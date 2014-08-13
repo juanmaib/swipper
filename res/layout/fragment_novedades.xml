@@ -1,0 +1,171 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#017d6c"
+    android:orientation="vertical"
+    tools:context="com.globant.labs.swipper.HomeActivity$PlaceholderFragment" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="5dp" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/background_with_shadow"
+                android:orientation="vertical"
+                android:padding="5dp" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#019682"
+                    android:orientation="vertical"
+                    android:padding="5dp" >
+
+                    <TextView
+                        android:id="@+id/tittle"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:focusable="true"
+                        android:drawableLeft="@drawable/ic_action_pin"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:shadowColor="#000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="2"
+                        android:text="@string/title_obra"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:background="#038c78"
+                    android:orientation="vertical"
+                    android:padding="10dp" >
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/title_obra"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                       />
+                    
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/title_obra"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                       />
+
+                    <TextView
+                        android:id="@+id/lugar"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/title_obra"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/organizador"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/title_obra"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                      />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:background="#019682"
+                    android:orientation="horizontal" >
+
+                    <Button
+                        android:id="@+id/asistir"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.5"
+                        android:drawableLeft="@drawable/ic_calendar"
+                        android:drawablePadding="10dp"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/asistir"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+
+                    <Button
+                        android:id="@+id/share"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.5"
+                        android:drawableLeft="@drawable/ic_share"
+                        android:drawablePadding="10dp"
+                        android:focusable="true"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/title_share"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+        </FrameLayout>
+    </FrameLayout>
+
+</FrameLayout>

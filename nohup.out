@@ -1,0 +1,62 @@
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=512m; support was removed in 8.0
+Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=512M; support was removed in 8.0
+No bp log location saved, using default.
+[000:000] Cpu: 6.58.9, x8, 2301Mhz, 7766MB
+[000:000] Computer model: Not available
+[000:000] Browser XEmbed support present: 1
+[000:000] Browser toolkit is Gtk2.
+[000:000] Using Gtk2 toolkit
+[000:074] Warning(optionsfile.cc:47): Load: Could not open file, err=2
+[000:074] No bp log location saved, using default.
+[000:074] Cpu: 6.58.9, x8, 2301Mhz, 7766MB
+[000:074] Computer model: Not available
+[000:074] Browser XEmbed support present: 1
+[000:074] Browser toolkit is Gtk2.
+[000:075] Using Gtk2 toolkit
+No bp log location saved, using default.
+[000:000] Cpu: 6.58.9, x8, 2301Mhz, 7766MB
+[000:000] Computer model: Not available
+[000:656] Warning(optionsfile.cc:47): Load: Could not open file, err=2
+[000:656] No bp log location saved, using default.
+[000:658] Cpu: 6.58.9, x8, 2301Mhz, 7766MB
+[000:658] Computer model: Not available
+Merged dex A (189 defs/232.4KiB) with dex B (520 defs/562.5KiB). Result is 709 defs/969.3KiB. Took 0.2s
+Merged dex A (709 defs/969.3KiB) with dex B (1 defs/0.4KiB). Result is 710 defs/1253.3KiB. Took 0.0s
+Result compacted from 4032.0KiB to 2554.2KiB to save 1477.8KiB
+Merged dex A (710 defs/1253.3KiB) with dex B (1622 defs/1771.4KiB). Result is 2332 defs/2554.2KiB. Took 0.2s
+Result compacted from 5457.9KiB to 4405.5KiB to save 1052.4KiB
+Merged dex A (2332 defs/2554.2KiB) with dex B (1869 defs/1855.0KiB). Result is 4201 defs/4405.5KiB. Took 0.3s
+Result compacted from 5879.1KiB to 4699.5KiB to save 1179.6KiB
+Merged dex A (4201 defs/4405.5KiB) with dex B (189 defs/324.3KiB). Result is 4390 defs/4699.5KiB. Took 0.2s
+Merged dex A (189 defs/232.4KiB) with dex B (520 defs/562.5KiB). Result is 709 defs/969.3KiB. Took 0.0s
+Merged dex A (709 defs/969.3KiB) with dex B (1 defs/0.4KiB). Result is 710 defs/1253.3KiB. Took 0.0s
+Result compacted from 4032.0KiB to 2554.2KiB to save 1477.8KiB
+Merged dex A (710 defs/1253.3KiB) with dex B (1622 defs/1771.4KiB). Result is 2332 defs/2554.2KiB. Took 0.1s
+Result compacted from 5457.9KiB to 4405.4KiB to save 1052.4KiB
+Merged dex A (2332 defs/2554.2KiB) with dex B (1869 defs/1855.0KiB). Result is 4201 defs/4405.4KiB. Took 0.3s
+Result compacted from 5879.1KiB to 4699.5KiB to save 1179.6KiB
+Merged dex A (4201 defs/4405.4KiB) with dex B (189 defs/324.3KiB). Result is 4390 defs/4699.5KiB. Took 0.3s
+Merged dex A (189 defs/232.8KiB) with dex B (520 defs/562.5KiB). Result is 709 defs/969.8KiB. Took 0.0s
+Merged dex A (709 defs/969.8KiB) with dex B (1 defs/0.4KiB). Result is 710 defs/1253.9KiB. Took 0.0s
+Result compacted from 4032.8KiB to 2554.6KiB to save 1478.2KiB
+Merged dex A (710 defs/1253.9KiB) with dex B (1622 defs/1771.4KiB). Result is 2332 defs/2554.6KiB. Took 0.1s
+Result compacted from 5458.4KiB to 4405.9KiB to save 1052.5KiB
+Merged dex A (2332 defs/2554.6KiB) with dex B (1869 defs/1855.0KiB). Result is 4201 defs/4405.9KiB. Took 0.2s
+Result compacted from 5879.6KiB to 4699.9KiB to save 1179.7KiB
+Merged dex A (4201 defs/4405.9KiB) with dex B (189 defs/324.3KiB). Result is 4390 defs/4699.9KiB. Took 0.2s
+Merged dex A (189 defs/232.8KiB) with dex B (520 defs/562.5KiB). Result is 709 defs/969.8KiB. Took 0.0s
+Merged dex A (709 defs/969.8KiB) with dex B (1 defs/0.4KiB). Result is 710 defs/1253.9KiB. Took 0.0s
+Result compacted from 4032.8KiB to 2554.6KiB to save 1478.2KiB
+Merged dex A (710 defs/1253.9KiB) with dex B (1622 defs/1771.4KiB). Result is 2332 defs/2554.6KiB. Took 0.2s
+Result compacted from 5458.4KiB to 4405.9KiB to save 1052.5KiB
+Merged dex A (2332 defs/2554.6KiB) with dex B (1869 defs/1855.0KiB). Result is 4201 defs/4405.9KiB. Took 0.2s
+Result compacted from 5879.6KiB to 4699.9KiB to save 1179.7KiB
+Merged dex A (4201 defs/4405.9KiB) with dex B (189 defs/324.3KiB). Result is 4390 defs/4699.9KiB. Took 0.2s
+Merged dex A (189 defs/232.8KiB) with dex B (520 defs/562.5KiB). Result is 709 defs/969.8KiB. Took 0.0s
+Merged dex A (709 defs/969.8KiB) with dex B (1 defs/0.4KiB). Result is 710 defs/1253.9KiB. Took 0.0s
+Result compacted from 4032.8KiB to 2554.6KiB to save 1478.2KiB
+Merged dex A (710 defs/1253.9KiB) with dex B (1622 defs/1771.4KiB). Result is 2332 defs/2554.6KiB. Took 0.1s
+Result compacted from 5458.4KiB to 4405.9KiB to save 1052.5KiB
+Merged dex A (2332 defs/2554.6KiB) with dex B (1869 defs/1855.0KiB). Result is 4201 defs/4405.9KiB. Took 0.2s
+Result compacted from 5879.6KiB to 4699.9KiB to save 1179.7KiB
+Merged dex A (4201 defs/4405.9KiB) with dex B (189 defs/324.3KiB). Result is 4390 defs/4699.9KiB. Took 0.2s

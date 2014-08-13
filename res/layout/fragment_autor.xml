@@ -1,0 +1,106 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+        android:background="#017d6c"
+    android:orientation="vertical"
+    tools:context="com.globant.labs.swipper.HomeActivity$PlaceholderFragment" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center"
+            android:padding="5dp" >
+
+            <FrameLayout
+                android:id="@+id/default_image"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:scrollbarSize="15dp"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical" >
+
+                <ImageView
+                    android:layout_width="128dp"
+                    android:layout_height="128dp"
+                    android:background="@drawable/ic_action_pin"
+                    android:scaleX="0.5"
+                    android:scaleY="0.5" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/progress"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center" >
+
+                <ProgressBar
+                    android:layout_width="128dp"
+                    android:layout_height="128dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:focusable="true"
+                    android:paddingLeft="10dp"
+                    android:scaleX="0.25"
+                    android:scaleY="0.25" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_gravity="center" >
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="128dp"
+                    android:layout_height="128dp"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tittle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:background="#038c78"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="15dp"
+                android:paddingBottom="6dip"
+                android:text="@string/title_obra"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:drawableLeft="@drawable/ic_autor"/>
+
+            <Button
+                android:id="@+id/description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:background="#019682"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/title_obra"
+                android:textColor="#FFFFFF"
+                android:padding="15dp"
+                android:paddingBottom="6dip"
+                android:textSize="13sp"
+                android:drawableLeft="@drawable/ic_text"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
