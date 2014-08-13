@@ -1,0 +1,174 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#017d6c"
+    android:orientation="vertical"
+    tools:context="com.globant.labs.swipper.ObraActivity" >
+
+    <LinearLayout
+        android:id="@+id/login_status"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin" >
+
+                <ImageView
+                    android:id="@+id/imagedd"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="23dp"
+                    android:src="@drawable/ic_launcher_web" />
+
+                <TextView
+                    android:id="@+id/loading_status_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:shadowColor="@android:color/darker_gray"
+                    android:shadowRadius="20"
+                    android:text="@string/loading_data"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <ProgressBar
+                    android:id="@+id/pbDownload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:id="@+id/home_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:gravity="top"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/wait_image"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="15dp" >
+
+                <FrameLayout
+                    android:layout_width="320dp"
+                    android:layout_height="320dp"
+                    android:layout_gravity="center"
+                    android:padding="5dp" >
+
+                    <FrameLayout
+                        android:id="@+id/default_image"
+                        android:layout_width="320dp"
+                        android:layout_height="320dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal"
+                        android:scrollbarSize="15dp"
+                        android:scrollbarStyle="insideOverlay"
+                        android:scrollbars="vertical" >
+
+                        <ImageView
+                            android:layout_width="320dp"
+                            android:layout_height="320dp"
+                            android:background="@drawable/ic_action_pin"
+                            android:scaleX="0.5"
+                            android:scaleY="0.5" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/progress"
+                        android:layout_width="320dp"
+                        android:layout_height="320dp" >
+
+                        <ProgressBar
+                            android:layout_width="320dp"
+                            android:layout_height="320dp"
+                            android:layout_gravity="center_horizontal|center_vertical"
+                            android:focusable="true"
+                            android:paddingLeft="10dp"
+                            android:scaleX="0.25"
+                            android:scaleY="0.25" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="320dp"
+                        android:layout_height="320dp" >
+
+                        <ImageView
+                            android:id="@+id/image"
+                            android:layout_width="320dp"
+                            android:layout_height="320dp" />
+                    </FrameLayout>
+                </FrameLayout>
+
+               
+            </LinearLayout>
+            
+             <LinearLayout
+                    android:id="@+id/coverflowReflect"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical" />
+
+            <com.jmv.codigocom.globant.labs.swipper.comps.TextViewEx   android:id="@+id/description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/title_obra"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="italic" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="#009681"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:gravity="top"
+                    android:orientation="vertical" >
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
