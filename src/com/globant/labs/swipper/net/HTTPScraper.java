@@ -120,11 +120,7 @@ public class HTTPScraper {
     	post.setHeader("Accept-Language", "en-US,en;q=0.5");
     	post.setHeader("Cookie", getCookies());
     	post.setHeader("Connection", "keep-alive");
-    	
-    	if (url.indexOf("http://sysacadweb.frre.utn.edu.ar/menuAlumno.asp")!=-1){
-    		post.setHeader("Referer", "http://sysacadweb.frre.utn.edu.ar/loginAlumno.asp");
-    	}
-    	
+    	    	
     	post.setHeader("Content-Type", "application/x-www-form-urlencoded");
      
         try {

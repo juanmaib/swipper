@@ -5,6 +5,7 @@ public class GeoEscultura implements Comparable<GeoEscultura> {
 
 	private int nid;
 	private String node_title;
+	private String node_category;
 	private Double node_latitude;
 	private Double node_longitude;
 	private Double distance;
@@ -20,6 +21,12 @@ public class GeoEscultura implements Comparable<GeoEscultura> {
 	}
 	public void setNode_title(String node_title) {
 		this.node_title = node_title;
+	}
+	public String getNode_category() {
+		return node_category;
+	}
+	public void setNode_category(String node_category) {
+		this.node_category = node_category;
 	}
 	public Double getNode_latitude() {
 		return node_latitude;
