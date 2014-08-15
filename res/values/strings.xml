@@ -60,7 +60,7 @@
     <string name="enviar">Enviar</string>
     <string name="error_field_required">Informacion Requerida</string>
     <string name="ubic">Ubicación</string>
-    <string name="title_activity_splash">Resistenciarte</string>
+    <string name="title_activity_splash">Swipper</string>
     <string name="share_tittle">Estoy viendo la obra:[escultura] de la ciudad de Resistencia usando Resistenciarte! Usala vos tambien </string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_map">Mapa de Esculturas</string>

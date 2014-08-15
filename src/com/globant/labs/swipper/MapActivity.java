@@ -1,74 +1,64 @@
 package com.globant.labs.swipper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.globant.labs.swipper.logic.esculturas.Autor;
-import com.globant.labs.swipper.logic.esculturas.Escultura;
-import com.globant.labs.swipper.logic.esculturas.Foto;
-import com.globant.labs.swipper.logic.esculturas.GeoEscultura;
-import com.globant.labs.swipper.net.IRequester;
-import com.globant.labs.swipper.net.RestClientResistenciarte;
-import com.globant.labs.swipper.utils.Constants;
-import com.globant.labs.swipper.utils.Generador;
-import com.globant.labs.swipper.utils.Utils;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.base.Function;
-import com.globant.labs.swipper.R;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.Paint.Style;
-import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.OnNavigationListener;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapActivity extends ActionBarCustomActivity implements IRequester {
+import com.globant.labs.swipper.geo.GeoLocationsUtils;
+import com.globant.labs.swipper.logic.esculturas.GeoEscultura;
+import com.globant.labs.swipper.net.IRequester;
+import com.globant.labs.swipper.utils.Constants;
+import com.globant.labs.swipper.utils.Utils;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+public class MapActivity extends ActionBarActivity implements IRequester, OnNavigationListener {
 
 	protected View mLoginFormView;
 	protected View mLoginStatusView;
+	
+	protected SpinnerAdapter mSpinnerAdapter;
 
 	// Google Map
 	private GoogleMap googleMap;
@@ -78,8 +68,8 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
 	private HashMap<GeoEscultura, View> view_per_esculturas;
 
 	public MapActivity() {
-		RestClientResistenciarte client = new RestClientResistenciarte(this);
-		client.makeJsonRestRequest();
+		//RestClientResistenciarte client = new RestClientResistenciarte(this);
+		//client.makeJsonRestRequest();
 	}
 
 	@Override
@@ -87,6 +77,14 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
+		mSpinnerAdapter = ArrayAdapter.createFromResource(this,
+		        R.array.categories_list, android.R.layout.simple_spinner_dropdown_item);
+		
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setTitle("");
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
+		
 		try {
 
 			mLoginFormView = findViewById(R.id.login_form);
@@ -94,6 +92,7 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
 			
 			showProgress(true);
 			initilizeMap();
+			generateMarkers();
 		} catch (Exception e) {
 		}
 
@@ -145,6 +144,8 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
 			// ---get the best location provider---
 			String bestProvider = locationManager.getBestProvider(c, true);
 
+			
+			
 			esculturas_per_marker = new HashMap<Marker, GeoEscultura>();
 			view_per_esculturas = new HashMap<GeoEscultura, View>();
 			
@@ -286,6 +287,111 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
 		}
 	}
 	
+	protected void generateMarkers() {
+		
+		loadLocations();
+		
+	    try {
+			final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+			esculturas_per_marker.clear();
+			
+			for (GeoEscultura locationStore : listaEsculturas) {
+				
+				final LatLng pos = new LatLng(locationStore.getNode_latitude(),
+						locationStore.getNode_longitude());
+				
+				if(locationStore.getDistance() < 1000) {							
+					builder.include(pos);
+					LatLng pos2 = new LatLng(
+							locationStore.getNode_latitude() + 0.001,
+							locationStore.getNode_longitude() + 0.001);
+					builder.include(pos2);
+				}
+
+				int image = R.drawable.ic_action_pin;
+
+				// #148273
+				Marker marker = googleMap.addMarker(new MarkerOptions()
+						.position(pos)
+						.title(locationStore.getNode_title().trim())
+						.snippet(
+								"Distancia actual:"
+										+ locationStore.getDistance() + "(KM)")
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.green_pin)));
+				
+				esculturas_per_marker.put(marker, locationStore);
+
+			}
+
+			showProgress(false);
+
+			googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+
+				public void onCameraChange(CameraPosition arg0) {
+					googleMap.animateCamera(CameraUpdateFactory
+							.newLatLngBounds(builder.build(), 50));
+
+					googleMap.setOnCameraChangeListener(null);
+				}
+			});
+			
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+		            @Override
+		            public void onInfoWindowClick(Marker marker) {
+		            	GeoEscultura esc = esculturas_per_marker.get(marker);
+		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	startActivity(intent);
+		            	//ObraActivity.showHome(MapActivity.this, esc.getNid(), esc.getNode_title().trim());
+
+		            }
+		        });
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	protected void loadLocations() {
+		listaEsculturas = new ArrayList<GeoEscultura>();
+		
+		InputStream inputStream = getResources().openRawResource(R.raw.locations);
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+	    
+	    String line;
+	    try {
+	    	int i = 0;
+			while ((line = reader.readLine()) != null) {
+			   String[] values = line.split(",");
+			   
+			   try {
+				   GeoEscultura localReg = new GeoEscultura();
+				   
+				   double lat = Double.parseDouble(values[6]);
+				   double lng = Double.parseDouble(values[7]);
+				   
+				   localReg.setNid(i);
+				   localReg.setNode_title(values[1]);
+				   localReg.setNode_category(values[5]);
+				   localReg.setNode_latitude(lat);
+				   localReg.setNode_longitude(lng);
+				   localReg.setDistance(GeoLocationsUtils.calculationByDistance(
+						   new LatLng(myLocation.getLatitude(), myLocation.getLongitude()),
+						   new LatLng(lat, lng)));
+				   
+				   listaEsculturas.add(localReg);
+			   }catch (NumberFormatException nfm) {
+				   Log.e("SWIPPER", "Error on: "+values[6]+" "+values[7]);
+			   }
+			   			   
+			   i++;
+			}
+			reader.close();
+	    } catch(IOException ioe) {
+	    	
+	    }
+	}
 
 	public static int convertToPixels(Context context, int nDP)
 	{
@@ -346,6 +452,153 @@ public class MapActivity extends ActionBarCustomActivity implements IRequester {
         }
     }
 
+	@Override
+	public boolean onNavigationItemSelected(int pos, long arg1) {
+		String[] strings = getResources().getStringArray(R.array.categories_list);
+		
+		if(strings[pos].equals("All")) {
+			showAllMarkers();
+		}else{
+			showFilteredMarkers(strings[pos]);
+		}
+		
+		return false;
+	}
 
+	protected void showAllMarkers() {
+	    try {
+	    	googleMap.clear();
+	    	
+			final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+			esculturas_per_marker.clear();
+					
+			for (GeoEscultura locationStore : listaEsculturas) {
+				
+				final LatLng pos = new LatLng(locationStore.getNode_latitude(),
+						locationStore.getNode_longitude());
+				
+				if(locationStore.getDistance() < 1000) {							
+					builder.include(pos);
+					LatLng pos2 = new LatLng(
+							locationStore.getNode_latitude() + 0.001,
+							locationStore.getNode_longitude() + 0.001);
+					builder.include(pos2);
+				}
+
+				int image = R.drawable.ic_action_pin;
+
+				// #148273
+				Marker marker = googleMap.addMarker(new MarkerOptions()
+						.position(pos)
+						.title(locationStore.getNode_title().trim())
+						.snippet(
+								"Distancia actual:"
+										+ locationStore.getDistance() + "(KM)")
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.green_pin)));
+				
+				esculturas_per_marker.put(marker, locationStore);
+
+			}
+
+			showProgress(false);
+
+//			if(q > 0) {
+//				googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+//	
+//					public void onCameraChange(CameraPosition arg0) {
+//						googleMap.animateCamera(CameraUpdateFactory
+//								.newLatLngBounds(builder.build(), 50));
+//	
+//						googleMap.setOnCameraChangeListener(null);
+//					}
+//				});
+//			}
+			
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+		            @Override
+		            public void onInfoWindowClick(Marker marker) {
+		            	GeoEscultura esc = esculturas_per_marker.get(marker);
+		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	startActivity(intent);
+		            }
+		        });
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void showFilteredMarkers(String filter) {
+	    try {
+	    	googleMap.clear();
+	    	
+			final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+			esculturas_per_marker.clear();
+			
+			int q = 0;
+			
+			for (GeoEscultura locationStore : listaEsculturas) {
+				
+				if(locationStore.getNode_category().equals(filter)) {
+				
+					final LatLng pos = new LatLng(locationStore.getNode_latitude(),
+							locationStore.getNode_longitude());
+					
+					if(locationStore.getDistance() < 1000) {							
+						builder.include(pos);
+						LatLng pos2 = new LatLng(
+								locationStore.getNode_latitude() + 0.001,
+								locationStore.getNode_longitude() + 0.001);
+						builder.include(pos2);
+						q++;
+					}
+	
+					int image = R.drawable.ic_action_pin;
+	
+					// #148273
+					Marker marker = googleMap.addMarker(new MarkerOptions()
+							.position(pos)
+							.title(locationStore.getNode_title().trim())
+							.snippet(
+									"Distancia actual:"
+											+ locationStore.getDistance() + "(KM)")
+							.icon(BitmapDescriptorFactory.fromResource(R.drawable.green_pin)));
+					
+					esculturas_per_marker.put(marker, locationStore);
+					
+				}
+			}
+
+			showProgress(false);
+
+//			if(q > 0) {
+//				googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+//	
+//					public void onCameraChange(CameraPosition arg0) {
+//						googleMap.animateCamera(CameraUpdateFactory
+//								.newLatLngBounds(builder.build(), 50));
+//	
+//						googleMap.setOnCameraChangeListener(null);
+//					}
+//				});
+//			}
+//			
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+		            @Override
+		            public void onInfoWindowClick(Marker marker) {
+		            	GeoEscultura esc = esculturas_per_marker.get(marker);
+		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	startActivity(intent);
+		            }
+		        });
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
