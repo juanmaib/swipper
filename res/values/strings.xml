@@ -17,7 +17,7 @@
     <string name="action_search">Buscar</string>
     <string name="drawer_open">Abrir Menu</string>
     <string name="drawer_close">Cerrar Menu</string>
-    <string name="map">Mapa de Esculturas</string>
+    <string name="map">Mapa de Lugares</string>
     <string name="lento_internet">La conexion se esta tardando, pero estoy tratando de re-intentar! Si podes conectate con WIFI!</string>
     <string name="no_internet">Sin Internet no se donde estas! Prendelo o conectate con WIFI y proba de nuevo!</string>
     <string name="autores">Perfiles de Autores</string>
