@@ -3,6 +3,7 @@ package com.globant.labs.swipper;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.globant.labs.swipper.logic.esculturas.GeoEscultura;
 import com.globant.labs.swipper.places.Place;
 import com.globant.labs.swipper.places.PlacesAPIClient;
+import com.squareup.picasso.Picasso;
 
 public class PlaceInfoActivity extends ActionBarActivity {
 
@@ -71,6 +73,10 @@ public class PlaceInfoActivity extends ActionBarActivity {
 		
 	}
 	
+	protected PlaceInfoActivity getContext() {
+		return this;
+	}
+	
 	private class AsyncPlace extends AsyncTask<GeoEscultura, Void, List<Place>> {
 
 		@Override
@@ -84,6 +90,11 @@ public class PlaceInfoActivity extends ActionBarActivity {
 			//mPlaceNameTextView.setText(result.getName());
 			if(result != null && result.size() > 0) {
 				mPlaceRatingTextView.setText(new DecimalFormat("#.##").format(result.get(0).getRating()));
+				Picasso.with(getContext()).load("" +
+						"https://maps.googleapis.com/maps/api/place/photo" +
+						"?maxwidth=400" +
+						"&photoreference=" + result.get(0).getPhotos().get(0).getPhoto_reference() +
+						"&key=AIzaSyBIuXfrOunbMGsPA21rye1fSI6YMRJMe-Y").into(mPlaceImageView);
 			}
 			//mPlaceAddressTextView.setText(result.getFormatted_address());			
 		}
