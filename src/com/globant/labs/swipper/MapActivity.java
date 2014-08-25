@@ -18,6 +18,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +39,8 @@ import android.widget.Toast;
 import com.globant.labs.swipper.geo.GeoLocationsUtils;
 import com.globant.labs.swipper.logic.esculturas.GeoEscultura;
 import com.globant.labs.swipper.net.IRequester;
+import com.globant.labs.swipper.places.Place;
+import com.globant.labs.swipper.places.PlacesAPIClient;
 import com.globant.labs.swipper.utils.Constants;
 import com.globant.labs.swipper.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -340,9 +343,10 @@ public class MapActivity extends ActionBarActivity implements IRequester, OnNavi
 		            @Override
 		            public void onInfoWindowClick(Marker marker) {
 		            	GeoEscultura esc = esculturas_per_marker.get(marker);
-		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
-		            	startActivity(intent);
+		            	displayInfo(esc);
+		            	//Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	//intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	//startActivity(intent);
 		            	//ObraActivity.showHome(MapActivity.this, esc.getNid(), esc.getNode_title().trim());
 
 		            }
@@ -379,6 +383,10 @@ public class MapActivity extends ActionBarActivity implements IRequester, OnNavi
 				   localReg.setDistance(GeoLocationsUtils.calculationByDistance(
 						   new LatLng(myLocation.getLatitude(), myLocation.getLongitude()),
 						   new LatLng(lat, lng)));
+				   localReg.setCiudad(values[0]);
+				   localReg.setProvincia(values[3]);
+				   localReg.setDireccion(values[2]);
+				   localReg.setTelefono(values[4]);
 				   
 				   listaEsculturas.add(localReg);
 			   }catch (NumberFormatException nfm) {
@@ -519,9 +527,10 @@ public class MapActivity extends ActionBarActivity implements IRequester, OnNavi
 		            @Override
 		            public void onInfoWindowClick(Marker marker) {
 		            	GeoEscultura esc = esculturas_per_marker.get(marker);
-		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
-		            	startActivity(intent);
+		            	displayInfo(esc);
+		            	//Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	//intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	//startActivity(intent);
 		            }
 		        });
 
@@ -590,15 +599,45 @@ public class MapActivity extends ActionBarActivity implements IRequester, OnNavi
 		            @Override
 		            public void onInfoWindowClick(Marker marker) {
 		            	GeoEscultura esc = esculturas_per_marker.get(marker);
-		            	Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-		            	intent.putExtra(SearchManager.QUERY, esc.getNode_title());
-		            	startActivity(intent);
+		            	displayInfo(esc);
+		            	//Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+		            	//intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+		            	//startActivity(intent);
 		            }
 		        });
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void displayInfo(GeoEscultura geoEscultura) {
+		//AsyncPlace asyncPlace = new AsyncPlace();
+		//asyncPlace.execute(geoEscultura);
+		Intent intent = new Intent(this, PlaceInfoActivity.class);
+		intent.putExtra(PlaceInfoActivity.EXTRA_QUERY, geoEscultura.getNode_title());
+		intent.putExtra(PlaceInfoActivity.EXTRA_LAT, geoEscultura.getNode_latitude());		
+		intent.putExtra(PlaceInfoActivity.EXTRA_LNG, geoEscultura.getNode_longitude());
+		intent.putExtra("CIUDAD", geoEscultura.getCiudad());
+		intent.putExtra("PROV", geoEscultura.getProvincia());
+		intent.putExtra("DIR", geoEscultura.getDireccion());
+		intent.putExtra("TEL", geoEscultura.getTelefono());
+    	//intent.putExtra(SearchManager.QUERY, esc.getNode_title());
+    	startActivity(intent);
+	}
+	
+	private class AsyncPlace extends AsyncTask<GeoEscultura, Void, Place> {
+
+		@Override
+		protected Place doInBackground(GeoEscultura... params) {
+			PlacesAPIClient apiClient = new PlacesAPIClient();
+			return apiClient.textsearch(params[0].getNode_title(), params[0].getNode_latitude(), params[0].getNode_longitude()).get(0);
+		}
+		
+		protected void onPostExecute(Place result) {
+			Log.d("SWIPPER", result.getPlace_id()+" "+result.getName());
+		}
+		
 	}
 	
 }

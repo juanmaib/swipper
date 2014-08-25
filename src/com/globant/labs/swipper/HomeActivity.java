@@ -100,12 +100,12 @@ public class HomeActivity extends ActionBarCustomActivity implements
 		dataList = new ArrayList<DrawerItem>();
 
 		// dataList.add(new DrawerItem("Menu")); // adding a header to the list
-		dataList.add(new DrawerItem(getString(R.string.identificar),
-				R.drawable.ic_action_target));
+		//dataList.add(new DrawerItem(getString(R.string.identificar),
+		//		R.drawable.ic_action_target));
 		dataList.add(new DrawerItem(getString(R.string.map),
 				R.drawable.ic_action_map));
-		dataList.add(new DrawerItem(getString(R.string.autores),
-				R.drawable.ic_action_usr));
+		//dataList.add(new DrawerItem(getString(R.string.autores),
+		//		R.drawable.ic_action_usr));
 		dataList.add(new DrawerItem(getString(R.string.contacto_menu),
 				R.drawable.ic_action_contacto));
 		dataList.add(new DrawerItem(getString(R.string.about),
@@ -364,21 +364,21 @@ public class HomeActivity extends ActionBarCustomActivity implements
 	private void selectItem(int position) {
 
 		switch (position) {
+		//case 0:
+		//	NearbyLocations.showHome(this);
+		//	break;
 		case 0:
-			NearbyLocations.showHome(this);
-			break;
-		case 1:
 			if (checkOpenGL()) {
 				MapActivity.showHome(this);
 			}
 			break;
-		case 2:
-			AutoresActivity.showHome(this);
-			break;
-		case 3:
+		//case 2:
+		//	AutoresActivity.showHome(this);
+		//	break;
+		case 1:
 			ContactoActivity.showHome(this);
 			break;
-		case 4:
+		case 2:
 			AboutActivity.showHome(this);
 			break;
 		}

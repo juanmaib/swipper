@@ -5,8 +5,7 @@
     <string name="calendar_event_already_added_message">"Evento borrado del Calendario!!!"</string>
     <string name="calendar_event_wrong_message">"Fechas Incorrectas!!"</string>
     <string name="calendar_event_undefined_error">"Se produjo un error!"</string>
-     <string name="calendar_event_deleted_error">"Error:"</string>
-    
+    <string name="calendar_event_deleted_error">"Error:"</string>
     <string name="app_name">Swipper</string>
     <string name="title_section1">Destacado</string>
     <string name="sin_novedades_detailed">Busca por mas novedades aqui pronto!!!</string>
@@ -18,11 +17,11 @@
     <string name="action_search">Buscar</string>
     <string name="drawer_open">Abrir Menu</string>
     <string name="drawer_close">Cerrar Menu</string>
-    <string name="map">Mapa de Esculturas</string>
+    <string name="map">Mapa de Lugares</string>
     <string name="lento_internet">La conexion se esta tardando, pero estoy tratando de re-intentar! Si podes conectate con WIFI!</string>
     <string name="no_internet">Sin Internet no se donde estas! Prendelo o conectate con WIFI y proba de nuevo!</string>
     <string name="autores">Perfiles de Autores</string>
-    <string name="about">Resistenciarte</string>
+    <string name="about">Swipper</string>
     <string name="retry">Re-Intentar!</string>
     <string name="contacto_menu">Contacto&#8230;</string>
     <string name="current_location">Obteniendo nombre de Calle&#8230;</string>
@@ -77,5 +76,6 @@
     <string name="title_activity_cover_flow_example">Galeria de Fotos</string>
     <string name="title_activity_standard_image_programmatic">Detalle de Obra</string>
     <string name="title_activity_contacto">Contacto</string>
+    <string name="title_activity_place_info">PlaceInfo</string>
 
 </resources>

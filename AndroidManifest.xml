@@ -26,9 +26,8 @@
     <!-- Required to show current location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-    
+
     <!-- Required OpenGL ES 2.0. for Maps V2 -->
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -49,12 +48,12 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.globant.labs.swipper.HomeActivity"
+            android:name=".HomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.SplashActivity"
+            android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
@@ -65,84 +64,88 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.MapActivity"
+            android:name=".MapActivity"
             android:label="@string/title_activity_map"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.NearbyLocations"
+            android:name=".NearbyLocations"
             android:label="@string/title_activity_nearby_locations"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.AboutActivity"
+            android:name=".AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.AutoresActivity"
+            android:name=".AutoresActivity"
             android:label="@string/title_activity_autores"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.AutorActivity"
+            android:name=".AutorActivity"
             android:label="@string/title_activity_autor"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.ObraActivity"
+            android:name=".ObraActivity"
             android:label="@string/title_activity_obra"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.CoverFlowExample"
+            android:name=".CoverFlowExample"
             android:label="@string/title_activity_cover_flow_example"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.StandardImageProgrammatic"
+            android:name=".StandardImageProgrammatic"
             android:label="@string/title_activity_standard_image_programmatic"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity" >
+            android:parentActivityName=".HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
         </activity>
         <activity
-            android:name="com.globant.labs.swipper.ContactoActivity"
+            android:name=".ContactoActivity"
             android:label="@string/title_activity_contacto"
-            android:parentActivityName="com.globant.labs.swipper.HomeActivity"
+            android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.globant.labs.swipper.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".PlaceInfoActivity"
+            android:label="@string/title_activity_place_info" >
         </activity>
     </application>
 
