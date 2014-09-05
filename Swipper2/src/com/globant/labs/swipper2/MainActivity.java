@@ -7,6 +7,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -17,38 +20,58 @@ public class MainActivity extends ActionBarActivity implements
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
 	/**
-	 * Fragment managing the behaviors, interactions and presentation of the map
-	 * fragment.
-	 */
-	// private SupportMapFragment mMapFragment;
-
-	/**
 	 * Used to store the last screen title. For use in
 	 * {@link #restoreActionBar()}.
 	 */
 	private CharSequence mTitle;
+
+	private GoogleMap mMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mTitle = getTitle();
+		
+		// Set up the map
+		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
-		mTitle = getTitle();
+		
+		// Just in case, assure that we have ready the map
+		setUpMapIfNeeded();
 
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
+
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Just in case, assure that we have ready the map
+		setUpMapIfNeeded();
+	}
+	
+	private void setUpMapIfNeeded() {
+	    // Do a null check to confirm that we have not already instantiated the map.
+	    if (mMap == null) {
+	        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+	                            .getMap();
+	        // Check if we were successful in obtaining the map.
+	        if (mMap != null) {
+	            // The Map is verified. It is now safe to manipulate the map.
+
+	        }
+	    }
 	}
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
-		// update the main content by replacing fragments
-		// FragmentManager fragmentManager = getSupportFragmentManager();
-		// fragmentManager.beginTransaction()
-		// .replace(R.id.container, PlaceholderFragment.newInstance(position +
-		// 1)).commit();
+		// TODO
 	}
 
 	public void onSectionAttached(int number) {
@@ -105,39 +128,5 @@ public class MainActivity extends ActionBarActivity implements
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	// /**
-	// * A placeholder fragment containing a simple view.
-	// */
-	// public static class PlaceholderFragment extends Fragment {
-	//
-	// /**
-	// * The fragment argument representing the section number for this
-	// * fragment.
-	// */
-	// private static final String ARG_SECTION_NUMBER = "section_number";
-	//
-	// /**
-	// * Returns a new instance of this fragment for the given section number.
-	// */
-	// public static PlaceholderFragment newInstance(int sectionNumber) {
-	// PlaceholderFragment fragment = new PlaceholderFragment();
-	// Bundle args = new Bundle();
-	// args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-	// fragment.setArguments(args);
-	// return fragment;
-	// }
-	//
-	// public PlaceholderFragment() {
-	// }
-	//
-	// @Override
-	// public void onAttach(Activity activity) {
-	// super.onAttach(activity);
-	// ((MainActivity)
-	// activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
-	// }
-	//
-	// }
 
 }

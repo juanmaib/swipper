@@ -2,7 +2,7 @@
 <resources>
     
     <!-- Generic -->
-    <string name="app_name">GeoAmex</string>
+    <string name="app_name">Swipper</string>
     <string name="title_section1">Todas las Categorias</string>
     <string name="title_section2">Alimentos</string>
     <string name="title_section3">Combustible</string>
