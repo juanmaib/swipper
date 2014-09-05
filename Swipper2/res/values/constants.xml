@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="maxDescriptionLines_PlaceDetails">3</integer>
+    <integer name="maxReviewRatingStars">5</integer>
+    <integer name="maxReviewLines_PlaceDetails">2</integer>
+</resources>

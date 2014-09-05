@@ -1,0 +1,22 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/map"
+    android:name="com.geoamex.SwipperMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    class="com.google.android.gms.maps.SupportMapFragment" />
+
+<!--
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.geoamex.MainActivity$PlaceholderFragment" >
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+
+</RelativeLayout>
+-->

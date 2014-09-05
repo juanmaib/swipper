@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- Generic -->
+    <string name="app_name">GeoAmex</string>
+    <string name="title_section1">Todas las Categorias</string>
+    <string name="title_section2">Alimentos</string>
+    <string name="title_section3">Combustible</string>
+    <string name="title_section4">Taxi</string>
+    <string name="title_section5">Alquiler de coches</string>
+    <string name="title_section6">Alojamiento</string>
+    <string name="navigation_drawer_open">Abrir cajon de navegación</string>
+    <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
+    <string name="action_example">Acción de ejemplo</string>
+    <string name="action_settings">Ajustes</string>
+    
+    <!-- Place Details -->
+    <string name="textEditGeolocationInformation_PlaceDetails"><u>editar</u></string>
+    <string name="textDescriptionHeader_PlaceDetails">Descripción</string>
+    <string name="textReadMoreDescription_PlaceDetails"><u>leer más</u></string>
+    <string name="textReviewsHeader_PlaceDetails">Reseñas</string>
+    <string name="textAddReview_PlaceDetails"><u>+ agregar reseña</u></string>
+    <string name="textMoreReviews_PlaceDetails"><u>más reseñas</u></string>
+    <string name="textPhotosHeader_PlaceDetails">Fotos</string>
+
+    <!-- Content Descriptions -->
+    <string name="imageLocationTypeDescription">Tipo de lugar</string>
+    <string name="imageExitButtonDescription">Botón de salida (usado comúnmente como equivalente del botón "regresar")</string>
+    <string name="imageGenericLocationDescription">Imagen estándar comúnmente usada como marcador en los mapas</string>
+    <string name="imageShowPlaceInMapDescription">Regresar a la vista del mapa y mostrar el lugar descripto actualmente</string>
+    <string name="imageNavigateToPlaceDescription">Regresar a la vista del mapa y mostrar cómo llegar al lugar descripto actualmente</string>
+    <string name="imageCallToPlaceDescription">Hacer una llamada al lugar descripto actualmente</string>
+    <string name="imageSharePlaceDescription">Compartir lugar</string>
+
+</resources>
