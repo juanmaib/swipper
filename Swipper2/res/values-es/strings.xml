@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyEllipsis">
     
     <!-- Generic -->
     <string name="app_name">Swipper</string>
@@ -13,6 +13,10 @@
     <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
     <string name="action_example">Acción de ejemplo</string>
     <string name="action_settings">Ajustes</string>
+    
+    <!-- MainActivity -->
+    <string name="myLocationButtonTapped">Obteniendo su ubicación...\nEspere, por favor...</string>
+    <string name="my_location">Mi ubicación</string>
     
     <!-- Place Details -->
     <string name="textEditGeolocationInformation_PlaceDetails"><u>editar</u></string>

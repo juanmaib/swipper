@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyEllipsis">
+
     <!-- Generic -->
     <string name="app_name">Swipper</string>
     <string name="title_section1">All Categories</string>
@@ -13,7 +13,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
-    
+
+    <!-- MainActivity -->
+    <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
+    <string name="my_location">My Location</string>
+
     <!-- Place Details -->
     <string name="textEditGeolocationInformation_PlaceDetails"><u>edit</u></string>
     <string name="textDescriptionHeader_PlaceDetails">Description</string>

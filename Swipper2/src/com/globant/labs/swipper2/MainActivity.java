@@ -1,5 +1,10 @@
 package com.globant.labs.swipper2;
 
+import android.app.Dialog;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -7,11 +12,19 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends ActionBarActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks {
+		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
+
+	// implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+	// OnConnectionFailedListener, LocationListener,
+	// OnMyLocationButtonClickListener, ConnectionCallbacks
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -33,40 +46,56 @@ public class MainActivity extends ActionBarActivity implements
 		setContentView(R.layout.activity_main);
 
 		mTitle = getTitle();
-		
-		// Set up the map
-		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 
+		// Getting Google Play availability status
+		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
+
+		// Showing status
+		if (status != ConnectionResult.SUCCESS) { // Google Play Services are
+													// not available
+			int requestCode = 10;
+			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
+			dialog.show();
+		} else { // Google Play Services are available
+
+			// Getting reference to the SupportMapFragment of activity_main.xml
+			SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.map);
+
+			// Getting GoogleMap object from the fragment
+			mMap = fm.getMap();
+
+			// Enabling MyLocation Layer of Google Map
+			mMap.setMyLocationEnabled(true);
+
+			// Getting LocationManager object from System Service
+			// LOCATION_SERVICE
+			LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+			// Creating a criteria object to retrieve provider
+			Criteria criteria = new Criteria();
+
+			// Getting the name of the best provider
+			String provider = locationManager.getBestProvider(criteria, true);
+
+			// Getting Current Location
+			Location location = locationManager.getLastKnownLocation(provider);
+
+			if (location != null) {
+				onLocationChanged(location);
+			}
+
+			locationManager.requestLocationUpdates(provider, 20000, 0, this);
+		}
+
+		// Get the drawer
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
-		
-		// Just in case, assure that we have ready the map
-		setUpMapIfNeeded();
 
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// Just in case, assure that we have ready the map
-		setUpMapIfNeeded();
-	}
-	
-	private void setUpMapIfNeeded() {
-	    // Do a null check to confirm that we have not already instantiated the map.
-	    if (mMap == null) {
-	        mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-	                            .getMap();
-	        // Check if we were successful in obtaining the map.
-	        if (mMap != null) {
-	            // The Map is verified. It is now safe to manipulate the map.
-
-	        }
-	    }
 	}
 
 	@Override
@@ -127,6 +156,42 @@ public class MainActivity extends ActionBarActivity implements
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	// Implementation of {@link LocationListener}.
+	@Override
+	public void onLocationChanged(Location location) {
+		// Getting latitude of the current location
+		double latitude = location.getLatitude();
+
+		// Getting longitude of the current location
+		double longitude = location.getLongitude();
+
+		// Creating a LatLng object for the current location
+		LatLng latLng = new LatLng(latitude, longitude);
+
+		// Showing the current location in Google Map
+		mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+		// Zoom in the Google Map
+		mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
 	}
 
 }
