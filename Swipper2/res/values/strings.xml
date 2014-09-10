@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyEllipsis">
+
+    <!-- Generic -->
+    <string name="app_name">Swipper</string>
+    <string name="title_section1">All Categories</string>
+    <string name="title_section2">Food</string>
+    <string name="title_section3">Gas</string>
+    <string name="title_section4">Taxi</string>
+    <string name="title_section5">Car rental</string>
+    <string name="title_section6">Lodging</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- MainActivity -->
+    <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
+    <string name="my_location">My Location</string>
+
+    <!-- Place Details -->
+    <string name="textEditGeolocationInformation_PlaceDetails"><u>edit</u></string>
+    <string name="textDescriptionHeader_PlaceDetails">Description</string>
+    <string name="textReadMoreDescription_PlaceDetails"><u>read more</u></string>
+    <string name="textReviewsHeader_PlaceDetails">Reviews</string>
+    <string name="textAddReview_PlaceDetails"><u>+ add review</u></string>
+    <string name="textMoreReviews_PlaceDetails"><u>more reviews</u></string>
+    <string name="textPhotosHeader_PlaceDetails">Photos</string>
+
+    <!-- Content Descriptions -->
+    <string name="imageLocationTypeDescription">Type of place</string>
+    <string name="imageExitButtonDescription">Exit Button (used as equivalent of "back" button on most cases)</string>
+    <string name="imageGenericLocationDescription">Standard image used when marking a place in a (google) map</string>
+    <string name="imageShowPlaceInMapDescription">Return to Map view and show currently described place</string>
+    <string name="imageNavigateToPlaceDescription">Return to Map and show how to get to currently described place</string>
+    <string name="imageCallToPlaceDescription">Make a phone call to currently described place</string>
+    <string name="imageSharePlaceDescription">Share place</string>
+
+</resources>
