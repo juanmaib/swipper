@@ -1,5 +1,8 @@
 package com.globant.labs.swipper2;
 
+import java.util.List;
+
+
 import android.app.Dialog;
 import android.location.Criteria;
 import android.location.Location;
@@ -9,15 +12,22 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.globant.labs.swipper2.models.Category;
+import com.globant.labs.swipper2.repositories.CategoryRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.strongloop.android.loopback.Model;
+import com.strongloop.android.loopback.ModelRepository;
+import com.strongloop.android.loopback.ModelRepository.FindAllCallback;
+import com.strongloop.android.loopback.RestAdapter;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -96,6 +106,24 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
+		RestAdapter restAdapter = new RestAdapter(getApplicationContext(), "http://swipper2-luciopoveda.rhcloud.com/api");
+		CategoryRepository categoryRepository = restAdapter.createRepository(CategoryRepository.class);
+		categoryRepository.findAll(new FindAllCallback<Category>() {
+
+			@Override
+			public void onSuccess(List<Category> models) {
+				for(Category m : models) {
+					Log.i("SWIPPER", m.getName());
+				}
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				Log.i("SWIPPER", "API ERROR");
+			}
+			
+		});
+		
 	}
 
 	@Override
