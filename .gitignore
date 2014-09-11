@@ -1,4 +1,4 @@
-bin/
-gen/
-project.properties
-.classpath
+Swipper2/bin/
+Swipper2/gen/
+Swipper2/project.properties
+Swipper2/.classpath
