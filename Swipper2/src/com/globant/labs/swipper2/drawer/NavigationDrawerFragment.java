@@ -1,4 +1,4 @@
-package com.globant.labs.swipper2;
+package com.globant.labs.swipper2.drawer;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -17,9 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.globant.labs.swipper2.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -99,15 +101,19 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position);
 			}
 		});
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(),
-				android.R.layout.simple_list_item_1, android.R.id.text1, new String[] {
-						getString(R.string.title_section1), getString(R.string.title_section2),
-						getString(R.string.title_section3), getString(R.string.title_section4),
-						getString(R.string.title_section5), getString(R.string.title_section6), }));
-		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+		//mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(),
+		//		android.R.layout.simple_list_item_1, android.R.id.text1, new String[] {
+		//				getString(R.string.title_section1), getString(R.string.title_section2),
+		//				getString(R.string.title_section3), getString(R.string.title_section4),
+		//				getString(R.string.title_section5), getString(R.string.title_section6), }));
+		//mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
 	}
 
+	public void setAdapter(ListAdapter adapter) {
+		mDrawerListView.setAdapter(adapter);
+	}
+	
 	public boolean isDrawerOpen() {
 		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
 	}

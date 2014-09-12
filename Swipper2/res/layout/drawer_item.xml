@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="60dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <View
+        android:id="@+id/categoryColor"
+        android:layout_width="6dp"
+        android:layout_height="match_parent" />
+    
+    <TextView
+        android:id="@+id/categoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:paddingLeft="20dp" />
+
+    <View
+	    android:layout_width="0dp"
+	    android:layout_height="match_parent"
+	    android:layout_weight="1" />
+		    
+    <ToggleButton
+        android:id="@+id/categoryToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+
+</LinearLayout>

@@ -1,6 +1,9 @@
 package com.globant.labs.swipper2;
 
+import java.util.List;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,12 +15,19 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.globant.labs.swipper2.drawer.CategoriesAdapter;
+import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.models.Category;
+import com.globant.labs.swipper2.repositories.CategoryRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.internal.md;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.strongloop.android.loopback.RestAdapter;
+import com.strongloop.android.loopback.callbacks.ListCallback;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -96,6 +106,31 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
+		RestAdapter rest = ((SwipperApp) getApplication()).getRestAdapter();
+		CategoryRepository catRepo = rest.createRepository(CategoryRepository.class);
+				
+		catRepo.findAll(new ListCallback<Category>() {
+			
+			@Override
+			public void onSuccess(List<Category> cats) {
+				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
+				for(Category cat : cats) {
+					catAdapter.addCategory(cat);
+				}
+				mNavigationDrawerFragment.setAdapter(catAdapter);
+			}
+			
+			@Override
+			public void onError(Throwable t) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+	}
+	
+	public Context getContext() {
+		return this;
 	}
 
 	@Override
