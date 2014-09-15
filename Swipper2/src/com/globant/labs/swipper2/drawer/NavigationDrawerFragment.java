@@ -1,5 +1,8 @@
 package com.globant.labs.swipper2.drawer;
 
+import java.util.List;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -7,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -15,9 +19,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,11 +36,6 @@ import com.globant.labs.swipper2.R;
  * implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-
-	/**
-	 * Remember the position of the selected item.
-	 */
-	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
 	/**
 	 * Per the design guidelines, you should show the drawer on launch until the
@@ -56,8 +56,9 @@ public class NavigationDrawerFragment extends Fragment {
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerListView;
 	private View mFragmentContainerView;
+	
+	private CategoriesAdapter mAdapter;
 
-	private int mCurrentSelectedPosition = 0;
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
@@ -75,12 +76,9 @@ public class NavigationDrawerFragment extends Fragment {
 		mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
 		if (savedInstanceState != null) {
-			mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 			mFromSavedInstanceState = true;
 		}
 
-		// Select either the default item (0) or the last selected item.
-		selectItem(mCurrentSelectedPosition);
 	}
 
 	@Override
@@ -92,6 +90,7 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	@Override
+	@SuppressLint("InflateParams")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mDrawerListView = (ListView) inflater.inflate(R.layout.fragment_navigation_drawer,
 				container, false);
@@ -101,17 +100,24 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position);
 			}
 		});
-		//mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(),
-		//		android.R.layout.simple_list_item_1, android.R.id.text1, new String[] {
-		//				getString(R.string.title_section1), getString(R.string.title_section2),
-		//				getString(R.string.title_section3), getString(R.string.title_section4),
-		//				getString(R.string.title_section5), getString(R.string.title_section6), }));
-		//mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+		
+		View footerView = inflater.inflate(R.layout.navigation_drawer_footer, null);
+		
+		mDrawerListView.addFooterView(footerView);
+		Button applyButton = (Button) footerView.findViewById(R.id.apply_button);
+		applyButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mDrawerLayout.closeDrawer(mFragmentContainerView);	
+			}
+		});
+		
 		return mDrawerListView;
 	}
 
-	public void setAdapter(ListAdapter adapter) {
-		mDrawerListView.setAdapter(adapter);
+	public void setAdapter(CategoriesAdapter adapter) {
+		mAdapter = adapter;
+		mDrawerListView.setAdapter(adapter);		
 	}
 	
 	public boolean isDrawerOpen() {
@@ -133,7 +139,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 		// set a custom shadow that overlays the main content when the drawer
 		// opens
-//		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 		// set up the drawer's list view with items and click listener
 
 		ActionBar actionBar = getActionBar();
@@ -163,6 +169,10 @@ public class NavigationDrawerFragment extends Fragment {
 
 				getActivity().supportInvalidateOptionsMenu(); // calls
 																// onPrepareOptionsMenu()
+				
+				if(mCallbacks != null) {
+					mCallbacks.onSelectionApplied(mAdapter.getCheckedIds());
+				}
 			}
 
 			@Override
@@ -206,13 +216,12 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	private void selectItem(int position) {
-		mCurrentSelectedPosition = position;
-		if (mDrawerListView != null) {
-			mDrawerListView.setItemChecked(position, true);
+		if (mAdapter != null) {
+			mAdapter.toggleCategory(position);
 		}
-		if (mDrawerLayout != null) {
-			mDrawerLayout.closeDrawer(mFragmentContainerView);
-		}
+		//if (mDrawerLayout != null) {
+		//	mDrawerLayout.closeDrawer(mFragmentContainerView);		
+		//}
 		if (mCallbacks != null) {
 			mCallbacks.onNavigationDrawerItemSelected(position);
 		}
@@ -237,7 +246,7 @@ public class NavigationDrawerFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+		//outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
 	}
 
 	@Override
@@ -299,5 +308,6 @@ public class NavigationDrawerFragment extends Fragment {
 		 * Called when an item in the navigation drawer is selected.
 		 */
 		void onNavigationDrawerItemSelected(int position);
+		void onSelectionApplied(List<String> ids);
 	}
 }

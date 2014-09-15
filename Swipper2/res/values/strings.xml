@@ -13,10 +13,15 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
 
     <!-- MainActivity -->
     <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
     <string name="my_location">My Location</string>
+    
+    <!-- Nav Drawer -->
+    <string name="apply">APPLY ›</string>
 
     <!-- Place Details -->
     <string name="textEditGeolocationInformation_PlaceDetails"><u>edit</u></string>

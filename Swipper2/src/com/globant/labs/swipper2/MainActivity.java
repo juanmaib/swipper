@@ -12,16 +12,18 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.globant.labs.swipper2.drawer.CategoriesAdapter;
+import com.globant.labs.swipper2.drawer.CategoryMapper;
+import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
 import com.globant.labs.swipper2.models.Category;
 import com.globant.labs.swipper2.repositories.CategoryRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.internal.md;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -114,9 +116,14 @@ public class MainActivity extends ActionBarActivity implements
 			@Override
 			public void onSuccess(List<Category> cats) {
 				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
-				for(Category cat : cats) {
+				//for(Category cat : cats) {
+				//	catAdapter.addCategory(cat);
+				//}
+				
+				for(DrawerCategoryItem cat : CategoryMapper.getStaticCategories()) {
 					catAdapter.addCategory(cat);
 				}
+				
 				mNavigationDrawerFragment.setAdapter(catAdapter);
 			}
 			
@@ -227,6 +234,15 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onSelectionApplied(List<String> ids) {
+		Log.i("SWIPPER", "Selection Applied");
+		for(String id: ids) {
+			Log.i("SWIPPER", "ID: "+id);
+		}
+		Log.i("SWIPPER", "------------");
 	}
 
 }

@@ -1,16 +1,13 @@
 package com.globant.labs.swipper2.drawer;
 
-import android.graphics.Color;
-
 import com.globant.labs.swipper2.models.Category;
 
-public class CategoryDisplay {
+public class DrawerCategoryItem extends DrawerItem {
 
 	protected Category category;
 	protected int color;
-	protected boolean checked;
-	
-	public CategoryDisplay(Category cat) {
+
+	public DrawerCategoryItem(Category cat) {
 		category = cat;
 	}
 	
@@ -36,14 +33,6 @@ public class CategoryDisplay {
 	
 	public void setColor(int color) {
 		this.color = color;
-	}
-	
-	public boolean isChecked() {
-		return checked;
-	}
-	
-	public void setChecked(boolean checked) {
-		this.checked = checked;
 	}
 	
 }

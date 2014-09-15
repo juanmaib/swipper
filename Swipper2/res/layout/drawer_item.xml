@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minHeight="60dp"
@@ -11,23 +12,26 @@
         android:layout_width="6dp"
         android:layout_height="match_parent" />
     
-    <TextView
+    <com.globant.labs.swipper2.widget.SwipperTextView 
         android:id="@+id/categoryName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="20sp"
-        android:paddingLeft="20dp" />
+        android:paddingLeft="20dp"
+        app:fontName="roboto_thin.ttf" />
 
     <View
 	    android:layout_width="0dp"
 	    android:layout_height="match_parent"
-	    android:layout_weight="1" />
+	    android:layout_weight="2" />
 		    
-    <ToggleButton
+    <ImageView
         android:id="@+id/categoryToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:layout_margin="10dp"
+        android:src="@drawable/check"
+        android:contentDescription="@string/off" />
 
 </LinearLayout>
