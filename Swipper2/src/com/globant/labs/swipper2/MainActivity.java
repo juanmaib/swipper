@@ -1,6 +1,9 @@
 package com.globant.labs.swipper2;
 
+import java.util.List;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -9,9 +12,14 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.globant.labs.swipper2.drawer.CategoriesAdapter;
+import com.globant.labs.swipper2.drawer.CategoryMapper;
+import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
+import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -96,11 +104,40 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
+//		RestAdapter rest = ((SwipperApp) getApplication()).getRestAdapter();
+//		CategoryRepository catRepo = rest.createRepository(CategoryRepository.class);
+//				
+//		catRepo.findAll(new ListCallback<Category>() {
+//			
+//			@Override
+//			public void onSuccess(List<Category> cats) {
+//				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
+//				for(Category cat : cats) {
+//					catAdapter.addCategory(cat);
+//				}
+//				
+//				mNavigationDrawerFragment.setAdapter(catAdapter);
+//			}
+//			
+//			@Override
+//			public void onError(Throwable t) {
+//				// TODO Auto-generated method stub		
+//			}
+//		});
+		
+		CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
+		for(DrawerCategoryItem cat : CategoryMapper.getStaticCategories()) {
+			cat.setChecked(true);
+			cat.setAppliedState(true);
+			catAdapter.addCategory(cat);
+		}
+		
+		mNavigationDrawerFragment.setAdapter(catAdapter);
+		
 	}
-
-	@Override
-	public void onNavigationDrawerItemSelected(int position) {
-		// TODO
+	
+	public Context getContext() {
+		return this;
 	}
 
 	public void onSectionAttached(int number) {
@@ -192,6 +229,15 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onSelectionApplied(List<String> ids) {
+		Log.i("SWIPPER", "Selection Applied");
+		for(String id: ids) {
+			Log.i("SWIPPER", "ID: "+id);
+		}
+		Log.i("SWIPPER", "------------");
 	}
 
 }
