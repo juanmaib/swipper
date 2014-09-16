@@ -71,5 +71,19 @@ public class CategoryMapper {
 		colorMap = map;
 	}
 	
+	private static final Map<String, Integer> iconMap;
+	static {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("5404917fa90a2a0000a37d8b", R.drawable.marker_lodging);
+		map.put("54049180a90a2a0000a37d8f", R.drawable.marker_carrental);
+		map.put("54049180a90a2a0000a37d91", R.drawable.marker_food);
+		map.put("54049181a90a2a0000a37db2", R.drawable.marker_gas);
+		map.put("Lodging Small", R.drawable.marker_lodging);
+		map.put("54049193a90a2a0000a38206", R.drawable.marker_taxi);
+		iconMap = map;
+	}
 	
+	public static int getCategoryIcon(String category) {
+		return iconMap.get(category);
+	}
 }

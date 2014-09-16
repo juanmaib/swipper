@@ -16,16 +16,24 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.globant.labs.swipper2.api.SwipperRestAdapter;
 import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.repositories.PlaceRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.strongloop.android.loopback.callbacks.ListCallback;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -72,7 +80,7 @@ public class MainActivity extends ActionBarActivity implements
 
 			// Getting GoogleMap object from the fragment
 			mMap = fm.getMap();
-
+			
 			// Enabling MyLocation Layer of Google Map
 			mMap.setMyLocationEnabled(true);
 
@@ -212,6 +220,33 @@ public class MainActivity extends ActionBarActivity implements
 
 		// Zoom in the Google Map
 		mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+		
+		LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+		LatLng northWest = new LatLng(bounds.northeast.latitude, bounds.southwest.longitude);
+		LatLng southEast = new LatLng(bounds.southwest.latitude, bounds.northeast.longitude);
+		
+		SwipperRestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
+		PlaceRepository placeRepo = restAdapter.createRepository(PlaceRepository.class);
+		placeRepo.nearBy(northWest, southEast, new ListCallback<Place>() {
+			
+			@Override
+			public void onSuccess(List<Place> places) {
+				for(Place p: places) {
+					MarkerOptions marker = new MarkerOptions()
+						.position(p.getLocation())
+						.title(p.getName())
+						.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryIcon(p.getCategoryId())));
+					mMap.addMarker(marker);
+				}
+			}
+			
+			@Override
+			public void onError(Throwable t) {
+				Log.i("SWIPPER", "NearBy error");
+			}
+			
+		});
+		
 	}
 
 	@Override
