@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:background="@android:color/transparent"
         android:text="@string/apply"
-        android:textColor="@color/white"
+        android:textColor="@color/button_text_color"
         android:textSize="22sp"
         app:fontName="roboto_regular.ttf" />
     

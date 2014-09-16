@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -56,6 +55,7 @@ public class NavigationDrawerFragment extends Fragment {
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerListView;
 	private View mFragmentContainerView;
+	private Button mApplyButton;
 	
 	private CategoriesAdapter mAdapter;
 
@@ -104,10 +104,14 @@ public class NavigationDrawerFragment extends Fragment {
 		View footerView = inflater.inflate(R.layout.navigation_drawer_footer, null);
 		
 		mDrawerListView.addFooterView(footerView);
-		Button applyButton = (Button) footerView.findViewById(R.id.apply_button);
-		applyButton.setOnClickListener(new OnClickListener() {
+		mApplyButton = (Button) footerView.findViewById(R.id.apply_button);
+		mApplyButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				mAdapter.applyChanges();
+				if(mCallbacks != null) {
+					mCallbacks.onSelectionApplied(mAdapter.getCheckedIds());
+				}
 				mDrawerLayout.closeDrawer(mFragmentContainerView);	
 			}
 		});
@@ -139,7 +143,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 		// set a custom shadow that overlays the main content when the drawer
 		// opens
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		//mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 		// set up the drawer's list view with items and click listener
 
 		ActionBar actionBar = getActionBar();
@@ -170,9 +174,7 @@ public class NavigationDrawerFragment extends Fragment {
 				getActivity().supportInvalidateOptionsMenu(); // calls
 																// onPrepareOptionsMenu()
 				
-				if(mCallbacks != null) {
-					mCallbacks.onSelectionApplied(mAdapter.getCheckedIds());
-				}
+				mAdapter.resetChanges();
 			}
 
 			@Override
@@ -218,12 +220,7 @@ public class NavigationDrawerFragment extends Fragment {
 	private void selectItem(int position) {
 		if (mAdapter != null) {
 			mAdapter.toggleCategory(position);
-		}
-		//if (mDrawerLayout != null) {
-		//	mDrawerLayout.closeDrawer(mFragmentContainerView);		
-		//}
-		if (mCallbacks != null) {
-			mCallbacks.onNavigationDrawerItemSelected(position);
+			mApplyButton.setEnabled(mAdapter.getSelectionCount() > 0);			
 		}
 	}
 
@@ -307,7 +304,6 @@ public class NavigationDrawerFragment extends Fragment {
 		/**
 		 * Called when an item in the navigation drawer is selected.
 		 */
-		void onNavigationDrawerItemSelected(int position);
 		void onSelectionApplied(List<String> ids);
 	}
 }

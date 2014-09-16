@@ -20,16 +20,12 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
-import com.globant.labs.swipper2.models.Category;
-import com.globant.labs.swipper2.repositories.CategoryRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.loopback.callbacks.ListCallback;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -108,41 +104,40 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
 
-		RestAdapter rest = ((SwipperApp) getApplication()).getRestAdapter();
-		CategoryRepository catRepo = rest.createRepository(CategoryRepository.class);
-				
-		catRepo.findAll(new ListCallback<Category>() {
-			
-			@Override
-			public void onSuccess(List<Category> cats) {
-				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
-				//for(Category cat : cats) {
-				//	catAdapter.addCategory(cat);
-				//}
-				
-				for(DrawerCategoryItem cat : CategoryMapper.getStaticCategories()) {
-					catAdapter.addCategory(cat);
-				}
-				
-				mNavigationDrawerFragment.setAdapter(catAdapter);
-			}
-			
-			@Override
-			public void onError(Throwable t) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+//		RestAdapter rest = ((SwipperApp) getApplication()).getRestAdapter();
+//		CategoryRepository catRepo = rest.createRepository(CategoryRepository.class);
+//				
+//		catRepo.findAll(new ListCallback<Category>() {
+//			
+//			@Override
+//			public void onSuccess(List<Category> cats) {
+//				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
+//				for(Category cat : cats) {
+//					catAdapter.addCategory(cat);
+//				}
+//				
+//				mNavigationDrawerFragment.setAdapter(catAdapter);
+//			}
+//			
+//			@Override
+//			public void onError(Throwable t) {
+//				// TODO Auto-generated method stub		
+//			}
+//		});
+		
+		CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
+		for(DrawerCategoryItem cat : CategoryMapper.getStaticCategories()) {
+			cat.setChecked(true);
+			cat.setAppliedState(true);
+			catAdapter.addCategory(cat);
+		}
+		
+		mNavigationDrawerFragment.setAdapter(catAdapter);
 		
 	}
 	
 	public Context getContext() {
 		return this;
-	}
-
-	@Override
-	public void onNavigationDrawerItemSelected(int position) {
-		// TODO
 	}
 
 	public void onSectionAttached(int number) {

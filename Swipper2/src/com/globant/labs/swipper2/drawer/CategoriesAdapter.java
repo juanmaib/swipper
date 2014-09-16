@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,14 @@ public class CategoriesAdapter extends BaseAdapter {
 	protected final String mOnString;
 	protected final String mOffString;
 	
+	protected int mSelectionCount;
+	
 	public CategoriesAdapter(Context ctx) {
 		mInflater = LayoutInflater.from(ctx);
 		mCategories = new ArrayList<DrawerItem>();
+		
 		mCategories.add(new DrawerAllItem());
+		mSelectionCount = 0;
 		
 		mOnString = ctx.getString(R.string.on);
 		mOffString = ctx.getString(R.string.off);
@@ -41,6 +46,9 @@ public class CategoriesAdapter extends BaseAdapter {
 	
 	public void addCategory(DrawerCategoryItem catDisplay) {
 		mCategories.add(catDisplay);
+		if(catDisplay.isChecked()) {
+			mSelectionCount++;
+		}
 	}
 
 	public void toggleCategory(int position) {
@@ -49,13 +57,45 @@ public class CategoriesAdapter extends BaseAdapter {
 		
 		if(position == 0) {
 			boolean status = item.isChecked();
+			
+			if(status) {
+				mSelectionCount = mCategories.size() - 1;
+			}else {
+				mSelectionCount = 0;
+			}
+			
 			for(DrawerItem cat : mCategories) {
 				cat.setChecked(status);
 			}
 		}else {
+			mSelectionCount += item.isChecked() ? 1 : -1;
 			if(!item.isChecked()) {
 				getItem(0).setChecked(false);
 			}
+		}
+		Log.i("SWIPPER", "SelectionCount: "+mSelectionCount);
+		notifyDataSetChanged();
+	}
+	
+	public int getSelectionCount() {
+		return mSelectionCount;
+	}
+	
+	public void applyChanges() {
+		for(DrawerItem cat : mCategories) {
+			cat.applyState();
+		}
+	}
+	
+	public void resetChanges() {
+		mSelectionCount = 0;
+		
+		mCategories.get(0).resetState();
+		
+		for(int i = 1; i < mCategories.size(); i++) {
+			DrawerItem item = mCategories.get(i);
+			item.resetState();
+			mSelectionCount += item.isChecked() ? 1 : 0;			
 		}
 		
 		notifyDataSetChanged();
