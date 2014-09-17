@@ -26,4 +26,12 @@ public class GeoUtils {
 				(Double) map.get("lng"));
 	}
 	
+	public static boolean isInBounds(LatLng location, LatLng northWest, LatLng southEast) {
+		if(location.latitude < southEast.latitude) return false;
+		if(location.latitude > northWest.latitude) return false;
+		if(location.longitude < northWest.longitude) return false;
+		if(location.longitude > southEast.longitude) return false;
+		
+		return true;
+	}
 }

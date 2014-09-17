@@ -20,12 +20,21 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.provider.PlacesProvider;
+import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
+import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -34,6 +43,12 @@ public class MainActivity extends ActionBarActivity implements
 	// OnConnectionFailedListener, LocationListener,
 	// OnMyLocationButtonClickListener, ConnectionCallbacks
 
+	protected PlacesProvider mPlacesProvider;
+	
+	protected boolean mFarZoom;
+	protected LatLng mLastNorthWest;
+	protected LatLng mLastSouthEast;
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -53,6 +68,9 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mPlacesProvider = new PlacesProvider(this);
+		mFarZoom = false;
+		
 		mTitle = getTitle();
 
 		// Getting Google Play availability status
@@ -72,10 +90,10 @@ public class MainActivity extends ActionBarActivity implements
 
 			// Getting GoogleMap object from the fragment
 			mMap = fm.getMap();
-
+			
 			// Enabling MyLocation Layer of Google Map
 			mMap.setMyLocationEnabled(true);
-
+			
 			// Getting LocationManager object from System Service
 			// LOCATION_SERVICE
 			LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -92,8 +110,53 @@ public class MainActivity extends ActionBarActivity implements
 			if (location != null) {
 				onLocationChanged(location);
 			}
-
-			locationManager.requestLocationUpdates(provider, 20000, 0, this);
+			
+			mPlacesProvider.setPlacesCallback(new PlacesCallback() {
+				
+				@Override
+				public void placesUpdated(List<Place> places) {
+					mMap.clear();
+					generateMarkers(places);
+				}
+				
+				@Override
+				public void placesError(Throwable t) {
+					Log.i("SWIPPER", "Places error");
+					t.printStackTrace();
+				}
+			});	
+			
+			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+				
+				@Override
+				public void onCameraChange(CameraPosition camPosition) {
+					Log.i("SWIPPER", "Camera Zoom: "+camPosition.zoom);
+					
+					if(camPosition.zoom > 10) {
+						LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+						LatLng northWest = new LatLng(bounds.northeast.latitude, bounds.southwest.longitude);
+						LatLng southEast = new LatLng(bounds.southwest.latitude, bounds.northeast.longitude);
+						
+						if(mLastNorthWest == null
+								|| mLastSouthEast == null
+								|| !GeoUtils.isInBounds(northWest, mLastNorthWest, mLastSouthEast)
+								|| !GeoUtils.isInBounds(southEast, mLastNorthWest, mLastSouthEast)) {
+						
+							mLastNorthWest = northWest;
+							mLastSouthEast = southEast;
+							mPlacesProvider.updateLocation(northWest, southEast);					
+						}else if(mFarZoom) {
+							mFarZoom = false;
+							generateMarkers(mPlacesProvider.getFilteredPlaces());
+						}
+					}else{
+						mFarZoom = true;
+						mMap.clear();
+					}
+				}
+			});
+			//locationManager.requestLocationUpdates(provider, 20000, 0, this);
+			locationManager.requestSingleUpdate(provider, this, null);
 		}
 
 		// Get the drawer
@@ -103,27 +166,6 @@ public class MainActivity extends ActionBarActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
-//		RestAdapter rest = ((SwipperApp) getApplication()).getRestAdapter();
-//		CategoryRepository catRepo = rest.createRepository(CategoryRepository.class);
-//				
-//		catRepo.findAll(new ListCallback<Category>() {
-//			
-//			@Override
-//			public void onSuccess(List<Category> cats) {
-//				CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
-//				for(Category cat : cats) {
-//					catAdapter.addCategory(cat);
-//				}
-//				
-//				mNavigationDrawerFragment.setAdapter(catAdapter);
-//			}
-//			
-//			@Override
-//			public void onError(Throwable t) {
-//				// TODO Auto-generated method stub		
-//			}
-//		});
 		
 		CategoriesAdapter catAdapter = new CategoriesAdapter(getContext());
 		for(DrawerCategoryItem cat : CategoryMapper.getStaticCategories()) {
@@ -133,7 +175,17 @@ public class MainActivity extends ActionBarActivity implements
 		}
 		
 		mNavigationDrawerFragment.setAdapter(catAdapter);
-		
+
+	}
+	
+	public void generateMarkers(List<Place> places) {
+		for(Place p: places) {
+			MarkerOptions marker = new MarkerOptions()
+				.position(p.getLocation())
+				.title(p.getName())
+				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryIcon(p.getCategoryId())));
+			mMap.addMarker(marker);
+		}
 	}
 	
 	public Context getContext() {
@@ -211,19 +263,17 @@ public class MainActivity extends ActionBarActivity implements
 		mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
 		// Zoom in the Google Map
-		mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+		mMap.animateCamera(CameraUpdateFactory.zoomTo(15));		
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -233,11 +283,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onSelectionApplied(List<String> ids) {
-		Log.i("SWIPPER", "Selection Applied");
-		for(String id: ids) {
-			Log.i("SWIPPER", "ID: "+id);
-		}
-		Log.i("SWIPPER", "------------");
+		mPlacesProvider.setFilters(ids);
 	}
 
 }
