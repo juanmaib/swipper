@@ -129,9 +129,7 @@ public class MainActivity extends ActionBarActivity implements
 			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 				
 				@Override
-				public void onCameraChange(CameraPosition camPosition) {
-					Log.i("SWIPPER", "Camera Zoom: "+camPosition.zoom);
-					
+				public void onCameraChange(CameraPosition camPosition) {					
 					if(camPosition.zoom > 10) {
 						LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 						LatLng northWest = new LatLng(bounds.northeast.latitude, bounds.southwest.longitude);
@@ -219,7 +217,8 @@ public class MainActivity extends ActionBarActivity implements
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(mTitle);
+		//actionBar.setTitle(mTitle);
+		actionBar.setTitle("");
 	}
 
 	@Override
@@ -240,10 +239,10 @@ public class MainActivity extends ActionBarActivity implements
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
+		//int id = item.getItemId();
+		//if (id == R.id.action_settings) {
+		//	return true;
+		//}
 		return super.onOptionsItemSelected(item);
 	}
 
