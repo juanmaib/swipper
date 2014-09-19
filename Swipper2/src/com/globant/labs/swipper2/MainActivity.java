@@ -1,5 +1,6 @@
 package com.globant.labs.swipper2;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import android.app.Dialog;
@@ -50,6 +51,10 @@ public class MainActivity extends ActionBarActivity implements
 	protected LatLng mLastSouthEast;
 	protected double[] lastKnownPosition;
 	
+	protected Location mCurrentLocation;
+	
+	protected LocationManager mLocationManager;
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -60,7 +65,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Used to store the last screen title. For use in
 	 * {@link #restoreActionBar()}.
 	 */
-	private CharSequence mTitle;
+	//private CharSequence mTitle;
 
 	private GoogleMap mMap;
 
@@ -72,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements
 		mPlacesProvider = new PlacesProvider(this);
 		mFarZoom = false;
 		
-		mTitle = getTitle();
+		//mTitle = getTitle();
 
 		// Getting Google Play availability status
 		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
@@ -104,21 +109,23 @@ public class MainActivity extends ActionBarActivity implements
 			// Center the map around last known position
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
 			
+			mMap.setInfoWindowAdapter(new SwipperInfoWindowAdapter(this));
+
 			// Getting LocationManager object from System Service
 			// LOCATION_SERVICE
-			LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 			// Creating a criteria object to retrieve provider
 			Criteria criteria = new Criteria();
 
 			// Getting the name of the best provider
-			String provider = locationManager.getBestProvider(criteria, true);
+			String provider = mLocationManager.getBestProvider(criteria, true);
 
 			// Getting Current Location
-			Location location = locationManager.getLastKnownLocation(provider);
+			mCurrentLocation = mLocationManager.getLastKnownLocation(provider);
 
-			if (location != null) {
-				onLocationChanged(location);
+			if (mCurrentLocation != null) {
+				onLocationChanged(mCurrentLocation);
 			}
 			
 			mPlacesProvider.setPlacesCallback(new PlacesCallback() {
@@ -163,8 +170,9 @@ public class MainActivity extends ActionBarActivity implements
 					}
 				}
 			});
-			//locationManager.requestLocationUpdates(provider, 20000, 0, this);
-			locationManager.requestSingleUpdate(provider, this, null);
+			mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
+			//locationManager.requestSingleUpdate(provider, this, null);
+			
 		}
 
 		// Get the drawer
@@ -187,11 +195,18 @@ public class MainActivity extends ActionBarActivity implements
 	}
 	
 	public void generateMarkers(List<Place> places) {
+		
+		LatLng myLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+		DecimalFormat df = new DecimalFormat("0.00"); 
 		for(Place p: places) {
 			MarkerOptions marker = new MarkerOptions()
 				.position(p.getLocation())
 				.title(p.getName())
+				.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
+				.anchor(0.35f, 1.0f)
+				.infoWindowAnchor(0.35f, 0.2f)
 				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryIcon(p.getCategoryId())));
+				
 			mMap.addMarker(marker);
 		}
 	}
@@ -201,26 +216,26 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section2);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section3);
-			break;
-		case 4:
-			mTitle = getString(R.string.title_section4);
-			break;
-		case 5:
-			mTitle = getString(R.string.title_section5);
-			break;
-		case 6:
-			mTitle = getString(R.string.title_section6);
-			break;
-		}
+//		switch (number) {
+//		case 1:
+//			mTitle = getString(R.string.title_section1);
+//			break;
+//		case 2:
+//			mTitle = getString(R.string.title_section2);
+//			break;
+//		case 3:
+//			mTitle = getString(R.string.title_section3);
+//			break;
+//		case 4:
+//			mTitle = getString(R.string.title_section4);
+//			break;
+//		case 5:
+//			mTitle = getString(R.string.title_section5);
+//			break;
+//		case 6:
+//			mTitle = getString(R.string.title_section6);
+//			break;
+//		}
 	}
 
 	public void restoreActionBar() {
@@ -259,6 +274,11 @@ public class MainActivity extends ActionBarActivity implements
 	// Implementation of {@link LocationListener}.
 	@Override
 	public void onLocationChanged(Location location) {
+		
+		mCurrentLocation = location;
+		
+		mLocationManager.removeUpdates(this);
+		
 		// Getting latitude of the current location
 		double latitude = location.getLatitude();
 

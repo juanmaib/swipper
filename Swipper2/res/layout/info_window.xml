@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/infowin" >
+    
+    <android.support.v7.widget.GridLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="10dp"
+		app:columnCount="3">
+	            
+	     <com.globant.labs.swipper2.widget.SwipperTextView 
+	         android:id="@+id/placeName"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         app:layout_columnSpan="2"
+	         android:textColor="@color/white"
+	         app:fontName="roboto_light.ttf"
+	         android:textSize="22sp" />
+	     
+	     <ImageView
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         app:layout_rowSpan="2"
+	         android:paddingLeft="20dp"
+	         app:layout_gravity="center_vertical"
+	         android:src="@drawable/details_arrow" /> 
+	     
+	     <ImageView
+	         android:id="@+id/distanceIcon"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         app:layout_gravity="center_vertical"	     
+	         android:src="@drawable/distance_icon" />
+	     
+	     <com.globant.labs.swipper2.widget.SwipperTextView 
+	         android:id="@+id/distance"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         app:layout_gravity="center_vertical"
+	         android:paddingLeft="4dp"
+	         android:textColor="@color/white"
+	         app:fontName="roboto_thin.ttf"
+			 android:textSize="16sp" />
+
+	</android.support.v7.widget.GridLayout>
+    
+</FrameLayout>
+
+
