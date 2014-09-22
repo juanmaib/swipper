@@ -48,6 +48,7 @@ public class MainActivity extends ActionBarActivity implements
 	protected boolean mFarZoom;
 	protected LatLng mLastNorthWest;
 	protected LatLng mLastSouthEast;
+	protected double[] lastKnownPosition;
 	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -93,6 +94,15 @@ public class MainActivity extends ActionBarActivity implements
 			
 			// Enabling MyLocation Layer of Google Map
 			mMap.setMyLocationEnabled(true);
+			
+			// Get last known position from splash activity
+			Bundle extras = getIntent().getExtras();
+			if (extras != null) {
+			    lastKnownPosition = extras.getDoubleArray("lastKnownPosition");
+			}
+			
+			// Center the map around last known position
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
 			
 			// Getting LocationManager object from System Service
 			// LOCATION_SERVICE
