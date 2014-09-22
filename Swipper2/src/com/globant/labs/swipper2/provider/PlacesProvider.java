@@ -21,12 +21,14 @@ public class PlacesProvider implements ListCallback<Place> {
 	protected PlacesCallback mCallback;
 	protected PlaceRepository mRepository;
 	protected Multimap<String, Place> mPlaces;
+	protected List<Place> mFilteredPlaces;
 	protected Set<String> mFilters;
 	
 	public PlacesProvider(Context context) {
 		RestAdapter restAdapter = ((SwipperApp) context.getApplicationContext()).getRestAdapter();
 		mRepository = restAdapter.createRepository(PlaceRepository.class);
 		mPlaces = ArrayListMultimap.create();
+		mFilteredPlaces = new ArrayList<Place>();
 		mFilters = new HashSet<String>();
 	}
 	
@@ -43,21 +45,25 @@ public class PlacesProvider implements ListCallback<Place> {
 		for(String filter: filters) {
 			mFilters.add(filter);
 		}
+		refreshFilteredPlaces();
 		dispatchPlacesUpdated();
 	}
 	
 	public void addFilter(String filter) {
 		mFilters.add(filter);
+		refreshFilteredPlaces();
 		dispatchPlacesUpdated();
 	}
 	
 	public void removeFilter(String filter) {
 		mFilters.remove(filter);
+		refreshFilteredPlaces();
 		dispatchPlacesUpdated();
 	}
 	
 	public void clearFilters() {
 		mFilters.clear();
+		refreshFilteredPlaces();
 		dispatchPlacesUpdated();
 	}
 	
@@ -69,6 +75,7 @@ public class PlacesProvider implements ListCallback<Place> {
 			mPlaces.put(p.getCategoryId(), p);
 		}		
 		
+		refreshFilteredPlaces();
 		dispatchPlacesUpdated();
 	}
 
@@ -85,20 +92,30 @@ public class PlacesProvider implements ListCallback<Place> {
 		}
 	}
 	
-	public List<Place> getFilteredPlaces() {
-		List<Place> filteredPlaces = new ArrayList<Place>();
+	public void refreshFilteredPlaces() {
+		mFilteredPlaces.clear();
 		
 		if(!mFilters.isEmpty()) {
 			for(String filter: mFilters) {
-				filteredPlaces.addAll(mPlaces.get(filter));
+				mFilteredPlaces.addAll(mPlaces.get(filter));
 			}			
 		}else{
 			for(String key: mPlaces.keySet()) {
-				filteredPlaces.addAll(mPlaces.get(key));
+				mFilteredPlaces.addAll(mPlaces.get(key));
 			}
 		}
-		
-		return filteredPlaces;
+	}
+	
+	public List<Place> getFilteredPlaces() {
+		return mFilteredPlaces;
+	}
+	
+	public int getFilteredPlacesCount() {
+		return mFilteredPlaces.size();
+	}
+	
+	public Place getFilteredPlace(int position) {
+		return mFilteredPlaces.get(position);
 	}
 	
 	public interface PlacesCallback {

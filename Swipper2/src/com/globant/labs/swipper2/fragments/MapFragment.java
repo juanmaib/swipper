@@ -7,10 +7,13 @@ import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.globant.labs.swipper2.MainActivity;
+import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.SwipperInfoWindowAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
@@ -18,8 +21,8 @@ import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,6 +48,7 @@ public class MapFragment extends SupportMapFragment {
 	@Override
 	public void onAttach(Activity activity) {
         super.onAttach(activity);
+        setHasOptionsMenu(true);
         mActivity = activity;  
     }
 	
@@ -92,6 +96,12 @@ public class MapFragment extends SupportMapFragment {
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    inflater.inflate(R.menu.map, menu);
+	    super.onCreateOptionsMenu(menu,inflater);
 	}
 	
 	public void setCurrentLocation(Location location) {
