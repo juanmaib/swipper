@@ -1,6 +1,5 @@
 package com.globant.labs.swipper2;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import android.app.Dialog;
@@ -10,6 +9,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -21,21 +22,14 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.fragments.MapFragment;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
-import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
@@ -55,6 +49,8 @@ public class MainActivity extends ActionBarActivity implements
 	
 	protected LocationManager mLocationManager;
 	
+	protected MapFragment mMapFragment;
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -66,8 +62,6 @@ public class MainActivity extends ActionBarActivity implements
 	 * {@link #restoreActionBar()}.
 	 */
 	//private CharSequence mTitle;
-
-	private GoogleMap mMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,15 +85,9 @@ public class MainActivity extends ActionBarActivity implements
 		} else { // Google Play Services are available
 
 			// Getting reference to the SupportMapFragment of activity_main.xml
-			SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager()
+			mMapFragment = (MapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map);
-
-			// Getting GoogleMap object from the fragment
-			mMap = fm.getMap();
-			
-			// Enabling MyLocation Layer of Google Map
-			mMap.setMyLocationEnabled(true);
-			
+						
 			// Get last known position from splash activity
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
@@ -107,9 +95,7 @@ public class MainActivity extends ActionBarActivity implements
 			}
 			
 			// Center the map around last known position
-			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
-			
-			mMap.setInfoWindowAdapter(new SwipperInfoWindowAdapter(this));
+			mMapFragment.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
 
 			// Getting LocationManager object from System Service
 			// LOCATION_SERVICE
@@ -132,8 +118,8 @@ public class MainActivity extends ActionBarActivity implements
 				
 				@Override
 				public void placesUpdated(List<Place> places) {
-					mMap.clear();
-					generateMarkers(places);
+					mMapFragment.clear();
+					mMapFragment.displayPlaces(places, mCurrentLocation);
 				}
 				
 				@Override
@@ -143,33 +129,7 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});	
 			
-			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-				
-				@Override
-				public void onCameraChange(CameraPosition camPosition) {					
-					if(camPosition.zoom > 10) {
-						LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-						LatLng northWest = new LatLng(bounds.northeast.latitude, bounds.southwest.longitude);
-						LatLng southEast = new LatLng(bounds.southwest.latitude, bounds.northeast.longitude);
-						
-						if(mLastNorthWest == null
-								|| mLastSouthEast == null
-								|| !GeoUtils.isInBounds(northWest, mLastNorthWest, mLastSouthEast)
-								|| !GeoUtils.isInBounds(southEast, mLastNorthWest, mLastSouthEast)) {
-						
-							mLastNorthWest = northWest;
-							mLastSouthEast = southEast;
-							mPlacesProvider.updateLocation(northWest, southEast);					
-						}else if(mFarZoom) {
-							mFarZoom = false;
-							generateMarkers(mPlacesProvider.getFilteredPlaces());
-						}
-					}else{
-						mFarZoom = true;
-						mMap.clear();
-					}
-				}
-			});
+
 			mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
 			//locationManager.requestSingleUpdate(provider, this, null);
 			
@@ -194,48 +154,13 @@ public class MainActivity extends ActionBarActivity implements
 
 	}
 	
-	public void generateMarkers(List<Place> places) {
-		
-		LatLng myLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-		DecimalFormat df = new DecimalFormat("0.00"); 
-		for(Place p: places) {
-			MarkerOptions marker = new MarkerOptions()
-				.position(p.getLocation())
-				.title(p.getName())
-				.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
-				.anchor(0.35f, 1.0f)
-				.infoWindowAnchor(0.35f, 0.2f)
-				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryIcon(p.getCategoryId())));
-				
-			mMap.addMarker(marker);
-		}
+	public PlacesProvider getPlacesProvider() {
+		return mPlacesProvider;
 	}
+
 	
 	public Context getContext() {
 		return this;
-	}
-
-	public void onSectionAttached(int number) {
-//		switch (number) {
-//		case 1:
-//			mTitle = getString(R.string.title_section1);
-//			break;
-//		case 2:
-//			mTitle = getString(R.string.title_section2);
-//			break;
-//		case 3:
-//			mTitle = getString(R.string.title_section3);
-//			break;
-//		case 4:
-//			mTitle = getString(R.string.title_section4);
-//			break;
-//		case 5:
-//			mTitle = getString(R.string.title_section5);
-//			break;
-//		case 6:
-//			mTitle = getString(R.string.title_section6);
-//			break;
-//		}
 	}
 
 	public void restoreActionBar() {
@@ -264,35 +189,28 @@ public class MainActivity extends ActionBarActivity implements
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		//int id = item.getItemId();
-		//if (id == R.id.action_settings) {
-		//	return true;
-		//}
+		int id = item.getItemId();
+		if (id == R.id.action_list) {
+			
+			FragmentTransaction fTransaction = getSupportFragmentManager().beginTransaction();
+			ListFragment listFragment = new ListFragment();
+			fTransaction.replace(R.id.map, listFragment);
+			fTransaction.commit();
+			
+			
+			return true;
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 
 	// Implementation of {@link LocationListener}.
 	@Override
 	public void onLocationChanged(Location location) {
-		
 		mCurrentLocation = location;
-		
 		mLocationManager.removeUpdates(this);
-		
-		// Getting latitude of the current location
-		double latitude = location.getLatitude();
-
-		// Getting longitude of the current location
-		double longitude = location.getLongitude();
-
-		// Creating a LatLng object for the current location
-		LatLng latLng = new LatLng(latitude, longitude);
-
-		// Showing the current location in Google Map
-		mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-		// Zoom in the Google Map
-		mMap.animateCamera(CameraUpdateFactory.zoomTo(15));		
+		mMapFragment.setCurrentLocation(mCurrentLocation);
+		mMapFragment.displayCurrentLocation();
 	}
 
 	@Override

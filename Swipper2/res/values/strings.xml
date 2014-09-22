@@ -19,6 +19,7 @@
     <!-- MainActivity -->
     <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
     <string name="my_location">My Location</string>
+    <string name="action_list">List</string>
     
     <!-- Nav Drawer -->
     <string name="apply">APPLY ›</string>
