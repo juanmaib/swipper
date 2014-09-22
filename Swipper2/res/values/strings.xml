@@ -40,5 +40,7 @@
     <string name="imageNavigateToPlaceDescription">Return to Map and show how to get to currently described place</string>
     <string name="imageCallToPlaceDescription">Make a phone call to currently described place</string>
     <string name="imageSharePlaceDescription">Share place</string>
+    <string name="imageSplashLogoDescription">Swipper Logo</string>
+    <string name="imageSplashStreetsDescription">Splash footer image</string>
 
 </resources>
