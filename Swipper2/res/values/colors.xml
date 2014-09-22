@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="yellow" type="color">#FFFFC200</item>
+    
 	<item name="dark_grey" type="color">#FF272525</item>
 	<item name="ligth_grey" type="color">#18D0D0D0</item>
 	<item name="white" type="color">#FFFFFEFE</item>
