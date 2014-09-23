@@ -11,11 +11,16 @@
          space available using match_parent in both dimensions.
     -->
 
-    <fragment
+	<android.support.v4.view.ViewPager
+	    android:id="@+id/viewPager"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
+
+  <!--   <fragment
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            class="com.globant.labs.swipper2.fragments.MapFragment" />
+            class="com.globant.labs.swipper2.fragments.PlacesMapFragment" />-->
 
     <!--
          android:layout_gravity="start" tells DrawerLayout to treat

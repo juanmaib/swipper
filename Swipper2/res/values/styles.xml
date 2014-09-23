@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -11,6 +11,7 @@
             backward-compatibility can go here.
         -->
         <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionButtonStyle">@style/MyActionButtonStyle</item>
     </style>
 
     <!-- Application theme. -->
@@ -22,10 +23,15 @@
     <style name="MyActionBar"
            parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/orange</item>
-
+		<item name="android:height">60dp</item>
+		
         <!-- Support library compatibility -->
         <item name="background">@color/orange</item>
         <item name="logo">@drawable/action_logo</item>
     </style>
+    
+    <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
+    	<item name="android:background">@color/action</item>
+	</style>
     
 </resources>

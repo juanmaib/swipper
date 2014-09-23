@@ -20,7 +20,8 @@
     <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
     <string name="my_location">My Location</string>
     <string name="action_list">List</string>
-    
+    <string name="action_map">Map</string>
+     
     <!-- Nav Drawer -->
     <string name="apply">APPLY ›</string>
 

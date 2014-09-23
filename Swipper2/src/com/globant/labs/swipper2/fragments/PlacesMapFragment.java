@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -29,7 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends SupportMapFragment {
+public class PlacesMapFragment extends SupportMapFragment {
 
 	protected GoogleMap mMap;
 	protected Activity mActivity;
@@ -41,14 +43,19 @@ public class MapFragment extends SupportMapFragment {
 	
 	protected Location mCurrentLocation;
 	
-	public MapFragment() {
+	public PlacesMapFragment() {
 		super();
 	}
 	
 	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+	
+	@Override
 	public void onAttach(Activity activity) {
         super.onAttach(activity);
-        setHasOptionsMenu(true);
         mActivity = activity;  
     }
 	
@@ -96,12 +103,20 @@ public class MapFragment extends SupportMapFragment {
 				}
 			}
 		});
+		mMap.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
+			
+			@Override
+			public void onMyLocationChange(Location myLocation) {
+				Log.i("SWIPPER", "MyLocationChange!");
+				mPlacesProvider.setCurrentLocation(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+			}
+		});
 	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	    inflater.inflate(R.menu.map, menu);
-	    super.onCreateOptionsMenu(menu,inflater);
+	    super.onCreateOptionsMenu(menu, inflater);
 	}
 	
 	public void setCurrentLocation(Location location) {
@@ -141,7 +156,7 @@ public class MapFragment extends SupportMapFragment {
 				.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
 				.anchor(0.35f, 1.0f)
 				.infoWindowAnchor(0.35f, 0.2f)
-				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryIcon(p.getCategoryId())));
+				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategoryId())));
 				
 			mMap.addMarker(marker);
 		}

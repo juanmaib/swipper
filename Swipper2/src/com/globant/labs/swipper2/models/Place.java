@@ -15,6 +15,7 @@ public class Place extends Model {
 	private String id;
 	private String Name;
 	private String Phone;
+	private String Address;
 	private String cityId;
 	private String categoryId;
 	private LatLng Location;
@@ -41,6 +42,14 @@ public class Place extends Model {
 	
 	public void setPhone(String phone) {
 		Phone = phone;
+	}
+	
+	public String getAddress() {
+		return Address;
+	}
+	
+	public void setAddress(String address) {
+		Address = address;
 	}
 	
 	public String getCityId() {

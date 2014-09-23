@@ -1,6 +1,8 @@
 package com.globant.labs.swipper2.provider;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +12,7 @@ import android.content.Context;
 import com.globant.labs.swipper2.SwipperApp;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.repositories.PlaceRepository;
+import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -23,6 +26,8 @@ public class PlacesProvider implements ListCallback<Place> {
 	protected Multimap<String, Place> mPlaces;
 	protected List<Place> mFilteredPlaces;
 	protected Set<String> mFilters;
+	protected LatLng mCurrentLocation;
+	protected Comparator<Place> mPlacesComparator;
 	
 	public PlacesProvider(Context context) {
 		RestAdapter restAdapter = ((SwipperApp) context.getApplicationContext()).getRestAdapter();
@@ -30,6 +35,20 @@ public class PlacesProvider implements ListCallback<Place> {
 		mPlaces = ArrayListMultimap.create();
 		mFilteredPlaces = new ArrayList<Place>();
 		mFilters = new HashSet<String>();
+		
+		mPlacesComparator = new Comparator<Place>() {
+			
+			@Override
+			public int compare(Place p0, Place p1) {
+				double d0 = getDistanceTo(p0);
+				double d1 = getDistanceTo(p1);
+				
+				if(d0 < d1) return -1;
+				if(d0 > d1) return 1;
+				return 0;
+			}
+			
+		};
 	}
 	
 	public void setPlacesCallback(PlacesCallback callback) {
@@ -104,6 +123,8 @@ public class PlacesProvider implements ListCallback<Place> {
 				mFilteredPlaces.addAll(mPlaces.get(key));
 			}
 		}
+		
+		Collections.sort(mFilteredPlaces, mPlacesComparator);
 	}
 	
 	public List<Place> getFilteredPlaces() {
@@ -123,4 +144,11 @@ public class PlacesProvider implements ListCallback<Place> {
 		public void placesError(Throwable t);
 	}
 	
+	public void setCurrentLocation(LatLng currentLocation) {
+		mCurrentLocation = currentLocation;
+	}
+	
+	public double getDistanceTo(Place p) {
+		return GeoUtils.getDistance(mCurrentLocation, p.getLocation());
+	}
 }

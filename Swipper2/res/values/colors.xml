@@ -6,7 +6,7 @@
 	<item name="ligth_grey" type="color">#18D0D0D0</item>
 	<item name="white" type="color">#FFFFFEFE</item>
 	<item name="orange" type="color">#FFFEC10D</item>
-	<item name="action" type="color">#FF7ABCEA</item>
+	<item name="action" type="color">#FF42BFEA</item>
 	
 	<item name="food" type="color">#FFBB215B</item>
 	<item name="gas" type="color">#FF5FCBC2</item>
@@ -14,4 +14,6 @@
 	<item name="carrental" type="color">#FFAAC130</item>
 	<item name="lodging" type="color">#FF214CBB</item>
 	
+	<item name="dark_font" type="color">#FF272525</item>
+	<item name="light_font" type="color">#FF888888</item>
 </resources>

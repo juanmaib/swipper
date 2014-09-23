@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:columnCount="5" >
+    
+	<ImageView
+	    android:id="@+id/placeIcon"
+	    app:layout_gravity="fill"
+	    app:layout_rowSpan="3"	    
+	    android:paddingLeft="12dp"
+	    android:paddingRight="12dp"
+	    android:layout_marginRight="15dp" />
+	
+	<com.globant.labs.swipper2.widget.SwipperTextView 
+	    android:id="@+id/placeName"
+	    android:textColor="@color/dark_font"
+	    android:textSize="18sp"
+	    android:paddingTop="10dp"
+	    android:ellipsize="end"
+		android:singleLine="true"
+	    app:fontName="roboto_regular.ttf" />
+	
+	<com.globant.labs.swipper2.widget.SwipperTextView 
+	    android:textColor="@color/light_font"
+	    android:textSize="18sp"
+	    android:text="|"
+	    android:paddingLeft="4dp"
+	    android:paddingRight="4dp"
+	    app:fontName="roboto_regular.ttf" />
+	
+	<com.globant.labs.swipper2.widget.SwipperTextView 
+	    android:id="@+id/placeDistance"
+	    android:textColor="@color/dark_font"    
+	    app:fontName="roboto_regular.ttf" />	
+	    	
+	<ImageButton
+	    android:id="@+id/navButton"
+	    android:src="@drawable/nav_button"
+	    android:background="@android:color/transparent"
+	    app:layout_rowSpan="3"
+	    android:padding="20dp"
+	    app:layout_gravity="right|fill_vertical" />
+    
+	<com.globant.labs.swipper2.widget.SwipperTextView 
+	    android:id="@+id/placeAddress"
+	    app:layout_columnSpan="3"
+	    android:textColor="@color/light_font"
+	    app:fontName="roboto_light.ttf" />
+	
+	<com.globant.labs.swipper2.widget.SwipperTextView 
+	    android:id="@+id/placeCity"
+	    app:layout_columnSpan="3"
+	    android:textColor="@color/light_font"
+	    app:fontName="roboto_thin.ttf"
+	    android:paddingBottom="10dp"/>
+    
+</android.support.v7.widget.GridLayout>
