@@ -1,12 +1,15 @@
 package com.globant.labs.swipper2.fragments;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class PlacesMapFragment extends SupportMapFragment {
@@ -43,6 +47,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 	
 	protected Location mCurrentLocation;
 	
+	protected Map<String, Marker> mMarkers;
+	
 	public PlacesMapFragment() {
 		super();
 	}
@@ -51,6 +57,7 @@ public class PlacesMapFragment extends SupportMapFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mMarkers = new HashMap<String, Marker>();
     }
 	
 	@Override
@@ -82,21 +89,13 @@ public class PlacesMapFragment extends SupportMapFragment {
 			public void onCameraChange(CameraPosition camPosition) {					
 				if(camPosition.zoom > 10) {
 					LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-					LatLng northWest = new LatLng(bounds.northeast.latitude, bounds.southwest.longitude);
-					LatLng southEast = new LatLng(bounds.southwest.latitude, bounds.northeast.longitude);
-					
-					if(mLastNorthWest == null
-							|| mLastSouthEast == null
-							|| !GeoUtils.isInBounds(northWest, mLastNorthWest, mLastSouthEast)
-							|| !GeoUtils.isInBounds(southEast, mLastNorthWest, mLastSouthEast)) {
-					
-						mLastNorthWest = northWest;
-						mLastSouthEast = southEast;
-						mPlacesProvider.updateLocation(northWest, southEast);					
-					}else if(mFarZoom) {
-						mFarZoom = false;
+				
+					if(mPlacesProvider.updateLocation(bounds) && mFarZoom) {	
 						displayPlaces(mPlacesProvider.getFilteredPlaces(), mCurrentLocation);
 					}
+					
+					mFarZoom = false;
+					
 				}else{
 					mFarZoom = true;
 					clear();
@@ -107,7 +106,6 @@ public class PlacesMapFragment extends SupportMapFragment {
 			
 			@Override
 			public void onMyLocationChange(Location myLocation) {
-				Log.i("SWIPPER", "MyLocationChange!");
 				mPlacesProvider.setCurrentLocation(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
 			}
 		});
@@ -147,18 +145,34 @@ public class PlacesMapFragment extends SupportMapFragment {
 	}
 	
 	public void displayPlaces(List<Place> places, Location currentLocation) {
+		
+		LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+		
+		Iterator<Entry<String, Marker>> it = mMarkers.entrySet().iterator();
+				
+		while (it.hasNext()) {
+			Entry<String, Marker> entry = it.next();
+			if(!bounds.contains(entry.getValue().getPosition())) {
+				entry.getValue().remove();
+				it.remove();
+			}
+		}
+		
 		LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		for(Place p: places) {
-			MarkerOptions marker = new MarkerOptions()
-				.position(p.getLocation())
-				.title(p.getName())
-				.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
-				.anchor(0.35f, 1.0f)
-				.infoWindowAnchor(0.35f, 0.2f)
-				.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategoryId())));
-				
-			mMap.addMarker(marker);
+			if(!mMarkers.containsKey(p.getId())) {			
+				MarkerOptions marker = new MarkerOptions()
+					.position(p.getLocation())
+					.title(p.getName())
+					.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
+					.anchor(0.35f, 1.0f)
+					.infoWindowAnchor(0.35f, 0.2f)
+					.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategoryId())));
+					
+				Marker m = mMap.addMarker(marker);
+				mMarkers.put(p.getId(), m);
+			}
 		}
 	}
 	

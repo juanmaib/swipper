@@ -25,16 +25,7 @@ public class GeoUtils {
 				(Double) map.get("lat"),
 				(Double) map.get("lng"));
 	}
-	
-	public static boolean isInBounds(LatLng location, LatLng northWest, LatLng southEast) {
-		if(location.latitude < southEast.latitude) return false;
-		if(location.latitude > northWest.latitude) return false;
-		if(location.longitude < northWest.longitude) return false;
-		if(location.longitude > southEast.longitude) return false;
 		
-		return true;
-	}
-	
 	public static double getDistance(LatLng StartP, LatLng EndP) {
 		int Radius = 6371;	// radius of earth in Km
 		double lat1 = StartP.latitude;

@@ -23,6 +23,7 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
 import com.globant.labs.swipper2.models.Place;
@@ -131,7 +132,6 @@ public class MainActivity extends ActionBarActivity implements
 				@Override
 				public void placesUpdated(List<Place> places) {
 					((PlacesAdapter) mListFragment.getListAdapter()).setDataChanged();
-					mMapFragment.clear();
 					mMapFragment.displayPlaces(places, mCurrentLocation);
 				}
 				

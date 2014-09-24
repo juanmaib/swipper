@@ -14,6 +14,7 @@ import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.repositories.PlaceRepository;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.strongloop.android.loopback.RestAdapter;
@@ -27,6 +28,7 @@ public class PlacesProvider implements ListCallback<Place> {
 	protected List<Place> mFilteredPlaces;
 	protected Set<String> mFilters;
 	protected LatLng mCurrentLocation;
+	protected LatLngBounds mCurrentBounds;
 	protected Comparator<Place> mPlacesComparator;
 	
 	public PlacesProvider(Context context) {
@@ -55,8 +57,30 @@ public class PlacesProvider implements ListCallback<Place> {
 		mCallback = callback;
 	}
 	
-	public void updateLocation(LatLng northWest, LatLng southEast) {
-		mRepository.nearBy(northWest, southEast, this);
+	//public void updateLocation(LatLng northWest, LatLng southEast) {
+	//	mRepository.nearBy(northWest, southEast, this);
+	//}
+	
+	public boolean updateLocation(LatLngBounds bounds) {
+		if(mCurrentBounds == null
+				|| !mCurrentBounds.contains(bounds.northeast)
+				|| !mCurrentBounds.contains(bounds.southwest)) {
+			
+			mCurrentBounds = bounds;
+			
+			LatLng northWest = new LatLng(
+					bounds.northeast.latitude + 0.036,
+					bounds.southwest.longitude - 0.036);
+			
+			LatLng southEast = new LatLng(
+					bounds.southwest.latitude - 0.036,
+					bounds.northeast.longitude + 0.036);
+			
+			mRepository.nearBy(northWest, southEast, this);
+			return false;
+		}else{
+			return true;
+		}
 	}
 		
 	public void setFilters(List<String> filters) {

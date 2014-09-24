@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
 import com.globant.labs.swipper2.provider.PlacesProvider;

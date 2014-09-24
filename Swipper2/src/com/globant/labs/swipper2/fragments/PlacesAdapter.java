@@ -1,8 +1,8 @@
-package com.globant.labs.swipper2;
+package com.globant.labs.swipper2.fragments;
 
 import java.text.DecimalFormat;
 
-import android.text.Layout;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,9 +10,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.globant.labs.swipper2.MainActivity;
+import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
@@ -56,13 +57,13 @@ public class PlacesAdapter extends BaseAdapter {
 	}
 
 	@Override
+	@SuppressLint("InflateParams")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		ViewHolder holder;
 		if(convertView == null) {
 			convertView = mInflater.inflate(R.layout.place_item_rel, null);
 			holder = new ViewHolder();
-			holder.iconLayout = (LinearLayout) convertView.findViewById(R.id.placeIconLayout);
 			holder.icon = (ImageView) convertView.findViewById(R.id.placeIcon);
 			holder.placeName = (TextView) convertView.findViewById(R.id.placeName);
 			holder.placeDistance = (TextView) convertView.findViewById(R.id.placeDistance);
@@ -79,7 +80,7 @@ public class PlacesAdapter extends BaseAdapter {
 		
 		Place p = getItem(position);
 		
-		holder.iconLayout.setBackgroundResource(CategoryMapper.getCategoryColor(p.getCategoryId()));
+		holder.icon.setBackgroundResource(CategoryMapper.getCategoryColor(p.getCategoryId()));
 		holder.icon.setImageResource(CategoryMapper.getCategoryIcon(p.getCategoryId()));
 		holder.placeName.setText(p.getName());
 		holder.placeDistance.setText(df.format(mProvider.getDistanceTo(p))+" km");
@@ -91,7 +92,6 @@ public class PlacesAdapter extends BaseAdapter {
 	}
 
 	protected static class ViewHolder {
-		public LinearLayout iconLayout;
 		public ImageView icon;
 		public TextView placeName;
 		public TextView placeDistance;
