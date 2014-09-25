@@ -103,13 +103,17 @@ public class PlacesMapFragment extends SupportMapFragment {
 				}
 			}
 		});
-		mMap.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
-			
+		
+		mMap.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {		
 			@Override
 			public void onMyLocationChange(Location myLocation) {
 				mPlacesProvider.setCurrentLocation(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
 			}
 		});
+		
+		if(mCurrentLocation != null) {
+			displayCurrentLocation();
+		}
 	}
 	
 	@Override
