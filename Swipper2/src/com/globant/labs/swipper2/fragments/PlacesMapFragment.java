@@ -1,6 +1,7 @@
 package com.globant.labs.swipper2.fragments;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -147,17 +148,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 	public void displayPlaces(List<Place> places, Location currentLocation) {
 		
 		LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-		
-		Iterator<Entry<String, Marker>> it = mMarkers.entrySet().iterator();
-				
-		while (it.hasNext()) {
-			Entry<String, Marker> entry = it.next();
-			if(!bounds.contains(entry.getValue().getPosition())) {
-				entry.getValue().remove();
-				it.remove();
-			}
-		}
-		
+		List<String> keeps = new ArrayList<String>();
+	
 		LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		for(Place p: places) {
@@ -172,6 +164,18 @@ public class PlacesMapFragment extends SupportMapFragment {
 					
 				Marker m = mMap.addMarker(marker);
 				mMarkers.put(p.getId(), m);
+			}
+			
+			keeps.add(p.getId());
+		}
+		
+		Iterator<Entry<String, Marker>> it = mMarkers.entrySet().iterator();
+		
+		while (it.hasNext()) {
+			Entry<String, Marker> entry = it.next();
+			if(!bounds.contains(entry.getValue().getPosition()) || !keeps.contains(entry.getKey())) {
+				entry.getValue().remove();
+				it.remove();
 			}
 		}
 	}
