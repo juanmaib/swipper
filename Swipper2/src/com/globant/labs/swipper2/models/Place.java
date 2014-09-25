@@ -19,6 +19,7 @@ public class Place extends Model {
 	private String cityId;
 	private String categoryId;
 	private LatLng Location;
+	private City City;
 	
 	public String getId() {
 		return id;
@@ -78,6 +79,14 @@ public class Place extends Model {
 	
 	public void setLocation(Map<String, ? extends Object> params) {
 		Location = GeoUtils.latLngFromMap(params);
+	}
+
+	public City getCity() {
+		return City;
+	}
+
+	public void setCity(City city) {
+		City = city;
 	}
 	
 }

@@ -31,7 +31,7 @@
     </style>
     
     <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
-    	<item name="android:background">@color/action</item>
+    	<!-- <item name="android:background">@color/action</item> -->
 	</style>
     
 </resources>

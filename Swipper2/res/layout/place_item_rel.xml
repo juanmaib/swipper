@@ -34,18 +34,14 @@
 			    android:paddingTop="10dp"
 			    android:ellipsize="end"
 				android:maxLines="1"
-			    app:fontName="roboto_regular.ttf" />
+			    app:fontName="roboto_bold.ttf" />
 			
-			<com.globant.labs.swipper2.widget.SwipperTextView 
-			    android:textColor="@color/light_font"
+			<ImageView
 			    android:layout_height="wrap_content"
-		    	android:layout_width="wrap_content"
-			    android:textSize="18sp"
-			    android:text="|"
-			    android:paddingLeft="4dp"
-			    android:paddingRight="4dp"
-			    android:ellipsize="none"
-			    app:fontName="roboto_regular.ttf" />
+			    android:layout_width="wrap_content"
+			    android:layout_gravity="bottom"
+			    android:padding="4dp"
+			    android:src="@drawable/text_separator" />
 			
 			<com.globant.labs.swipper2.widget.SwipperTextView 
 			    android:id="@+id/placeDistance"
@@ -54,7 +50,7 @@
 		    	android:singleLine="true"
 		    	android:ellipsize="none"
 			    android:textColor="@color/dark_font"    
-			    app:fontName="roboto_regular.ttf" />	
+			    app:fontName="roboto_medium.ttf" />	
 		    	
 		</LinearLayout>
 		
@@ -63,14 +59,14 @@
 		    android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
 		    android:textColor="@color/light_font"
-		    app:fontName="roboto_light.ttf" />
+		    app:fontName="roboto_italic.ttf" />
 		
 		<com.globant.labs.swipper2.widget.SwipperTextView 
 		    android:id="@+id/placeCity"
 	   	    android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
 		    android:textColor="@color/light_font"
-		    app:fontName="roboto_thin.ttf"
+		    app:fontName="roboto_italic.ttf"
 		    android:paddingBottom="10dp"/>
 	
 	</LinearLayout>

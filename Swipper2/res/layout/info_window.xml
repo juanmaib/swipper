@@ -42,7 +42,7 @@
 	         app:layout_gravity="center_vertical"
 	         android:paddingLeft="4dp"
 	         android:textColor="@color/white"
-	         app:fontName="roboto_thin.ttf"
+	         app:fontName="roboto_light.ttf"
 			 android:textSize="16sp" />
 
 	</android.support.v7.widget.GridLayout>
