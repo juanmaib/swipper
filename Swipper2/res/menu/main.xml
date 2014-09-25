@@ -3,10 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.globant.labs.swipper2.MainActivity" >
 
-<!-- <item
-        android:id="@+id/action_example"
-        android:title="@string/action_example"
-        app:showAsAction="withText|ifRoom"/>
+ 	<!-- <item
+        android:id="@+id/action_list"
+        android:icon="@drawable/action_list"
+        android:title="@string/action_list"
+        
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
