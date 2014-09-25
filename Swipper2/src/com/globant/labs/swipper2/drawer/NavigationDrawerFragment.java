@@ -164,6 +164,9 @@ public class NavigationDrawerFragment extends Fragment {
 			@Override
 			public void onDrawerClosed(View drawerView) {
 				super.onDrawerClosed(drawerView);
+				
+				mApplyButton.setEnabled(true);
+				
 				if (!isAdded()) {
 					return;
 				}
