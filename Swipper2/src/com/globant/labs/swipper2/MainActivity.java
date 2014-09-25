@@ -5,10 +5,8 @@ import java.util.List;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -47,11 +45,10 @@ public class MainActivity extends ActionBarActivity implements
 	protected boolean mFarZoom;
 	protected LatLng mLastNorthWest;
 	protected LatLng mLastSouthEast;
-	protected double[] lastKnownPosition;
 	
 	protected Location mCurrentLocation;
 	
-	protected LocationManager mLocationManager;
+	//protected LocationManager mLocationManager;
 	
 	protected ViewPager mViewPager;
 	protected MainFragmentsAdapter mFragmentsAdapter;
@@ -108,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements
 			// Get last known position from splash activity
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
-			    lastKnownPosition = extras.getDoubleArray("lastKnownPosition");
+			    mCurrentLocation = (Location) extras.get(SplashScreen.LAST_KNOWN_LOCATION_EXTRA);
 			}
 					
 			//Center the map around last known position (or 0,0 if we couldn't obtain the user location)
@@ -116,16 +113,16 @@ public class MainActivity extends ActionBarActivity implements
 
 			// Getting LocationManager object from System Service
 			// LOCATION_SERVICE
-			mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+			//mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 			// Creating a criteria object to retrieve provider
-			Criteria criteria = new Criteria();
+			//Criteria criteria = new Criteria();
 
 			// Getting the name of the best provider
-			String provider = mLocationManager.getBestProvider(criteria, true);
+			//String provider = mLocationManager.getBestProvider(criteria, true);
 
 			// Getting Current Location
-			mCurrentLocation = mLocationManager.getLastKnownLocation(provider);
+			//mCurrentLocation = mLocationManager.getLastKnownLocation(provider);
 
 			if (mCurrentLocation != null) {
 				onLocationChanged(mCurrentLocation);
@@ -147,7 +144,7 @@ public class MainActivity extends ActionBarActivity implements
 			});	
 			
 
-			mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
+			//mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
 			//locationManager.requestSingleUpdate(provider, this, null);
 			
 		}
@@ -169,11 +166,10 @@ public class MainActivity extends ActionBarActivity implements
 		
 		mNavigationDrawerFragment.setAdapter(catAdapter);
 	}
-		
+			
 	public PlacesProvider getPlacesProvider() {
 		return mPlacesProvider;
 	}
-
 	
 	public Context getContext() {
 		return this;
@@ -235,7 +231,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onLocationChanged(Location location) {
 		mCurrentLocation = location;
-		mLocationManager.removeUpdates(this);
+		//mLocationManager.removeUpdates(this);
 		mMapFragment.setCurrentLocation(mCurrentLocation);
 		mMapFragment.displayCurrentLocation();
 	}
