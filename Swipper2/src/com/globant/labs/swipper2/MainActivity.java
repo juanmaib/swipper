@@ -101,7 +101,7 @@ public class MainActivity extends ActionBarActivity implements
 			    lastKnownPosition = extras.getDoubleArray("lastKnownPosition");
 			}
 			
-			// Center the map around last known position
+			// Center the map around last known position (or 0,0 if we couldn't obtain the user location)
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
 			
 			// Getting LocationManager object from System Service
