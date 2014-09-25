@@ -9,6 +9,10 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+
+import com.globant.labs.swipper2.provider.CitiesProvider;
+import com.globant.labs.swipper2.provider.CitiesProvider.CitiesCallback;
 //import android.os.Handler;
 
 public class SplashScreen extends Activity {
@@ -18,12 +22,33 @@ public class SplashScreen extends Activity {
 	
 	// Position coordinates
 	private double[] lastKnownPosition;
+	protected boolean allReady;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 		// Showing splashscreen while fetching last known position.
+		
+		allReady = false;
+		
+		CitiesProvider citiesProvider = ((SwipperApp) getApplication()).getCitiesProvider();
+		citiesProvider.setCitiesCallback(new CitiesCallback() {
+			
+			@Override
+			public void citiesLoaded() {
+				Log.i("SWIPPER", "ALL OK");
+				transition();
+			}
+			
+			@Override
+			public void citiesError(Throwable t) {
+				Log.i("SWIPPER", "ALL ERROR");
+			}
+		});
+		
+		citiesProvider.loadCities();
+		
 		new PrefetchData().execute();
 	}
 
@@ -57,11 +82,8 @@ public class SplashScreen extends Activity {
 			
 			// After doing all the necessary stuff, launch the main
 			// activity
-			Intent i = new Intent(SplashScreen.this, MainActivity.class);
-			i.putExtra("lastKnownPosition", lastKnownPosition);
-			startActivity(i);
-			// Finish this activity
-			finish();
+			
+			transition();
 		}
 
 		private double[] getPosition() {
@@ -88,5 +110,17 @@ public class SplashScreen extends Activity {
 			return position;
 		}
 
+	}
+	
+	protected void transition() {
+		if(allReady) {
+			Intent i = new Intent(SplashScreen.this, MainActivity.class);
+			i.putExtra("lastKnownPosition", lastKnownPosition);
+			startActivity(i);
+			// Finish this activity
+			finish();
+		}else{
+			allReady = true;
+		}
 	}
 }

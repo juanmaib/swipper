@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +72,7 @@ public class CategoriesAdapter extends BaseAdapter {
 				getItem(0).setChecked(false);
 			}
 		}
-		Log.i("SWIPPER", "SelectionCount: "+mSelectionCount);
+
 		notifyDataSetChanged();
 	}
 	

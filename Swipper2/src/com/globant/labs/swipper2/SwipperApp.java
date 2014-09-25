@@ -1,12 +1,14 @@
 package com.globant.labs.swipper2;
 
-import com.globant.labs.swipper2.api.SwipperRestAdapter;
-
 import android.app.Application;
+
+import com.globant.labs.swipper2.api.SwipperRestAdapter;
+import com.globant.labs.swipper2.provider.CitiesProvider;
 
 public class SwipperApp extends Application {
 
     SwipperRestAdapter adapter;
+    CitiesProvider citiesProvider;
 
     public SwipperRestAdapter getRestAdapter() {       
     	if (adapter == null) {
@@ -14,6 +16,14 @@ public class SwipperApp extends Application {
         }
         
         return adapter;
+    }
+    
+    public CitiesProvider getCitiesProvider() {
+    	if(citiesProvider == null) {
+    		citiesProvider = new CitiesProvider(getApplicationContext());
+    	}
+    	
+    	return citiesProvider;
     }
 	
 }
