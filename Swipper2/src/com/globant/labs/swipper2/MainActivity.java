@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		//actionBar.setTitle(mTitle);
-		actionBar.setTitle("");
+		//actionBar.setTitle("");
 	}
 
 	@Override

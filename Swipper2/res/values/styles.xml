@@ -23,15 +23,20 @@
     <style name="MyActionBar"
            parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/orange</item>
-		<item name="android:height">60dp</item>
+		<item name="android:height">60dp</item>	
 		
         <!-- Support library compatibility -->
         <item name="background">@color/orange</item>
-        <item name="logo">@drawable/action_logo</item>
+        <item name="titleTextStyle">@style/MyActionBarTitleText</item>
+        <!-- <item name="logo">@drawable/action_logo</item> -->
     </style>
     
     <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
     	<!-- <item name="android:background">@color/action</item> -->
 	</style>
+	
+    <style name="MyActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+	    <item name="android:textColor">@color/dark_font</item>
+    </style>
     
 </resources>

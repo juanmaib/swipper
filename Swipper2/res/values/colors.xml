@@ -5,6 +5,7 @@
 	<item name="dark_grey" type="color">#FF272525</item>
 	<item name="ligth_grey" type="color">#18D0D0D0</item>
 	<item name="white" type="color">#FFFFFEFE</item>
+	<item name="real_white" type="color">#FFFFFFFF</item>
 	<item name="orange" type="color">#FFFEC10D</item>
 	<item name="action" type="color">#FF42BFEA</item>
 	

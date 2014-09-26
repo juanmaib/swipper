@@ -45,6 +45,14 @@
         </activity>
         <activity
             android:name="com.globant.labs.swipper2.MainActivity"
+            android:title=""
+            android:icon="@drawable/action_logo"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.globant.labs.swipper2.PlaceDetailActivity"
+            android:parentActivityName="com.globant.labs.swipper2.MainActivity"
+            android:icon="@android:color/transparent"
             android:screenOrientation="portrait" >
         </activity>
 
