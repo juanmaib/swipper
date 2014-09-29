@@ -17,4 +17,7 @@
 	
 	<item name="dark_font" type="color">#FF272525</item>
 	<item name="light_font" type="color">#FF817F7F</item>
+	
+	<item name="layout_separator" type="color">#4D272525</item>
+	<item name="white_background" type="color">#FFF2F2F2</item>
 </resources>

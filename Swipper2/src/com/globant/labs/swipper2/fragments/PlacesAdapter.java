@@ -74,6 +74,7 @@ public class PlacesAdapter extends BaseAdapter {
 			holder.placeCity = (TextView) convertView.findViewById(R.id.placeCity);
 			holder.navButton = (ImageButton) convertView.findViewById(R.id.navButton);
 			holder.navButton.setOnClickListener(mClickListener);
+			holder.navButton.setFocusable(false);
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();

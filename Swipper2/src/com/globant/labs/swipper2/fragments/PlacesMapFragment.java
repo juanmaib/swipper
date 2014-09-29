@@ -121,6 +121,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
 				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, mIdsMap.get(marker.getId()).getId());
 				startActivity(intent);
 			}
 		});

@@ -1,4 +1,5 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -33,10 +34,12 @@
     
     <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
     	<!-- <item name="android:background">@color/action</item> -->
+    	<item name="android:padding">0dp</item>
 	</style>
 	
     <style name="MyActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
 	    <item name="android:textColor">@color/dark_font</item>
+	    <item name="android:textSize">24sp</item>
     </style>
     
 </resources>

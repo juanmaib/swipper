@@ -1,97 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
     
-    <android.support.v7.widget.GridLayout	    
+    <LinearLayout
+        android:id="@+id/headerLayout"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:orientation="vertical"
 	    android:background="@color/dark_grey"
-	    android:padding="15dp"
-	    app:columnCount="4" >
+    	android:padding="10dp" >
 	    
-        <ImageView
-            android:layout_width="wrap_content"
-            app:layout_rowSpan="2"
-            app:layout_gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/det_ico_location" />
+        <LinearLayout 
+            android:layout_width="match_parent"
+	    	android:layout_height="wrap_content"
+	    	android:orientation="horizontal"
+	    	android:gravity="center_vertical" >
+            
+            <ImageView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="10dp"
+	            android:src="@drawable/det_ico_location" />
+            
+            <LinearLayout 
+            	android:layout_width="0dp"
+	    		android:layout_height="wrap_content"
+	    		android:layout_weight="1"
+	    		android:orientation="vertical" >
+	    	
+                <com.globant.labs.swipper2.widget.SwipperTextView 
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            app:fontName="roboto_regular.ttf"
+		            android:textColor="@color/real_white"		            
+		            android:textSize="18sp"
+		            android:text="Av. Federico Lacroze 2301" />
+                
+                <com.globant.labs.swipper2.widget.SwipperTextView 
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            app:fontName="roboto_regular.ttf"
+		            android:textColor="@color/real_white"
+		            android:textSize="18sp"
+		            android:text="Resistencia, Chaco, Argentina" />  
+                
+            </LinearLayout>
+            
+            <ImageView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dp"
+	            android:layout_marginRight="10dp"
+	            android:src="@drawable/det_text_separator" />
+            
+            <com.globant.labs.swipper2.widget.SwipperTextView 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            app:fontName="roboto_regular.ttf"
+	            android:textColor="@color/real_white"	            
+	            android:textSize="16sp"
+	            android:text="0,1km" />
+            
+        </LinearLayout>
         
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-            android:layout_width="wrap_content"
-            app:layout_gravity="fill_horizontal|top"
-            android:textColor="@color/real_white"
-            app:fontName="roboto_regular.ttf"
-            android:textSize="18sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="Av. Federico Juansito Lacroze 2301" />
-        
-        <ImageView
-            android:layout_width="wrap_content"
-            app:layout_gravity="center_vertical"
-            app:layout_rowSpan="2"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/det_text_separator" />
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-            android:layout_width="wrap_content"
-            app:layout_gravity="center_vertical"
-            app:layout_rowSpan="2"
-            android:textColor="@color/real_white"
-            app:fontName="roboto_regular.ttf"
-            android:textSize="16sp"
-            android:text="0.1km" />
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-            android:layout_width="wrap_content"
-            app:layout_gravity="fill_horizontal"
-            android:textColor="@color/real_white"
-            app:fontName="roboto_regular.ttf"
-            android:textSize="18sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="Resistencia, Chaco, Argentina" />  
-        
-        <ImageView
-            android:layout_width="wrap_content"
-            app:layout_gravity="center_vertical"
-            android:src="@drawable/det_ico_phone" />
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-            app:layout_gravity="fill_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/real_white"
-            app:fontName="roboto_light.ttf"
-            android:textSize="18sp"
-            android:text="(011) 5896471" />          
-        
-        <android.support.v7.widget.Space
-            android:layout_width="wrap_content"
-            app:layout_rowSpan="2" />
-        
-        <ImageView
-            android:layout_width="wrap_content"
-            app:layout_gravity="center"
-            app:layout_rowSpan="2"
-            android:src="@drawable/nav_button" />
-        
-        <ImageView
-            android:layout_width="wrap_content"
-            app:layout_gravity="center_vertical"
-            android:src="@drawable/det_ico_watch" />
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-            app:layout_gravity="fill_horizontal"
-            android:textColor="@color/real_white"
-            app:fontName="roboto_light.ttf"
-            android:textSize="18sp"
-            android:text="10:30 am - 20:30 pm" />  
-           
-    
-    </android.support.v7.widget.GridLayout>
+        <LinearLayout 
+            android:layout_width="match_parent"
+	    	android:layout_height="wrap_content"
+	    	android:layout_marginTop="10dp"
+	    	android:orientation="horizontal"
+	    	android:gravity="center_vertical" >
+            
+            <LinearLayout 
+            	android:layout_width="0dp"
+	    		android:layout_height="wrap_content"
+	    		android:layout_weight="1"   		
+	    		android:orientation="vertical">
+                
+                <LinearLayout 
+		            android:layout_width="match_parent"
+			    	android:layout_height="wrap_content"			    	
+			    	android:orientation="horizontal"
+			    	android:gravity="center_vertical" >
+			    	
+                    <ImageView
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_marginRight="10dp"
+			            android:src="@drawable/det_ico_phone" />
+			        
+			        <com.globant.labs.swipper2.widget.SwipperTextView 
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"      
+			            app:fontName="roboto_light.ttf"    
+			            android:textColor="@color/real_white"			            
+			            android:textSize="18sp"
+			            android:text="(011) 5896471" />  
+                    
+                </LinearLayout>
+                
+                <LinearLayout 
+		            android:layout_width="match_parent"
+			    	android:layout_height="wrap_content"
+			    	android:layout_marginTop="10dp"
+			    	android:orientation="horizontal"
+			    	android:gravity="center_vertical" >
+			    	
+                    <ImageView
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"
+			            android:layout_marginRight="10dp"
+			            android:src="@drawable/det_ico_watch" />
+			        
+			        <com.globant.labs.swipper2.widget.SwipperTextView 
+			            android:layout_width="wrap_content"
+			            android:layout_height="wrap_content"			            
+			            app:fontName="roboto_light.ttf"
+			            android:textColor="@color/real_white"
+			            android:textSize="18sp"
+			            android:text="10:30 am - 20:30 pm" />  
+                    
+                </LinearLayout>
 
-</LinearLayout>
+            </LinearLayout>
+            
+            <ImageView
+	            android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginRight="10dp"
+	            android:src="@drawable/nav_button" />
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/descriptionLayout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/headerLayout"
+	    android:layout_above="@+id/photosLayout"
+	    android:background="@color/white_background"
+	    android:orientation="vertical"
+    	android:padding="10dp" >
+        
+        <com.globant.labs.swipper2.widget.SwipperTextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        app:fontName="roboto_regular.ttf"
+	        android:textColor="@color/dark_font"		            
+	        android:textSize="18sp"
+	        android:text="DESCRIPTION"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp" />
+        
+        <com.globant.labs.swipper2.widget.SwipperTextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"			            
+	        app:fontName="roboto_light.ttf"
+	        android:textColor="@color/dark_font"
+	        android:textSize="18sp"
+	        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut gravida nibh eu fermentum dictum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. In et felis efficitur, posuere neque vel, dictum odio. Integer non egestas ex. Nam in convallis risus. Integer tempor mollis tempor. Sed sollicitudin nunc sit amet aliquet interdum. Nam enim lacus, scelerisque non sem ut, sodales scelerisque nunc. Praesent vehicula ultrices dui, pretium feugiat arcu faucibus euismod. Ut ac lacus non mauris posuere varius." /> 
+        
+     </LinearLayout>
+     
+     <LinearLayout
+        android:id="@+id/photosLayout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:background="@drawable/photos_background"
+	    android:orientation="vertical"
+    	android:padding="10dp" >
+        
+        <com.globant.labs.swipper2.widget.SwipperTextView 
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            app:fontName="roboto_regular.ttf"
+		            android:textColor="@color/dark_font"		            
+		            android:textSize="18sp"
+		            android:text="PHOTOS"
+		            android:paddingTop="10dp"
+		            android:paddingBottom="10dp" />
+        
+        <HorizontalScrollView 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            
+	            <ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+	            <ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+	           	<ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+	           	<ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+	           	<ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+	           	<ImageView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginRight="4dp"
+	                android:src="@drawable/test_photo" />
+           	
+           	</LinearLayout>
+           	            
+        </HorizontalScrollView>
+        
+     </LinearLayout>
+
+</RelativeLayout>
