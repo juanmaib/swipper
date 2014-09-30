@@ -7,11 +7,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlaceDetailActivity extends ActionBarActivity {
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
+	
+	protected RelativeLayout mProgressBarLayout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,8 @@ public class PlaceDetailActivity extends ActionBarActivity {
 		Log.i("SWIPPER", "PlaceId: "+placeId);
 		
 		setTitle("Starbucks");
+		
+		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 	}
 
 	@Override
