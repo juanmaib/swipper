@@ -2,13 +2,20 @@ package com.globant.labs.swipper2;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,6 +23,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
@@ -33,8 +46,10 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends ActionBarActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener {
+		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener, ViewTreeObserver.OnGlobalLayoutListener {
 
+	private static final String PREF_WALKTHROUGH_DISPLAYED = "walkthrough_displayed";
+	
 	// implements NavigationDrawerFragment.NavigationDrawerCallbacks,
 	// OnConnectionFailedListener, LocationListener,
 	// OnMyLocationButtonClickListener, ConnectionCallbacks
@@ -56,6 +71,8 @@ public class MainActivity extends ActionBarActivity implements
 	protected PlacesMapFragment mMapFragment;
 	protected PlacesListFragment mListFragment;
 	
+	protected boolean mDisplayedWalkthrough;
+	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -73,6 +90,9 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		mDisplayedWalkthrough = sp.getBoolean(PREF_WALKTHROUGH_DISPLAYED, false);
+		
 		mCitiesProvider = ((SwipperApp) getApplication()).getCitiesProvider();
 		mPlacesProvider = new PlacesProvider(mCitiesProvider, this);
 		
@@ -143,6 +163,10 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});	
 			
+			
+			
+			
+			//showCoachMarks();
 
 			//mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
 			//locationManager.requestSingleUpdate(provider, this, null);
@@ -165,6 +189,7 @@ public class MainActivity extends ActionBarActivity implements
 		}
 		
 		mNavigationDrawerFragment.setAdapter(catAdapter);
+		mNavigationDrawerFragment.getView().getViewTreeObserver().addOnGlobalLayoutListener(this);
 	}
 			
 	public PlacesProvider getPlacesProvider() {
@@ -255,5 +280,77 @@ public class MainActivity extends ActionBarActivity implements
 	public void onSelectionApplied(List<String> ids) {
 		mPlacesProvider.setFilters(ids);
 	}
+	
+	public void showCoachMarks(){
+	    final Dialog dialog = new Dialog(this, R.style.Theme_Transparent);
+	    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+	    dialog.setContentView(R.layout.coach_marks);
+	    dialog.setCanceledOnTouchOutside(true);
+	    
+	    View masterView = dialog.findViewById(R.id.coach_marks_master_view);
+	    masterView.setOnClickListener(new View.OnClickListener() {
+	        @Override
+	        public void onClick(View view) {
+	            dialog.dismiss();
+	        }
+	    });
+	    
+	    dialog.setOnDismissListener(new OnDismissListener() {			
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				mDisplayedWalkthrough = true;
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplication());
+				sp.edit().putBoolean(PREF_WALKTHROUGH_DISPLAYED, true).commit();
+			}
+		});
+	    
+		ListView listView = (ListView) mNavigationDrawerFragment.getView().findViewById(R.id.drawerListView);
+		
+		int listViewWidth = listView.getWidth();
+		int itemHeight = listView.getChildAt(0).getHeight();
+		
+		int[] location = new int[2];				
+		
+		listView.getChildAt(0).getLocationOnScreen(location);
+		int firstItemY = location[1];
+		
+		listView.findViewById(R.id.apply_button).getLocationOnScreen(location);
+		int secondItemY = location[1];
+					
+		ImageView coachCategories = (ImageView) dialog.findViewById(R.id.coachCategories);
+		RelativeLayout.LayoutParams lpCategories = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.WRAP_CONTENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT);
+		lpCategories.setMargins(listViewWidth, firstItemY + itemHeight / 2, 0, 0);					
+		coachCategories.setLayoutParams(lpCategories);
+		
+		ImageView coachApply = (ImageView) dialog.findViewById(R.id.coachApply);
+		RelativeLayout.LayoutParams lpApply = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.WRAP_CONTENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT);
+		lpApply.setMargins(listViewWidth / 2, secondItemY + itemHeight, 0, 0);
+		coachApply.setLayoutParams(lpApply);
+	    
+	    dialog.show();
+	}
+
+	@Override
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	public void onGlobalLayout() {	
+		View drawerView = mNavigationDrawerFragment.getView();
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			drawerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+		}else{
+			drawerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+		}
+					
+		if(!mDisplayedWalkthrough) {
+			showCoachMarks();
+		}
+	}
+		
 
 }
