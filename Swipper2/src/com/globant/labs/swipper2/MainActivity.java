@@ -82,6 +82,8 @@ public class MainActivity extends ActionBarActivity implements
 		mFragmentsAdapter = new MainFragmentsAdapter(getSupportFragmentManager(), mPlacesProvider, this);
 		mViewPager.setAdapter(mFragmentsAdapter);
 		mViewPager.setCurrentItem(MainFragmentsAdapter.MAP_FRAGMENT);
+		// Preload the "other" "page"
+		mViewPager.setOffscreenPageLimit(1);
 		
 		//mTitle = getTitle();
 

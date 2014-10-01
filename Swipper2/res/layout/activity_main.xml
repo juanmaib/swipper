@@ -15,6 +15,12 @@
 	    android:id="@+id/viewPager"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent" />
+	
+	<!-- hack to fix ugly black artefact with maps v2 -->
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:background="@android:color/transparent" />
 
   <!--   <fragment
             android:id="@+id/map"
