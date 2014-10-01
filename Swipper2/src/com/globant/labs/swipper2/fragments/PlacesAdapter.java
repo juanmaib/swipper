@@ -114,4 +114,8 @@ public class PlacesAdapter extends BaseAdapter {
 	public void setDataChanged() {
 		notifyDataSetChanged();
 	}
+	
+	public PlacesProvider getProvider() {
+		return mProvider;
+	}
 }

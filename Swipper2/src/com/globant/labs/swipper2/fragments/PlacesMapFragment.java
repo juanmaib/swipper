@@ -120,8 +120,13 @@ public class PlacesMapFragment extends SupportMapFragment {
 		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 			@Override
 			public void onInfoWindowClick(Marker marker) {
+				Place p = mIdsMap.get(marker.getId());
+				
 				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, mIdsMap.get(marker.getId()).getId());
+				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
+				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
+				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategoryId());
+				intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, mPlacesProvider.getDistanceTo(p));
 				startActivity(intent);
 			}
 		});

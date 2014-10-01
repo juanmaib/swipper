@@ -32,20 +32,20 @@
 	    		android:orientation="vertical" >
 	    	
                 <com.globant.labs.swipper2.widget.SwipperTextView 
+		            android:id="@+id/addressText"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            app:fontName="roboto_regular.ttf"
 		            android:textColor="@color/real_white"		            
-		            android:textSize="18sp"
-		            android:text="Av. Federico Lacroze 2301" />
+		            android:textSize="18sp" />
                 
-                <com.globant.labs.swipper2.widget.SwipperTextView 
+                <com.globant.labs.swipper2.widget.SwipperTextView
+                    android:id="@+id/cityText" 
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            app:fontName="roboto_regular.ttf"
 		            android:textColor="@color/real_white"
-		            android:textSize="18sp"
-		            android:text="Resistencia, Chaco, Argentina" />  
+		            android:textSize="18sp" />  
                 
             </LinearLayout>
             
@@ -56,13 +56,13 @@
 	            android:layout_marginRight="10dp"
 	            android:src="@drawable/det_text_separator" />
             
-            <com.globant.labs.swipper2.widget.SwipperTextView 
+            <com.globant.labs.swipper2.widget.SwipperTextView
+                android:id="@+id/distanceText" 
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            app:fontName="roboto_regular.ttf"
 	            android:textColor="@color/real_white"	            
-	            android:textSize="16sp"
-	            android:text="0,1km" />
+	            android:textSize="16sp" />
             
         </LinearLayout>
         
@@ -92,12 +92,12 @@
 			            android:src="@drawable/det_ico_phone" />
 			        
 			        <com.globant.labs.swipper2.widget.SwipperTextView 
+			            android:id="@+id/phoneText"
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"      
 			            app:fontName="roboto_light.ttf"    
 			            android:textColor="@color/real_white"			            
-			            android:textSize="18sp"
-			            android:text="(011) 5896471" />  
+			            android:textSize="18sp" />  
                     
                 </LinearLayout>
                 
@@ -115,18 +115,19 @@
 			            android:src="@drawable/det_ico_watch" />
 			        
 			        <com.globant.labs.swipper2.widget.SwipperTextView 
+			            android:id="@+id/scheduleText"
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"			            
 			            app:fontName="roboto_light.ttf"
 			            android:textColor="@color/real_white"
-			            android:textSize="18sp"
-			            android:text="10:30 am - 20:30 pm" />  
+			            android:textSize="18sp" />  
                     
                 </LinearLayout>
 
             </LinearLayout>
             
             <ImageView
+                android:id="@+id/navImage"
 	            android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_marginRight="10dp"

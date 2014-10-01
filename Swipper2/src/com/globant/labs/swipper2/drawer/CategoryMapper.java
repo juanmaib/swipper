@@ -95,6 +95,18 @@ public class CategoryMapper {
 		iconMap = map;
 	}
 	
+	private static final Map<String, Integer> textMap;
+	static {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("5419c50d4405590000442951", R.string.lodging);
+		map.put("5419c50d4405590000442955", R.string.carrental);
+		map.put("5419c50d4405590000442957", R.string.food);
+		map.put("5419c50e4405590000442978", R.string.gas);
+		map.put("5419c50f44055900004429d8", R.string.lodging);
+		map.put("5419c5174405590000442dc8", R.string.taxi);
+		textMap = map;
+	}
+	
 	public static int getCategoryColor(String category) {
 		return colorMap.get(category);
 	}
@@ -105,5 +117,9 @@ public class CategoryMapper {
 	
 	public static int getCategoryIcon(String category) {
 		return iconMap.get(category);
+	}
+	
+	public static int getCategoryText(String category) {
+		return textMap.get(category);
 	}
 }
