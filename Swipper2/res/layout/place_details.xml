@@ -142,7 +142,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_below="@+id/headerLayout"
-	    android:layout_above="@+id/photosLayout"
+	    android:layout_above="@+id/photosSection"
 	    android:background="@color/white_background"
 	    android:orientation="vertical"
     	android:padding="10dp" >
@@ -153,22 +153,19 @@
 	        app:fontName="roboto_regular.ttf"
 	        android:textColor="@color/dark_font"		            
 	        android:textSize="18sp"
-	        android:text="DESCRIPTION"
+	        android:text="@string/reviews"
             android:paddingTop="10dp"
             android:paddingBottom="10dp" />
         
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"			            
-	        app:fontName="roboto_light.ttf"
-	        android:textColor="@color/dark_font"
-	        android:textSize="18sp"
-	        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut gravida nibh eu fermentum dictum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. In et felis efficitur, posuere neque vel, dictum odio. Integer non egestas ex. Nam in convallis risus. Integer tempor mollis tempor. Sed sollicitudin nunc sit amet aliquet interdum. Nam enim lacus, scelerisque non sem ut, sodales scelerisque nunc. Praesent vehicula ultrices dui, pretium feugiat arcu faucibus euismod. Ut ac lacus non mauris posuere varius." /> 
+        <ListView
+            android:id="@+id/reviewsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
         
      </LinearLayout>
      
      <LinearLayout
-        android:id="@+id/photosLayout"
+        android:id="@+id/photosSection"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
@@ -182,7 +179,7 @@
 		            app:fontName="roboto_regular.ttf"
 		            android:textColor="@color/dark_font"		            
 		            android:textSize="18sp"
-		            android:text="PHOTOS"
+		            android:text="@string/photos"
 		            android:paddingTop="10dp"
 		            android:paddingBottom="10dp" />
         
@@ -191,40 +188,11 @@
             android:layout_height="wrap_content" >
             
             <LinearLayout
+                android:id="@+id/photosLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            
-	            <ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-	            <ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-	           	<ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-	           	<ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-	           	<ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-	           	<ImageView
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_marginRight="4dp"
-	                android:src="@drawable/test_photo" />
-           	
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+  	
            	</LinearLayout>
            	            
         </HorizontalScrollView>

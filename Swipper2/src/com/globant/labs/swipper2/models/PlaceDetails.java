@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
+
 
 /**
  * @author bruno.demartino
@@ -12,6 +14,7 @@ import java.util.Map;
 public class PlaceDetails extends Place {
 
 	private List<Photo> photos;
+	private ArrayList<GoogleReview> reviews;
 
 	public List<Photo> getPhotos() {
 		return photos;
@@ -28,6 +31,28 @@ public class PlaceDetails extends Place {
 
 			this.photos.add(p);
 		}
+	}
+	
+	public ArrayList<GoogleReview> getReviews() {
+		return reviews;
+	}
+	
+	public void setReviews(List<Map<String, ? extends Object>> reviews) {
+		this.reviews = new ArrayList<GoogleReview>();
+		
+		for(Map<String, ? extends Object> element: reviews) {
+			GoogleReview r = new GoogleReview();
+			r.setAuthor_name((String) element.get("author_name"));
+			r.setAuthor_url((String) element.get("author_url"));
+			r.setLanguage((String) element.get("language"));
+			r.setRating((Integer) element.get("rating"));
+			r.setText((String) element.get("text"));
+			r.setTime((Integer) element.get("time"));
+			
+			this.reviews.add(r);
+		}
+		
+		Log.i("SWIPPER", "setReviews end");
 	}
 	
 }

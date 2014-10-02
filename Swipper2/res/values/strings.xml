@@ -53,4 +53,10 @@
     
     <string name="error_place_details_not_available">We have no info about that place</string>
     
+    <string name="reviews">REVIEWS</string>
+    <string name="photos">PHOTOS</string>
+    <string name="action_share">Share</string>
+    <string name="action_report">Report</string>
+    <string name="send_report">Send report...</string>
+    
 </resources>
