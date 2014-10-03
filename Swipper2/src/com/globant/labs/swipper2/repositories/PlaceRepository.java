@@ -2,7 +2,6 @@ package com.globant.labs.swipper2.repositories;
 
 import java.util.Map;
 
-
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.model.LatLng;
@@ -30,7 +29,7 @@ public class PlaceRepository extends ModelRepository<Place> {
                 parameters,
                 new JsonArrayParser<Place>(this, callback));
                 
-      	}
+    }
 
 	@Override
 	public RestContract createContract() {

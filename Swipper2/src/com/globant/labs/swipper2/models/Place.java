@@ -11,15 +11,20 @@ import com.strongloop.android.loopback.Model;
  * @author bruno.demartino
  *
  */
+/**
+ * @author bruno.demartino
+ *
+ */
 public class Place extends Model {
 	private String id;
 	private String Name;
 	private String Phone;
 	private String Address;
-	private String cityId;
-	private String categoryId;
+	private String Category;
 	private LatLng Location;
-	private City City;
+	private String City;
+	private String State;
+	private String Country;
 	
 	public String getId() {
 		return id;
@@ -52,23 +57,7 @@ public class Place extends Model {
 	public void setAddress(String address) {
 		Address = address;
 	}
-	
-	public String getCityId() {
-		return cityId;
-	}
-
-	public void setCityId(String cityId) {
-		this.cityId = cityId;
-	}
-
-	public String getCategoryId() {
-		return categoryId;
-	}
-
-	public void setCategoryId(String categoryId) {
-		this.categoryId = categoryId;
-	}
-	
+		
 	public LatLng getLocation() {
 		return Location;
 	}
@@ -81,12 +70,36 @@ public class Place extends Model {
 		Location = GeoUtils.latLngFromMap(params);
 	}
 
-	public City getCity() {
+	public String getCategory() {
+		return Category;
+	}
+
+	public void setCategory(String category) {
+		Category = category;
+	}
+
+	public String getCity() {
 		return City;
 	}
 
-	public void setCity(City city) {
+	public void setCity(String city) {
 		City = city;
+	}
+
+	public String getState() {
+		return State;
+	}
+
+	public void setState(String state) {
+		State = state;
+	}
+
+	public String getCountry() {
+		return Country;
+	}
+
+	public void setCountry(String country) {
+		Country = country;
 	}
 	
 }

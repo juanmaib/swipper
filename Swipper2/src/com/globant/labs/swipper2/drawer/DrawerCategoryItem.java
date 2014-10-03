@@ -1,29 +1,24 @@
 package com.globant.labs.swipper2.drawer;
 
-import com.globant.labs.swipper2.models.Category;
 
 public class DrawerCategoryItem extends DrawerItem {
 
-	protected Category category;
+	protected String category;
 	protected int color;
 
-	public DrawerCategoryItem(Category cat) {
+	public DrawerCategoryItem(String cat) {
 		category = cat;
 	}
 	
-	public Category getCategory() {
+	public String getCategory() {
 		return category;
 	}
 	
 	public String getName() {
-		return category.getName();
+		return category;
 	}
-	
-	public String getId() {
-		return category.getId();
-	}
-	
-	public void setCategory(Category category) {
+
+	public void setCategory(String category) {
 		this.category = category;
 	}
 	

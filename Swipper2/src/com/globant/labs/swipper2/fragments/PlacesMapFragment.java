@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.globant.labs.swipper2.MainActivity;
+import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.SwipperInfoWindowAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
@@ -27,6 +29,7 @@ import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -49,6 +52,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 	protected Location mCurrentLocation;
 	
 	protected Map<String, Marker> mMarkers;
+	protected Map<String, Place> mIdsMap;
 	
 	public PlacesMapFragment() {
 		super();
@@ -59,6 +63,7 @@ public class PlacesMapFragment extends SupportMapFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mMarkers = new HashMap<String, Marker>();
+        mIdsMap = new HashMap<String, Place>();
     }
 	
 	@Override
@@ -84,6 +89,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 		mPlacesProvider = ((MainActivity) getActivity()).getPlacesProvider();
 		
 		mMap.setInfoWindowAdapter(new SwipperInfoWindowAdapter(mActivity));
+		
 		mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			
 			@Override
@@ -108,6 +114,20 @@ public class PlacesMapFragment extends SupportMapFragment {
 			@Override
 			public void onMyLocationChange(Location myLocation) {
 				mPlacesProvider.setCurrentLocation(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()));
+			}
+		});
+		
+		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				Place p = mIdsMap.get(marker.getId());
+				
+				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
+				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
+				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
+				intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, mPlacesProvider.getDistanceTo(p));
+				startActivity(intent);
 			}
 		});
 		
@@ -146,6 +166,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 	public void clear() {
 		if(mMap != null) {
 			mMap.clear();
+			mMarkers.clear();
+			mIdsMap.clear();
 		}
 	}
 	
@@ -164,10 +186,11 @@ public class PlacesMapFragment extends SupportMapFragment {
 					.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
 					.anchor(0.35f, 1.0f)
 					.infoWindowAnchor(0.35f, 0.2f)
-					.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategoryId())));
+					.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategory())));
 					
 				Marker m = mMap.addMarker(marker);
 				mMarkers.put(p.getId(), m);
+				mIdsMap.put(m.getId(), p);
 			}
 			
 			keeps.add(p.getId());
@@ -178,6 +201,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 		while (it.hasNext()) {
 			Entry<String, Marker> entry = it.next();
 			if(!bounds.contains(entry.getValue().getPosition()) || !keeps.contains(entry.getKey())) {
+				mIdsMap.remove(entry.getValue().getId());
 				entry.getValue().remove();
 				it.remove();
 			}

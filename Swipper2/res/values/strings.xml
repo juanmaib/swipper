@@ -45,4 +45,18 @@
     <string name="imageSplashLogoDescription">Swipper Logo</string>
     <string name="imageSplashStreetsDescription">Splash footer image</string>
 
+    <string name="lodging">Lodging</string>
+    <string name="carrental">Car Rental</string>
+    <string name="taxi">Taxi</string>
+    <string name="gas">Gas</string>
+    <string name="food">Food</string>
+    
+    <string name="error_place_details_not_available">We have no info about that place</string>
+    
+    <string name="reviews">REVIEWS</string>
+    <string name="photos">PHOTOS</string>
+    <string name="action_share">Share</string>
+    <string name="action_report">Report</string>
+    <string name="send_report">Send report...</string>
+    
 </resources>

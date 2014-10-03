@@ -1,4 +1,5 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -23,15 +24,31 @@
     <style name="MyActionBar"
            parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/orange</item>
-		<item name="android:height">60dp</item>
+		<item name="android:height">60dp</item>	
 		
         <!-- Support library compatibility -->
         <item name="background">@color/orange</item>
-        <item name="logo">@drawable/action_logo</item>
+        <item name="titleTextStyle">@style/MyActionBarTitleText</item>
+        <!-- <item name="logo">@drawable/action_logo</item> -->
     </style>
     
     <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
     	<!-- <item name="android:background">@color/action</item> -->
+    	<!-- <item name="android:padding">0dp</item> -->
 	</style>
+	
+    <style name="MyActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+	    <item name="android:textColor">@color/dark_font</item>
+	    <item name="android:textSize">24sp</item>
+    </style>
+    
+      <style name="Theme.Transparent" parent="android:Theme">
+	    <item name="android:windowIsTranslucent">true</item>
+	    <item name="android:windowBackground">@android:color/transparent</item>
+	    <item name="android:windowContentOverlay">@null</item>
+	    <item name="android:windowNoTitle">false</item>
+	    <item name="android:windowIsFloating">false</item>
+	    <item name="android:backgroundDimEnabled">true</item>
+	  </style>
     
 </resources>

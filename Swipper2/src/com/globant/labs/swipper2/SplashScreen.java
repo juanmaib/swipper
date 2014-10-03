@@ -6,8 +6,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.globant.labs.swipper2.provider.CitiesProvider;
-import com.globant.labs.swipper2.provider.CitiesProvider.CitiesCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -17,7 +15,7 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 		GoogleApiClient.OnConnectionFailedListener {
 
 	public static final String LAST_KNOWN_LOCATION_EXTRA = "lastKnownLocation";
-	protected static final int STEPS = 2;
+	protected static final int STEPS = 1;
 	
 	protected GoogleApiClient mGoogleApiClient;
 	protected Location mLastKnownLocation;
@@ -39,21 +37,6 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 		
 		mGoogleApiClient.connect();
 		
-		CitiesProvider citiesProvider = ((SwipperApp) getApplication()).getCitiesProvider();
-		citiesProvider.setCitiesCallback(new CitiesCallback() {
-			@Override
-			public void citiesLoaded() {
-				Log.i("SWIPPER", "ALL OK");
-				stepAndTransition();
-			}
-			
-			@Override
-			public void citiesError(Throwable t) {
-				Log.i("SWIPPER", "ALL ERROR");
-			}
-		});
-		
-		citiesProvider.loadCities();
 	}
 
 	@Override

@@ -15,10 +15,7 @@ import android.widget.TextView;
 import com.globant.labs.swipper2.MainActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
-import com.globant.labs.swipper2.models.City;
-import com.globant.labs.swipper2.models.Country;
 import com.globant.labs.swipper2.models.Place;
-import com.globant.labs.swipper2.models.State;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 
 public class PlacesAdapter extends BaseAdapter {
@@ -74,6 +71,7 @@ public class PlacesAdapter extends BaseAdapter {
 			holder.placeCity = (TextView) convertView.findViewById(R.id.placeCity);
 			holder.navButton = (ImageButton) convertView.findViewById(R.id.navButton);
 			holder.navButton.setOnClickListener(mClickListener);
+			holder.navButton.setFocusable(false);
 			convertView.setTag(holder);
 		}else{
 			holder = (ViewHolder) convertView.getTag();
@@ -82,20 +80,16 @@ public class PlacesAdapter extends BaseAdapter {
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		
 		Place p = getItem(position);
-		
-		City city = p.getCity();
-		State state = city.getState();
-		Country country = state.getCountry();
-		
-		holder.icon.setBackgroundResource(CategoryMapper.getCategoryColor(p.getCategoryId()));
-		holder.icon.setImageResource(CategoryMapper.getCategoryIcon(p.getCategoryId()));
+				
+		holder.icon.setBackgroundResource(CategoryMapper.getCategoryColor(p.getCategory()));
+		holder.icon.setImageResource(CategoryMapper.getCategoryIcon(p.getCategory()));
 		holder.placeName.setText(p.getName());
 		holder.placeDistance.setText(df.format(mProvider.getDistanceTo(p))+" km");
 		holder.placeAddress.setText(p.getAddress());	
 		holder.placeCity.setText(
-				city.getName() + ", " +
-				state.getName() + ", " +
-				country.getName());
+				p.getCity() + ", " +
+				p.getState() + ", " +
+				p.getCountry());
 		holder.navButton.setTag(position);
 		
 		return convertView;
@@ -112,5 +106,9 @@ public class PlacesAdapter extends BaseAdapter {
 	
 	public void setDataChanged() {
 		notifyDataSetChanged();
+	}
+	
+	public PlacesProvider getProvider() {
+		return mProvider;
 	}
 }
