@@ -129,7 +129,11 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mPlace = placeDetails;
 		
 		mAddressTextView.setText(placeDetails.getAddress());
-		mCityTextView.setText(placeDetails.getCityId());
+		mCityTextView.setText(placeDetails.getCity()
+				+ ", "
+				+ placeDetails.getState()
+				+ ", "
+				+ placeDetails.getCountry());
 		mPhoneTextView.setText(placeDetails.getPhone());
 		//mScheduleTextView.setText();
 	
@@ -231,7 +235,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		if (id == R.id.action_share) {
 			
-			String placeString = mPlace.getName()+"\n"+mPlace.getAddress()+"\n"+mPlace.getPhone();
+			String placeString = mPlace.getName()
+					+ "\n" + mPlace.getAddress()
+					+ "\n" + mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
+					+ "\n" + mPlace.getPhone();
 			
 			Intent sendIntent = new Intent();
 			sendIntent.setAction(Intent.ACTION_SEND);
@@ -242,7 +249,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			return true;
 		}else if(id == R.id.action_report) {
 			
-			String placeString = mPlace.getName()+"\n"+mPlace.getAddress()+"\n"+mPlace.getPhone();
+			String placeString = mPlace.getName()
+					+ "\n" + mPlace.getAddress()
+					+ "\n" + mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
+					+ "\n" + mPlace.getPhone();
 			
 			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
 		            "mailto","bruno.demartino@globant.com", null));

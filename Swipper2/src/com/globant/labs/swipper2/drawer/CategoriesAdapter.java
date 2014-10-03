@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.globant.labs.swipper2.R;
-import com.globant.labs.swipper2.models.Category;
 
 public class CategoriesAdapter extends BaseAdapter {
 	
@@ -39,7 +38,7 @@ public class CategoriesAdapter extends BaseAdapter {
 		mOffString = ctx.getString(R.string.off);
 	}
 	
-	public void addCategory(Category cat) {
+	public void addCategory(String cat) {
 		mCategories.add(CategoryMapper.getCategoryDisplay(cat));
 	}
 	
@@ -105,7 +104,7 @@ public class CategoriesAdapter extends BaseAdapter {
 		for(int i = 1; i < mCategories.size(); i++) {
 			DrawerCategoryItem item = (DrawerCategoryItem) mCategories.get(i);
 			if(item.isChecked()) {
-				chekedIds.add(item.getId());
+				chekedIds.add(item.getName());
 			}
 		}
 		return chekedIds;	

@@ -125,7 +125,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
 				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
 				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
-				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategoryId());
+				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
 				intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, mPlacesProvider.getDistanceTo(p));
 				startActivity(intent);
 			}
@@ -186,7 +186,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 					.snippet(df.format(GeoUtils.getDistance(p.getLocation(), myLocation))+" km")
 					.anchor(0.35f, 1.0f)
 					.infoWindowAnchor(0.35f, 0.2f)
-					.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategoryId())));
+					.icon(BitmapDescriptorFactory.fromResource(CategoryMapper.getCategoryMarker(p.getCategory())));
 					
 				Marker m = mMap.addMarker(marker);
 				mMarkers.put(p.getId(), m);

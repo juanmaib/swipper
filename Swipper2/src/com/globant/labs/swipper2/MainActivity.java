@@ -38,7 +38,6 @@ import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
 import com.globant.labs.swipper2.models.Place;
-import com.globant.labs.swipper2.provider.CitiesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.google.android.gms.common.ConnectionResult;
@@ -54,7 +53,6 @@ public class MainActivity extends ActionBarActivity implements
 	// OnConnectionFailedListener, LocationListener,
 	// OnMyLocationButtonClickListener, ConnectionCallbacks
 
-	protected CitiesProvider mCitiesProvider;
 	protected PlacesProvider mPlacesProvider;
 	
 	protected boolean mFarZoom;
@@ -93,8 +91,7 @@ public class MainActivity extends ActionBarActivity implements
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		mDisplayedWalkthrough = sp.getBoolean(PREF_WALKTHROUGH_DISPLAYED, false);
 		
-		mCitiesProvider = ((SwipperApp) getApplication()).getCitiesProvider();
-		mPlacesProvider = new PlacesProvider(mCitiesProvider, this);
+		mPlacesProvider = new PlacesProvider(this);
 		
 		mFarZoom = false;
 		

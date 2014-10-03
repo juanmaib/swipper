@@ -30,15 +30,13 @@ public class PlacesProvider implements ListCallback<Place> {
 	protected LatLng mCurrentLocation;
 	protected LatLngBounds mCurrentBounds;
 	protected Comparator<Place> mPlacesComparator;
-	protected CitiesProvider mCitiesProvider;
 	
-	public PlacesProvider(CitiesProvider citiesProvider, Context context) {
+	public PlacesProvider(Context context) {
 		RestAdapter restAdapter = ((SwipperApp) context.getApplicationContext()).getRestAdapter();
 		mRepository = restAdapter.createRepository(PlaceRepository.class);
 		mPlaces = ArrayListMultimap.create();
 		mFilteredPlaces = new ArrayList<Place>();
 		mFilters = new HashSet<String>();
-		mCitiesProvider = citiesProvider;
 		
 		mPlacesComparator = new Comparator<Place>() {
 			
@@ -123,8 +121,7 @@ public class PlacesProvider implements ListCallback<Place> {
 		mPlaces.clear();
 		
 		for(Place p: places) {
-			p.setCity(mCitiesProvider.getCity(p.getCityId()));
-			mPlaces.put(p.getCategoryId(), p);
+			mPlaces.put(p.getCategory(), p);
 		}		
 		
 		refreshFilteredPlaces();

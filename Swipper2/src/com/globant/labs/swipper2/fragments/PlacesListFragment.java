@@ -44,7 +44,7 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
 		intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
 		intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
-		intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategoryId());
+		intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
 		intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, ((PlacesAdapter) getListAdapter()).getProvider().getDistanceTo(p));
 		startActivity(intent);
 	}
