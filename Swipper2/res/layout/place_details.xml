@@ -162,6 +162,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
         
+        <com.globant.labs.swipper2.widget.SwipperTextView 
+	        android:id="@android:id/empty"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:textColor="@color/light_font"
+        	app:fontName="roboto_italic.ttf"
+	        android:text="@string/no_reviews"/>
+        
      </LinearLayout>
      
      <LinearLayout

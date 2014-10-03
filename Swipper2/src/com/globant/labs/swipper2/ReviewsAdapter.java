@@ -23,7 +23,11 @@ public class ReviewsAdapter extends BaseAdapter {
 	
 	@Override
 	public int getCount() {
-		return mList.size();
+		if(mList != null) {
+			return mList.size();
+		}else{
+			return 0;
+		}
 	}
 
 	@Override

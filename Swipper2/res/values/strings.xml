@@ -60,5 +60,6 @@
     <string name="action_share">Share</string>
     <string name="action_report">Report</string>
     <string name="send_report">Send report...</string>
+    <string name="no_reviews">No reviews for this place yet</string>
     
 </resources>

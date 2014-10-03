@@ -144,9 +144,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 				+ placeDetails.getCountry());
 		mPhoneTextView.setText(placeDetails.getPhone());
 		//mScheduleTextView.setText();
-	
-		Log.i("SWIPPER", mPlace.getLocation().toString());
-		
 		
 		mNavImageView.setOnClickListener(new OnClickListener() {
 			@Override
@@ -155,55 +152,60 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			}
 		});		
 		
-		Log.i("SWIPPER", "Obtained PlaceId: "+placeDetails.getId());
-		Log.i("SWIPPER", "Obtained Phone: "+placeDetails.getPhone());
-		
 		List<Photo> photos = placeDetails.getPhotos();
-		Log.i("SWIPPER", "Photo count: "+photos.size());
-		
-		Resources r = getResources();
-		int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
-		int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
-		
-		LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(
-				size, 
-				size);
-		
-		imageLayoutParams.setMargins(0, 0, rightMargin, 0);
-		
-		for(Photo photo: photos) {
-			final ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleLarge);
-			progressBar.setLayoutParams(imageLayoutParams);
-			mPhotosLayout.addView(progressBar);
+		if(photos != null && photos.size() > 0) {
 			
-			final ImageView imageView = new ImageView(this);
-			imageView.setLayoutParams(imageLayoutParams);
-			imageView.setVisibility(View.GONE);
-			mPhotosLayout.addView(imageView);
+			Resources r = getResources();
+			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
+			int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
 			
-			Picasso.with(this)
-			  .load(getPhotoURL(photo.getPhoto_reference()))
-			  .resize(size, size)
-			  .centerCrop()
-			  .into(imageView, new Callback() {
-
-				@Override
-				public void onError() {
-					progressBar.setVisibility(View.GONE);
-				}
-
-				@Override
-				public void onSuccess() {
-					progressBar.setVisibility(View.GONE);
-					imageView.setVisibility(View.VISIBLE);
-				}
-				  
-			  });			
+			LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(
+					size, 
+					size);
+			
+			imageLayoutParams.setMargins(0, 0, rightMargin, 0);
+			
+			for(Photo photo: photos) {
+				final ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleLarge);
+				progressBar.setLayoutParams(imageLayoutParams);
+				mPhotosLayout.addView(progressBar);
+				
+				final ImageView imageView = new ImageView(this);
+				imageView.setLayoutParams(imageLayoutParams);
+				imageView.setVisibility(View.GONE);
+				mPhotosLayout.addView(imageView);
+				
+				Picasso.with(this)
+				  .load(getPhotoURL(photo.getPhoto_reference()))
+				  .resize(size, size)
+				  .centerCrop()
+				  .into(imageView, new Callback() {
+	
+					@Override
+					public void onError() {
+						progressBar.setVisibility(View.GONE);
+					}
+	
+					@Override
+					public void onSuccess() {
+						progressBar.setVisibility(View.GONE);
+						imageView.setVisibility(View.VISIBLE);
+					}
+					  
+				  });			
+			}
+		}else{
+			mPhotosSection.setVisibility(View.GONE);
 		}
 		
-		ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this);
-		reviewsAdapter.setReviews(placeDetails.getReviews());
-		mReviewsList.setAdapter(reviewsAdapter);
+		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
+			ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this);
+			reviewsAdapter.setReviews(placeDetails.getReviews());
+			mReviewsList.setAdapter(reviewsAdapter);
+		}else{
+			TextView emptyText = (TextView)findViewById(android.R.id.empty);
+			mReviewsList.setEmptyView(emptyText);		
+		}
 		
 		mProgressBarLayout.setVisibility(View.GONE);
 
