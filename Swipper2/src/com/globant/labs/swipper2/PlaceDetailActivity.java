@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -112,13 +113,20 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	
 	@Override
 	protected void onResume() {
-		changeSizeTitle();
 		super.onResume();
+		changeSizeTitle();
 	}
 	
 	private void changeSizeTitle() {
 	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_regular.ttf");
-	    int actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+	    int actionBarTitleId;
+	    
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+	    	actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+	    } else {
+	    	actionBarTitleId = R.id.action_bar_title;
+	    }
+	    
 	    TextView titleTextView = (TextView) findViewById(actionBarTitleId);
 	    titleTextView.setTypeface(typeFace);
 	}
