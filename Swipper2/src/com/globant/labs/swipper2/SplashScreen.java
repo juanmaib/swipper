@@ -1,8 +1,13 @@
 package com.globant.labs.swipper2;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -28,14 +33,18 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 		
 		mStepCount = 0;
 		
-		// Set up the google api client (used later to get the last location)
-		mGoogleApiClient = new GoogleApiClient.Builder(this)
-				.addApi(LocationServices.API)
-				.addConnectionCallbacks(this)
-				.addOnConnectionFailedListener(this)
-				.build();
-		
-		mGoogleApiClient.connect();
+		if(!isConnected()) {
+			displayUnrecoverableErrorMessage(R.string.network_error);
+		}else{
+			// Set up the google api client (used later to get the last location)
+			mGoogleApiClient = new GoogleApiClient.Builder(this)
+					.addApi(LocationServices.API)
+					.addConnectionCallbacks(this)
+					.addOnConnectionFailedListener(this)
+					.build();
+			
+			mGoogleApiClient.connect();
+		}
 		
 	}
 
@@ -63,5 +72,24 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 			startActivity(i);
 			finish();
 		}
+	}
+	
+	protected boolean isConnected() {
+		ConnectivityManager conectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = conectivityManager.getActiveNetworkInfo();
+		return (networkInfo != null && networkInfo.isConnected());
+	}
+				
+	protected void displayUnrecoverableErrorMessage(int errorMessageId) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+		dialogBuilder.setMessage(errorMessageId);
+		dialogBuilder.setCancelable(false);
+		dialogBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {		
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finish();
+			}
+		});
+		dialogBuilder.show();
 	}
 }
