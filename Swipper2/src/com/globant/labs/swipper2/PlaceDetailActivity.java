@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Photo;
 import com.globant.labs.swipper2.models.PlaceDetails;
 import com.globant.labs.swipper2.repositories.PlaceDetailsRepository;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
@@ -149,24 +151,42 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		Resources r = getResources();
 		int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
+		int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
 		
 		LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(
-				200, 
-				200);
+				size, 
+				size);
 		
 		imageLayoutParams.setMargins(0, 0, rightMargin, 0);
 		
 		for(Photo photo: photos) {
-			ImageView imageView = new ImageView(this);
+			final ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleLarge);
+			progressBar.setLayoutParams(imageLayoutParams);
+			mPhotosLayout.addView(progressBar);
+			
+			final ImageView imageView = new ImageView(this);
 			imageView.setLayoutParams(imageLayoutParams);
+			imageView.setVisibility(View.GONE);
 			mPhotosLayout.addView(imageView);
 			
 			Picasso.with(this)
 			  .load(getPhotoURL(photo.getPhoto_reference()))
-			  .placeholder(android.R.drawable.progress_indeterminate_horizontal)
-			  .resize(200, 200)
+			  .resize(size, size)
 			  .centerCrop()
-			  .into(imageView);			
+			  .into(imageView, new Callback() {
+
+				@Override
+				public void onError() {
+					progressBar.setVisibility(View.GONE);
+				}
+
+				@Override
+				public void onSuccess() {
+					progressBar.setVisibility(View.GONE);
+					imageView.setVisibility(View.VISIBLE);
+				}
+				  
+			  });			
 		}
 		
 		ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this);
