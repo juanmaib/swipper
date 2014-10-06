@@ -9,6 +9,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,7 +21,7 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 		GoogleApiClient.OnConnectionFailedListener {
 
 	public static final String LAST_KNOWN_LOCATION_EXTRA = "lastKnownLocation";
-	protected static final int STEPS = 1;
+	protected static final int STEPS = 2;
 	
 	protected GoogleApiClient mGoogleApiClient;
 	protected Location mLastKnownLocation;
@@ -36,6 +37,14 @@ public class SplashScreen extends Activity implements GoogleApiClient.Connection
 		if(!isConnected()) {
 			displayUnrecoverableErrorMessage(R.string.network_error);
 		}else{
+			final Handler handler = new Handler();
+		    handler.postDelayed(new Runnable() {
+		      @Override
+		      public void run() {
+		        stepAndTransition();
+		      }
+		    }, 1500);			
+			
 			// Set up the google api client (used later to get the last location)
 			mGoogleApiClient = new GoogleApiClient.Builder(this)
 					.addApi(LocationServices.API)
