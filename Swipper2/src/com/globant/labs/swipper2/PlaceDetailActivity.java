@@ -1,6 +1,7 @@
 package com.globant.labs.swipper2;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import android.content.Intent;
@@ -48,6 +49,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	
 	protected RelativeLayout mProgressBarLayout;
 	protected LinearLayout mDescriptionLayout;
+	protected LinearLayout mScheduleLayout;
 	protected LinearLayout mPhotosSection;
 	protected LinearLayout mPhotosLayout;
 	protected ListView mReviewsList;
@@ -90,6 +92,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
+		mScheduleLayout = (LinearLayout) findViewById(R.id.scheduleLayout);
 		mPhotosSection = (LinearLayout) findViewById(R.id.photosSection);
 		mPhotosLayout = (LinearLayout) findViewById(R.id.photosLayout);
 		
@@ -205,6 +208,14 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}else{
 			TextView emptyText = (TextView)findViewById(android.R.id.empty);
 			mReviewsList.setEmptyView(emptyText);		
+		}
+		
+		if(placeDetails.getSchedules() != null) {
+			Calendar calendar = Calendar.getInstance();
+			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1; 
+			mScheduleTextView.setText(placeDetails.getSchedules().get(dayOfWeek));
+		}else{
+			mScheduleLayout.setVisibility(View.GONE);
 		}
 		
 		mProgressBarLayout.setVisibility(View.GONE);
