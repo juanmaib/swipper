@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
-
 
 /**
  * @author bruno.demartino
@@ -15,6 +13,7 @@ public class PlaceDetails extends Place {
 
 	private List<Photo> photos;
 	private ArrayList<GoogleReview> reviews;
+	private ArrayList<String> schedules;
 
 	public List<Photo> getPhotos() {
 		return photos;
@@ -51,8 +50,14 @@ public class PlaceDetails extends Place {
 			
 			this.reviews.add(r);
 		}
-		
-		Log.i("SWIPPER", "setReviews end");
 	}
-	
+
+	public ArrayList<String> getSchedules() {
+		return schedules;
+	}
+
+	public void setOpening_hours(ArrayList<String> schedules) {
+		this.schedules = schedules;
+	}
+
 }
