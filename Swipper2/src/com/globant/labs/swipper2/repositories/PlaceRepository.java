@@ -30,6 +30,20 @@ public class PlaceRepository extends ModelRepository<Place> {
                 new JsonArrayParser<Place>(this, callback));
                 
     }
+	
+	public void storedBy(LatLng here, int page, ListCallback<Place> callback) {
+		
+		final Map<String, String> parameters = ImmutableMap.of(
+                "here", GeoUtils.latLngToJson(here).toString(),
+                "page", String.valueOf(page)
+                );
+		
+		invokeStaticMethod(
+                "storedBy",
+                parameters,
+                new JsonArrayParser<Place>(this, callback));
+                
+    }
 
 	@Override
 	public RestContract createContract() {
@@ -39,6 +53,11 @@ public class PlaceRepository extends ModelRepository<Place> {
 				new RestContractItem(
 						"/" + getNameForRestUrl() + "/nearBy", "POST"), 
 						getClassName() + ".nearBy");
+		
+		contract.addItem(
+				new RestContractItem(
+						"/" + getNameForRestUrl() + "/storedBy", "GET"), 
+						getClassName() + ".storedBy");
 		
 		return contract;
 	}

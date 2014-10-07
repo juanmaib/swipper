@@ -24,7 +24,7 @@ import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.SwipperInfoWindowAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
-import com.globant.labs.swipper2.provider.PlacesProvider;
+import com.globant.labs.swipper2.provider.MapPlacesProvider;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,7 +43,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 
 	protected GoogleMap mMap;
 	protected Activity mActivity;
-	protected PlacesProvider mPlacesProvider;
+	protected MapPlacesProvider mPlacesProvider;
 	
 	protected boolean mFarZoom;
 	protected LatLng mLastNorthWest;

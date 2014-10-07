@@ -34,12 +34,12 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
-import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
 import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.provider.MapPlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider;
-import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
+import com.globant.labs.swipper2.provider.AbstractPlacesProvider.PlacesCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements
 	// OnConnectionFailedListener, LocationListener,
 	// OnMyLocationButtonClickListener, ConnectionCallbacks
 
-	protected PlacesProvider mPlacesProvider;
+	protected MapPlacesProvider mPlacesProvider;
 	
 	protected boolean mFarZoom;
 	protected LatLng mLastNorthWest;
@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		mDisplayedWalkthrough = sp.getBoolean(PREF_WALKTHROUGH_DISPLAYED, false);
 		
-		mPlacesProvider = new PlacesProvider(this);
+		mPlacesProvider = new MapPlacesProvider(this);
 		
 		mFarZoom = false;
 		
@@ -151,7 +151,7 @@ public class MainActivity extends ActionBarActivity implements
 				
 				@Override
 				public void placesUpdated(List<Place> places) {
-					((PlacesAdapter) mListFragment.getListAdapter()).setDataChanged();
+					//((PlacesAdapter) mListFragment.getListAdapter()).setDataChanged();
 					mMapFragment.displayPlaces(places, mCurrentLocation);
 				}
 				
@@ -191,7 +191,7 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.getView().getViewTreeObserver().addOnGlobalLayoutListener(this);
 	}
 			
-	public PlacesProvider getPlacesProvider() {
+	public MapPlacesProvider getPlacesProvider() {
 		return mPlacesProvider;
 	}
 	

@@ -1,20 +1,27 @@
 package com.globant.labs.swipper2.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.RelativeLayout;
+import ca.weixiao.widget.InfiniteScrollListView;
 
 import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 
-public class PlacesListFragment extends ListFragment implements OnItemClickListener {
+public class PlacesListFragment extends Fragment implements OnItemClickListener {
 
+	protected InfiniteScrollListView mListView;
+	
 	public PlacesListFragment() {
 		super();
 	}
@@ -32,10 +39,21 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		getListView().setDivider(getActivity().getResources().getDrawable(R.drawable.divider));	
-		getListView().setOnItemClickListener(this);
+	public void onActivityCreated(Bundle savedInstanceState) {	
 		super.onActivityCreated(savedInstanceState);
+	}
+	
+	@Override
+	@SuppressLint("InflateParams")
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_places_list,
+				container, false);
+		
+		mListView = (InfiniteScrollListView) layout.findViewById(R.id.listView);
+		mListView.setDivider(getActivity().getResources().getDrawable(R.drawable.divider));	
+		mListView.setOnItemClickListener(this);
+
+		return layout;
 	}
 
 	@Override
@@ -45,7 +63,7 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
 		intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
 		intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
-		intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, ((PlacesAdapter) getListAdapter()).getProvider().getDistanceTo(p));
+		intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA, ((PlacesAdapter) mListView.getAdapter()).getProvider().getDistanceTo(p));
 		startActivity(intent);
 	}
 	

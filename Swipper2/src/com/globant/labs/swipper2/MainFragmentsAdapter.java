@@ -4,10 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
-import com.globant.labs.swipper2.provider.PlacesProvider;
+import com.globant.labs.swipper2.provider.MapPlacesProvider;
 
 public class MainFragmentsAdapter extends FragmentPagerAdapter {
 
@@ -18,12 +17,12 @@ public class MainFragmentsAdapter extends FragmentPagerAdapter {
 	protected PlacesMapFragment mMapFragment;
 	protected PlacesListFragment mListFragment;
 	
-	public MainFragmentsAdapter(FragmentManager fm, PlacesProvider placesProvider, MainActivity activity) {
+	public MainFragmentsAdapter(FragmentManager fm, MapPlacesProvider placesProvider, MainActivity activity) {
 		super(fm);
 		
 		mMapFragment = new PlacesMapFragment();
 		mListFragment = new PlacesListFragment();
-		mListFragment.setListAdapter(new PlacesAdapter(placesProvider, activity));
+		//mListFragment.setListAdapter(new PlacesAdapter(placesProvider, activity));
 	}
 
 	@Override

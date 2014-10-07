@@ -2,15 +2,14 @@ package com.globant.labs.swipper2.fragments;
 
 import java.text.DecimalFormat;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import ca.weixiao.widget.InfiniteScrollListAdapter;
 
 import com.globant.labs.swipper2.MainActivity;
 import com.globant.labs.swipper2.R;
@@ -18,13 +17,19 @@ import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 
-public class PlacesAdapter extends BaseAdapter {
+public class PlacesAdapter extends InfiniteScrollListAdapter {
 
 	protected MainActivity mActivity;
 	protected PlacesProvider mProvider;
-	protected LayoutInflater mInflater;
+	protected LayoutInflater mInflater;	
 	protected OnClickListener mClickListener;
-
+	protected NewPageListener newPageListener;
+	
+	public static abstract class NewPageListener {
+		public abstract void onScrollNext();
+		public abstract View getInfiniteScrollListView(int position, View convertView, ViewGroup parent);
+	}
+	
 	public PlacesAdapter(PlacesProvider provider, MainActivity activity) {
 		mActivity = activity;
 		mProvider = provider;
@@ -56,10 +61,31 @@ public class PlacesAdapter extends BaseAdapter {
 		return position;
 	}
 
+	protected static class ViewHolder {
+		public ImageView icon;
+		public TextView placeName;
+		public TextView placeDistance;
+		public TextView placeAddress;
+		public TextView placeCity;
+		public ImageButton navButton;
+	}
+	
+	public void setDataChanged() {
+		notifyDataSetChanged();
+	}
+	
+	public PlacesProvider getProvider() {
+		return mProvider;
+	}
+
 	@Override
-	@SuppressLint("InflateParams")
-	public View getView(int position, View convertView, ViewGroup parent) {
+	protected void onScrollNext() {
+		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public View getInfiniteScrollListView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if(convertView == null) {
 			convertView = mInflater.inflate(R.layout.place_item_rel, null);
@@ -93,22 +119,5 @@ public class PlacesAdapter extends BaseAdapter {
 		holder.navButton.setTag(position);
 		
 		return convertView;
-	}
-
-	protected static class ViewHolder {
-		public ImageView icon;
-		public TextView placeName;
-		public TextView placeDistance;
-		public TextView placeAddress;
-		public TextView placeCity;
-		public ImageButton navButton;
-	}
-	
-	public void setDataChanged() {
-		notifyDataSetChanged();
-	}
-	
-	public PlacesProvider getProvider() {
-		return mProvider;
 	}
 }
