@@ -1,15 +1,21 @@
 package com.globant.labs.swipper2;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -255,35 +261,89 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		int id = item.getItemId();
 		
 		if (id == R.id.action_share) {
-			
-			String placeString = mPlace.getName()
-					+ "\n" + mPlace.getAddress()
-					+ "\n" + mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
-					+ "\n" + mPlace.getPhone();
-			
-			Intent sendIntent = new Intent();
-			sendIntent.setAction(Intent.ACTION_SEND);
-			sendIntent.putExtra(Intent.EXTRA_TEXT, placeString);
-			sendIntent.setType("text/plain");
-			startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.action_share)));
-			
+			shareAction();
 			return true;
 		}else if(id == R.id.action_report) {
-			
-			String placeString = mPlace.getName()
-					+ "\n" + mPlace.getAddress()
-					+ "\n" + mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
-					+ "\n" + mPlace.getPhone();
-			
-			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-		            "mailto","bruno.demartino@globant.com", null));
-			emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
-			emailIntent.putExtra(Intent.EXTRA_TEXT, placeString+"\n\nWhat's the problem?\n...");
-			startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));
-			
+			reportAction();	
 			return true;
 		}
 		
 		return super.onOptionsItemSelected(item);
+	}
+	
+	protected void shareAction() {
+		StringBuilder stringBuilder = new StringBuilder()
+			.append(mPlace.getName())
+			.append("\n").append(mPlace.getAddress())
+			.append("\n").append(mPlace.getCity())
+			.append(", ").append(mPlace.getState())
+			.append(", ").append(mPlace.getCountry())
+			.append("\n").append(mPlace.getPhone());
+		
+		if(mPlace.getUrl() != null) {
+			stringBuilder.append("\n").append(mPlace.getUrl());
+		}
+					
+		Intent sendIntent = new Intent(Intent.ACTION_SEND);
+		sendIntent.setType("text/plain");
+		sendIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+				
+		final PackageManager packageManager = getPackageManager();
+		
+		List<Intent> targetedShareIntents = new ArrayList<Intent>();
+		List<ResolveInfo> resInfo = packageManager.queryIntentActivities(sendIntent, 0);
+
+		Collections.sort(resInfo, new Comparator<ResolveInfo>() {
+	        @Override
+	        public int compare(ResolveInfo first, ResolveInfo second) {
+	            String firstName = first.loadLabel(packageManager).toString();
+	            String secondName = second.loadLabel(packageManager).toString();
+	            return firstName.compareToIgnoreCase(secondName);
+	        }
+	    });
+		
+		for (ResolveInfo resolveInfo : resInfo) {
+			String packageName = resolveInfo.activityInfo.packageName;
+			String className = resolveInfo.activityInfo.name;
+			
+			if (mPlace.getUrl() != null || !packageName.equals("com.facebook.katana")) {
+				Intent targetedShareIntent = new Intent(Intent.ACTION_SEND);
+				targetedShareIntent.setType("text/plain");
+				targetedShareIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+				targetedShareIntent.setPackage(packageName);
+				targetedShareIntent.setClassName(packageName, className);
+						
+				targetedShareIntents.add(targetedShareIntent);
+			}
+		}
+		
+		Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), 
+				getResources().getString(R.string.action_share));
+		
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+		
+		startActivity(chooserIntent);
+	}
+	
+	protected void reportAction() {
+		StringBuilder stringBuilder = new StringBuilder()
+			.append(mPlace.getName())
+			.append("\n").append(mPlace.getAddress())
+			.append("\n").append(mPlace.getCity())
+			.append(", ").append(mPlace.getState())
+			.append(", ").append(mPlace.getCountry())
+			.append("\n").append(mPlace.getPhone());
+	
+		if(mPlace.getUrl() != null) {
+			stringBuilder.append("\n").append(mPlace.getUrl());
+		}
+		
+		stringBuilder.append("\n\n").append("What's the problem?\n...");
+		
+		Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+	            "mailto","candy.tellez@globant.com", null));
+		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
+		emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+		startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));
 	}
 }
