@@ -16,14 +16,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -65,6 +66,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected TextView mPhoneTextView;
 	protected TextView mScheduleTextView;
 	protected ImageView mNavImageView;
+	protected ImageButton mNavigateButton;
+	protected ImageButton mShareButton;
+	protected ImageButton mReportButton;
 	
 	protected PlaceDetails mPlace;
 	
@@ -87,7 +91,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mCategoryStringId = CategoryMapper.getCategoryText(placeCategory);
 		
 		setTitle(placeName);
-		getSupportActionBar().setIcon(mCategoryMarkerId);
 		
 		mAddressTextView = (TextView) findViewById(R.id.addressText);
 		mCityTextView = (TextView) findViewById(R.id.cityText);
@@ -104,6 +107,31 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		mReviewsList = (ListView) findViewById(R.id.reviewsList);
 		
+		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
+		mShareButton = (ImageButton) findViewById(R.id.shareButton);
+		mReportButton = (ImageButton) findViewById(R.id.reportButton);
+		
+		mNavigateButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				navigateAction();
+			}
+		});
+		
+		mShareButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				shareAction();
+			}
+		});
+		
+		mReportButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reportAction();
+			}
+		});
+		 
 		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
 		PlaceDetailsRepository placeDetailsRepo = restAdapter.createRepository(PlaceDetailsRepository.class);
 		placeDetailsRepo.details(placeId, this);
@@ -115,9 +143,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.details, menu);
-	    return super.onCreateOptionsMenu(menu);
+		MenuItem itemIcon = menu.add(mCategoryStringId);
+		MenuItemCompat.setShowAsAction(itemIcon, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
+		itemIcon.setIcon(mCategoryMarkerId);
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
@@ -157,7 +186,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mNavImageView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				displayNavigation();
+				navigateAction();
 			}
 		});		
 		
@@ -245,7 +274,12 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		finish();
 	}
 
-	public void displayNavigation() {
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return super.onOptionsItemSelected(item);
+	}
+	
+	public void navigateAction() {
 		String url = "http://maps.google.com/maps?"
 						+ "daddr="
 						+ mPlace.getLocation().latitude
@@ -254,21 +288,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,  Uri.parse(url));
 		startActivity(intent);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		
-		if (id == R.id.action_share) {
-			shareAction();
-			return true;
-		}else if(id == R.id.action_report) {
-			reportAction();	
-			return true;
-		}
-		
-		return super.onOptionsItemSelected(item);
 	}
 	
 	protected void shareAction() {
