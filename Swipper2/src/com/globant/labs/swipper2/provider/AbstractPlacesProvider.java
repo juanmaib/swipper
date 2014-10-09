@@ -25,6 +25,7 @@ public abstract class AbstractPlacesProvider implements ListCallback<Place> {
 	protected List<Place> mFilteredPlaces;
 	protected Set<String> mFilters;
 	protected LatLng mCurrentLocation;
+	protected int mLoadCount;
 	
 	public AbstractPlacesProvider(Context context) {
 		RestAdapter restAdapter = ((SwipperApp) context.getApplicationContext()).getRestAdapter();
@@ -32,6 +33,7 @@ public abstract class AbstractPlacesProvider implements ListCallback<Place> {
 		mPlaces = ArrayListMultimap.create();
 		mFilteredPlaces = new ArrayList<Place>();
 		mFilters = new HashSet<String>();
+		mLoadCount = 0;
 	}
 	
 	public void setPlacesCallback(PlacesCallback callback) {
@@ -70,7 +72,9 @@ public abstract class AbstractPlacesProvider implements ListCallback<Place> {
 	@Override
 	public void onSuccess(List<Place> places) {
 		for(Place p: places) {
+			p.setLoadOrder(mLoadCount);
 			mPlaces.put(p.getCategory(), p);
+			mLoadCount++;
 		}		
 		
 		refreshFilteredPlaces();

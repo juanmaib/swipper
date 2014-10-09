@@ -1,7 +1,10 @@
 package com.globant.labs.swipper2.fragments;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,22 +18,17 @@ import com.globant.labs.swipper2.MainActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
-import com.globant.labs.swipper2.provider.PlacesProvider;
+import com.globant.labs.swipper2.provider.AbstractPlacesProvider.PlacesCallback;
+import com.globant.labs.swipper2.provider.ListPlacesProvider;
 
-public class PlacesAdapter extends InfiniteScrollListAdapter {
+public class PlacesAdapter extends InfiniteScrollListAdapter implements PlacesCallback {
 
 	protected MainActivity mActivity;
-	protected PlacesProvider mProvider;
+	protected ListPlacesProvider mProvider;
 	protected LayoutInflater mInflater;	
 	protected OnClickListener mClickListener;
-	protected NewPageListener newPageListener;
-	
-	public static abstract class NewPageListener {
-		public abstract void onScrollNext();
-		public abstract View getInfiniteScrollListView(int position, View convertView, ViewGroup parent);
-	}
-	
-	public PlacesAdapter(PlacesProvider provider, MainActivity activity) {
+		
+	public PlacesAdapter(ListPlacesProvider provider, MainActivity activity) {
 		mActivity = activity;
 		mProvider = provider;
 		mInflater = LayoutInflater.from(activity);
@@ -43,6 +41,9 @@ public class PlacesAdapter extends InfiniteScrollListAdapter {
 				mActivity.displayNavigation(p);
 			}
 		};
+		
+		mProvider.setPlacesCallback(this);
+		unlock();
 		
 	}
 	
@@ -74,17 +75,18 @@ public class PlacesAdapter extends InfiniteScrollListAdapter {
 		notifyDataSetChanged();
 	}
 	
-	public PlacesProvider getProvider() {
+	public ListPlacesProvider getProvider() {
 		return mProvider;
 	}
 
 	@Override
 	protected void onScrollNext() {
-		// TODO Auto-generated method stub
-		
+		lock();
+		mProvider.loadMore();
 	}
 
 	@Override
+	@SuppressLint("InflateParams")
 	public View getInfiniteScrollListView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if(convertView == null) {
@@ -119,5 +121,20 @@ public class PlacesAdapter extends InfiniteScrollListAdapter {
 		holder.navButton.setTag(position);
 		
 		return convertView;
+	}
+
+	@Override
+	public void placesUpdated(List<Place> places) {
+		Log.i("SWIPPER", "placesUpdated");
+		Log.i("SWIPPER", "placesLength: "+places.size());
+		notifyDataSetChanged();
+		notifyHasMore();
+		unlock();
+	}
+
+	@Override
+	public void placesError(Throwable t) {
+		// TODO Auto-generated method stub
+		
 	}
 }

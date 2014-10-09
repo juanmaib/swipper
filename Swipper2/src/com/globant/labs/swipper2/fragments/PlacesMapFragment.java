@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +25,7 @@ import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.SwipperInfoWindowAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.provider.AbstractPlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.provider.MapPlacesProvider;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,7 +41,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class PlacesMapFragment extends SupportMapFragment {
+public class PlacesMapFragment extends SupportMapFragment implements PlacesCallback {
 
 	protected GoogleMap mMap;
 	protected Activity mActivity;
@@ -86,7 +88,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		mPlacesProvider = ((MainActivity) getActivity()).getPlacesProvider();
+		mPlacesProvider = ((MainActivity) getActivity()).getMapPlacesProvider();
 		
 		mMap.setInfoWindowAdapter(new SwipperInfoWindowAdapter(mActivity));
 		
@@ -130,6 +132,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 				startActivity(intent);
 			}
 		});
+		
+		mPlacesProvider.setPlacesCallback(this);
 		
 		if(mCurrentLocation != null) {
 			displayCurrentLocation();
@@ -206,6 +210,17 @@ public class PlacesMapFragment extends SupportMapFragment {
 				it.remove();
 			}
 		}
+	}
+	
+	@Override
+	public void placesUpdated(List<Place> places) {
+		displayPlaces(places, mCurrentLocation);
+	}
+	
+	@Override
+	public void placesError(Throwable t) {
+		Log.i("SWIPPER", "Places error");
+		t.printStackTrace();
 	}
 	
 	@Override

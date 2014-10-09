@@ -2,6 +2,8 @@ package com.globant.labs.swipper2.repositories;
 
 import java.util.Map;
 
+import android.util.Log;
+
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,6 +39,10 @@ public class PlaceRepository extends ModelRepository<Place> {
                 "here", GeoUtils.latLngToJson(here).toString(),
                 "page", String.valueOf(page)
                 );
+		
+		Log.i("SWIPPER", "storedBy");
+		Log.i("SWIPPER", parameters.get("here"));
+		Log.i("SWIPPER", parameters.get("page"));
 		
 		invokeStaticMethod(
                 "storedBy",

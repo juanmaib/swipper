@@ -25,6 +25,7 @@ public class Place extends Model {
 	private String City;
 	private String State;
 	private String Country;
+	private int LoadOrder;
 	
 	public String getId() {
 		return id;
@@ -96,6 +97,14 @@ public class Place extends Model {
 
 	public String getCountry() {
 		return Country;
+	}
+	
+	public void setLoadOrder(int loadOrder) {
+		LoadOrder = loadOrder;
+	}
+	
+	public int getLoadOrder() {
+		return LoadOrder;
 	}
 
 	public void setCountry(String country) {

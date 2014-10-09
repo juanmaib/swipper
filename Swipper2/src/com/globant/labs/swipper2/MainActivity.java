@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,31 +35,25 @@ import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
 import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.provider.ListPlacesProvider;
 import com.globant.labs.swipper2.provider.MapPlacesProvider;
-import com.globant.labs.swipper2.provider.PlacesProvider;
-import com.globant.labs.swipper2.provider.AbstractPlacesProvider.PlacesCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends ActionBarActivity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener, ViewTreeObserver.OnGlobalLayoutListener {
+		NavigationDrawerFragment.NavigationDrawerCallbacks, ViewTreeObserver.OnGlobalLayoutListener {
 
 	private static final String PREF_WALKTHROUGH_DISPLAYED = "walkthrough_displayed";
 	
-	// implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-	// OnConnectionFailedListener, LocationListener,
-	// OnMyLocationButtonClickListener, ConnectionCallbacks
-
-	protected MapPlacesProvider mPlacesProvider;
+	protected MapPlacesProvider mMapPlacesProvider;
+	protected ListPlacesProvider mListPlacesProvider;
 	
 	protected boolean mFarZoom;
 	protected LatLng mLastNorthWest;
 	protected LatLng mLastSouthEast;
 	
 	protected Location mCurrentLocation;
-	
-	//protected LocationManager mLocationManager;
 	
 	protected ViewPager mViewPager;
 	protected MainFragmentsAdapter mFragmentsAdapter;
@@ -77,12 +69,6 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
-	/**
-	 * Used to store the last screen title. For use in
-	 * {@link #restoreActionBar()}.
-	 */
-	//private CharSequence mTitle;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,19 +77,18 @@ public class MainActivity extends ActionBarActivity implements
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		mDisplayedWalkthrough = sp.getBoolean(PREF_WALKTHROUGH_DISPLAYED, false);
 		
-		mPlacesProvider = new MapPlacesProvider(this);
+		mMapPlacesProvider = new MapPlacesProvider(this);
+		mListPlacesProvider = new ListPlacesProvider(this);
 		
 		mFarZoom = false;
 		
 		mViewPager = (ViewPager) findViewById(R.id.viewPager);
-		mFragmentsAdapter = new MainFragmentsAdapter(getSupportFragmentManager(), mPlacesProvider, this);
+		mFragmentsAdapter = new MainFragmentsAdapter(getSupportFragmentManager(), mMapPlacesProvider, this);
 		mViewPager.setAdapter(mFragmentsAdapter);
 		mViewPager.setCurrentItem(MainFragmentsAdapter.MAP_FRAGMENT);
 		// Preload the "other" "page"
 		mViewPager.setOffscreenPageLimit(1);
 		
-		//mTitle = getTitle();
-
 		// Getting Google Play availability status
 		int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 
@@ -115,9 +100,6 @@ public class MainActivity extends ActionBarActivity implements
 			dialog.show();
 		} else { // Google Play Services are available
 
-			// Getting reference to the SupportMapFragment of activity_main.xml
-			//mMapFragment = (PlacesMapFragment) getSupportFragmentManager()
-			//		.findFragmentById(R.id.map);
 			mMapFragment = mFragmentsAdapter.getMapFragment();
 			mListFragment = mFragmentsAdapter.getListFragment();
 									
@@ -127,49 +109,10 @@ public class MainActivity extends ActionBarActivity implements
 			    mCurrentLocation = (Location) extras.get(SplashScreen.LAST_KNOWN_LOCATION_EXTRA);
 			}
 					
-			//Center the map around last known position (or 0,0 if we couldn't obtain the user location)
-			//mMapFragment.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownPosition[0], lastKnownPosition[1]), 15));
-
-			// Getting LocationManager object from System Service
-			// LOCATION_SERVICE
-			//mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-			// Creating a criteria object to retrieve provider
-			//Criteria criteria = new Criteria();
-
-			// Getting the name of the best provider
-			//String provider = mLocationManager.getBestProvider(criteria, true);
-
-			// Getting Current Location
-			//mCurrentLocation = mLocationManager.getLastKnownLocation(provider);
-
 			if (mCurrentLocation != null) {
 				onLocationChanged(mCurrentLocation);
-			}
-			
-			mPlacesProvider.setPlacesCallback(new PlacesCallback() {
-				
-				@Override
-				public void placesUpdated(List<Place> places) {
-					//((PlacesAdapter) mListFragment.getListAdapter()).setDataChanged();
-					mMapFragment.displayPlaces(places, mCurrentLocation);
-				}
-				
-				@Override
-				public void placesError(Throwable t) {
-					Log.i("SWIPPER", "Places error");
-					t.printStackTrace();
-				}
-			});	
-			
-			
-			
-			
-			//showCoachMarks();
-
-			//mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
-			//locationManager.requestSingleUpdate(provider, this, null);
-			
+				mListPlacesProvider.setCurrentLocation(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+			}						
 		}
 		
 		// Get the drawer
@@ -191,8 +134,12 @@ public class MainActivity extends ActionBarActivity implements
 		mNavigationDrawerFragment.getView().getViewTreeObserver().addOnGlobalLayoutListener(this);
 	}
 			
-	public MapPlacesProvider getPlacesProvider() {
-		return mPlacesProvider;
+	public MapPlacesProvider getMapPlacesProvider() {
+		return mMapPlacesProvider;
+	}
+	
+	public ListPlacesProvider getListMapPlacesProvider() {
+		return mListPlacesProvider;
 	}
 	
 	public Context getContext() {
@@ -227,8 +174,7 @@ public class MainActivity extends ActionBarActivity implements
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		
-		
+	
 		if (id == R.id.action_list) {
 			mViewPager.setCurrentItem(MainFragmentsAdapter.LIST_FRAGMENT);			
 			return true;
@@ -251,8 +197,6 @@ public class MainActivity extends ActionBarActivity implements
 		startActivity(intent);
 	}
 	
-	// Implementation of {@link LocationListener}.
-	@Override
 	public void onLocationChanged(Location location) {
 		mCurrentLocation = location;
 		//mLocationManager.removeUpdates(this);
@@ -261,23 +205,9 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void onSelectionApplied(List<String> ids) {
-		mPlacesProvider.setFilters(ids);
+		mMapPlacesProvider.setFilters(ids);
+		mListPlacesProvider.setFilters(ids);
 	}
 	
 	public void showCoachMarks(){
@@ -350,6 +280,5 @@ public class MainActivity extends ActionBarActivity implements
 			showCoachMarks();
 		}
 	}
-		
 
 }
