@@ -234,7 +234,7 @@
              android:layout_height="match_parent"
              android:layout_weight="1"
              android:background="@drawable/bar_button_background"
-             android:src="@drawable/nav_button"/>
+             android:src="@drawable/bar_nav_button"/>
          
          <View
              android:layout_width="1dp"
@@ -247,7 +247,7 @@
              android:layout_height="match_parent"
              android:layout_weight="1"
              android:background="@drawable/bar_button_background"
-             android:src="@drawable/nav_button"/>
+             android:src="@drawable/bar_share_button"/>
          
          <View
              android:layout_width="1dp"
@@ -260,7 +260,7 @@
              android:layout_height="match_parent"
              android:layout_weight="1"
              android:background="@drawable/bar_button_background"
-             android:src="@drawable/nav_button"/>
+             android:src="@drawable/bar_report_button"/>
          
 	</LinearLayout>
          
