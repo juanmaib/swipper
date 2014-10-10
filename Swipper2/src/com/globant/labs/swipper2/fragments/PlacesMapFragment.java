@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +19,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.globant.labs.swipper2.MainActivity;
 import com.globant.labs.swipper2.PlaceDetailActivity;
@@ -54,6 +60,14 @@ public class PlacesMapFragment extends SupportMapFragment {
 	protected Map<String, Marker> mMarkers;
 	protected Map<String, Place> mIdsMap;
 	
+	protected TextView mStatusTextView;
+	protected String mStatusText;
+	
+	protected String mStatusLoadingString;
+	protected String mStatusDoneString;
+	protected String mStatusNoPlacesString;
+	protected String mStatusZoomInString;
+	
 	public PlacesMapFragment() {
 		super();
 	}
@@ -64,6 +78,13 @@ public class PlacesMapFragment extends SupportMapFragment {
         setHasOptionsMenu(true);
         mMarkers = new HashMap<String, Marker>();
         mIdsMap = new HashMap<String, Place>();
+        mStatusText = "";
+        
+        Resources resources = getResources();
+        mStatusLoadingString = resources.getString(R.string.status_loading);
+        mStatusDoneString = resources.getString(R.string.status_done);
+        mStatusNoPlacesString = resources.getString(R.string.status_no_places);
+        mStatusZoomInString = resources.getString(R.string.status_zoom_in);
     }
 	
 	@Override
@@ -73,13 +94,24 @@ public class PlacesMapFragment extends SupportMapFragment {
     }
 	
 	@Override
+	@SuppressLint("InflateParams")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = super.onCreateView(inflater, container, savedInstanceState);
+		RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.status_bar, null);
 		
+		FrameLayout mapFrame = (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
+		
+		view.addView(mapFrame);
+		LayoutParams layoutParams = new LayoutParams(mapFrame.getLayoutParams());
+		layoutParams.addRule(RelativeLayout.ABOVE, R.id.statusText);
+		mapFrame.setLayoutParams(layoutParams);
+				
 		mMap = getMap();
 		mMap.setMyLocationEnabled(true);
 		
-		return v;
+		mStatusTextView = (TextView) view.findViewById(R.id.statusText);
+		mStatusTextView.setText(mStatusText);
+		
+		return view;
 	}
 	
 	@Override
@@ -95,15 +127,19 @@ public class PlacesMapFragment extends SupportMapFragment {
 			@Override
 			public void onCameraChange(CameraPosition camPosition) {					
 				if(camPosition.zoom > 10) {
+					
+					setStatusText(mStatusLoadingString);
+					
 					LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 				
-					if(mPlacesProvider.updateLocation(bounds) && mFarZoom) {	
+					if(mPlacesProvider.updateLocation(bounds)) {	
 						displayPlaces(mPlacesProvider.getFilteredPlaces(), mCurrentLocation);
 					}
 					
 					mFarZoom = false;
 					
 				}else{
+					setStatusText(mStatusZoomInString);
 					mFarZoom = true;
 					clear();
 				}
@@ -172,10 +208,9 @@ public class PlacesMapFragment extends SupportMapFragment {
 	}
 	
 	public void displayPlaces(List<Place> places, Location currentLocation) {
-		
 		LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 		List<String> keeps = new ArrayList<String>();
-	
+		
 		LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		for(Place p: places) {
@@ -206,8 +241,22 @@ public class PlacesMapFragment extends SupportMapFragment {
 				it.remove();
 			}
 		}
+		
+		if(mMarkers.size() == 0) {
+			setStatusText(mStatusNoPlacesString);
+		}else{
+			setStatusText(mStatusDoneString);
+		}
+
 	}
-	
+
+	protected void setStatusText(String text) {
+		mStatusText = text;
+		if(mStatusTextView != null) {
+			mStatusTextView.setText(mStatusText);
+		}
+	}
+		
 	@Override
 	public void onDestroyView() {
 		mMap = null;
