@@ -65,7 +65,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected TextView mDistanceTextView;
 	protected TextView mPhoneTextView;
 	protected TextView mScheduleTextView;
-	protected ImageView mNavImageView;
 	protected ImageButton mNavigateButton;
 	protected ImageButton mShareButton;
 	protected ImageButton mReportButton;
@@ -97,7 +96,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mDistanceTextView = (TextView) findViewById(R.id.distanceText);
 		mPhoneTextView = (TextView) findViewById(R.id.phoneText);
 		mScheduleTextView = (TextView) findViewById(R.id.scheduleText);
-		mNavImageView = (ImageView) findViewById(R.id.navImage);
 		
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
@@ -156,7 +154,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	}
 	
 	private void changeSizeTitle() {
-	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_regular.ttf");
+	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_light.ttf");
 	    int actionBarTitleId;
 	    
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -180,16 +178,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 				+ placeDetails.getState()
 				+ ", "
 				+ placeDetails.getCountry());
+		
 		mPhoneTextView.setText(placeDetails.getPhone());
-		//mScheduleTextView.setText();
-		
-		mNavImageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				navigateAction();
-			}
-		});		
-		
+				
 		List<Photo> photos = placeDetails.getPhotos();
 		if(photos != null && photos.size() > 0) {
 			
@@ -252,6 +243,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}else{
 			mScheduleLayout.setVisibility(View.GONE);
 		}
+		
+		//mScheduleTextView.setText("10:30 am - 20:30 pm");
 		
 		mProgressBarLayout.setVisibility(View.GONE);
 
