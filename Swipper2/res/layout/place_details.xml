@@ -17,12 +17,14 @@
         <LinearLayout 
             android:layout_width="match_parent"
 	    	android:layout_height="wrap_content"
-	    	android:orientation="horizontal"
-	    	android:gravity="center_vertical" >
+	    	android:gravity="center_vertical"
+	    	android:orientation="horizontal" >
             
             <ImageView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+	            android:layout_gravity="top"
+	            android:layout_marginTop="5dp"
 	            android:layout_marginRight="10dp"
 	            android:src="@drawable/det_ico_location" />
             
@@ -38,7 +40,8 @@
 		            android:layout_height="wrap_content"
 		            app:fontName="roboto_regular.ttf"
 		            android:textColor="@color/real_white"		            
-		            android:textSize="18sp" />
+		            android:textSize="16sp"
+		            android:lineSpacingMultiplier="0.8" />
                 
                 <com.globant.labs.swipper2.widget.SwipperTextView
                     android:id="@+id/cityText" 
@@ -46,7 +49,7 @@
 		            android:layout_height="wrap_content"
 		            app:fontName="roboto_regular.ttf"
 		            android:textColor="@color/real_white"
-		            android:textSize="18sp" />  
+		            android:textSize="16sp" />  
                 
             </LinearLayout>
             
@@ -66,76 +69,51 @@
 	            android:textSize="16sp" />
             
         </LinearLayout>
-        
+                        
         <LinearLayout 
-            android:layout_width="match_parent"
-	    	android:layout_height="wrap_content"
-	    	android:layout_marginTop="10dp"
+	        android:layout_width="match_parent"
+	    	android:layout_height="wrap_content"	
+	    	android:layout_marginTop="6dp"		    	
 	    	android:orientation="horizontal"
 	    	android:gravity="center_vertical" >
-            
-            <LinearLayout 
-            	android:layout_width="0dp"
-	    		android:layout_height="wrap_content"
-	    		android:layout_weight="1"   		
-	    		android:orientation="vertical">
-                
-                <LinearLayout 
-		            android:layout_width="match_parent"
-			    	android:layout_height="wrap_content"			    	
-			    	android:orientation="horizontal"
-			    	android:gravity="center_vertical" >
-			    	
-                    <ImageView
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:layout_marginRight="10dp"
-			            android:src="@drawable/det_ico_phone" />
-			        
-			        <com.globant.labs.swipper2.widget.SwipperTextView 
-			            android:id="@+id/phoneText"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"      
-			            app:fontName="roboto_light.ttf"    
-			            android:textColor="@color/real_white"			            
-			            android:textSize="18sp" />  
-                    
-                </LinearLayout>
-                
-                <LinearLayout 
-                    android:id="@+id/scheduleLayout"
-		            android:layout_width="match_parent"
-			    	android:layout_height="wrap_content"
-			    	android:layout_marginTop="10dp"
-			    	android:orientation="horizontal"
-			    	android:gravity="center_vertical" >
-			    	
-                    <ImageView
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:layout_marginRight="10dp"
-			            android:src="@drawable/det_ico_watch" />
-			        
-			        <com.globant.labs.swipper2.widget.SwipperTextView 
-			            android:id="@+id/scheduleText"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"			            
-			            app:fontName="roboto_light.ttf"
-			            android:textColor="@color/real_white"
-			            android:textSize="18sp" />  
-                    
-                </LinearLayout>
-
-            </LinearLayout>
-            
-            <ImageView
-                android:id="@+id/navImage"
+	    	
+	        <ImageView
 	            android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginRight="10dp"
-	            android:src="@drawable/nav_button" />
-            
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="10dp"
+	            android:src="@drawable/det_ico_phone" />
+	        
+	        <com.globant.labs.swipper2.widget.SwipperTextView 
+	            android:id="@+id/phoneText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"      
+	            app:fontName="roboto_thin.ttf"    
+	            android:textColor="@color/real_white"			            
+	            android:textSize="16sp" />                  
         </LinearLayout>
+             
+       	<LinearLayout 
+	     	android:id="@+id/scheduleLayout"
+	        android:layout_width="match_parent"
+	    	android:layout_height="wrap_content"
+	    	android:layout_marginTop="6dp"
+	    	android:orientation="horizontal"
+	    	android:gravity="center_vertical" >
+    	
+            <ImageView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="10dp"
+	            android:src="@drawable/det_ico_watch" />
+	        
+	        <com.globant.labs.swipper2.widget.SwipperTextView 
+	            android:id="@+id/scheduleText"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"			            
+	            app:fontName="roboto_thin.ttf"
+	            android:textColor="@color/real_white"
+	            android:textSize="16sp" />                 
+    	</LinearLayout>
         
     </LinearLayout>
     
@@ -160,7 +138,7 @@
         <com.globant.labs.swipper2.widget.SwipperTextView 
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        app:fontName="roboto_regular.ttf"
+	        app:fontName="roboto_bold.ttf"
 	        android:textColor="@color/dark_font"		            
 	        android:textSize="18sp"
 	        android:text="@string/reviews"
@@ -177,7 +155,7 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:textColor="@color/light_font"
-        	app:fontName="roboto_italic.ttf"
+        	app:fontName="roboto_light_italic.ttf"
 	        android:text="@string/no_reviews"/>
         
      </LinearLayout>
@@ -223,7 +201,7 @@
      <LinearLayout
         android:id="@+id/bottomBarLayout"
 	    android:layout_width="match_parent"
-	    android:layout_height="78dp"
+	    android:layout_height="68dp"
 	    android:layout_alignParentBottom="true"
 	    android:background="@drawable/bottom_bar_background"
 	    android:orientation="horizontal" >
