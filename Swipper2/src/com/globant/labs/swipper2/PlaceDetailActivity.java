@@ -20,23 +20,26 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.globant.labs.swipper2.drawer.CategoryMapper;
+import com.globant.labs.swipper2.models.GoogleReview;
 import com.globant.labs.swipper2.models.Photo;
 import com.globant.labs.swipper2.models.PlaceDetails;
 import com.globant.labs.swipper2.repositories.PlaceDetailsRepository;
+import com.globant.labs.swipper2.widget.SwipperScrollView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.strongloop.android.loopback.RestAdapter;
@@ -59,7 +62,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected LinearLayout mScheduleLayout;
 	protected LinearLayout mPhotosSection;
 	protected LinearLayout mPhotosLayout;
-	protected ListView mReviewsList;
+	protected LinearLayout mReviewsList;
 	protected TextView mAddressTextView;
 	protected TextView mCityTextView;
 	protected TextView mDistanceTextView;
@@ -103,7 +106,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mPhotosSection = (LinearLayout) findViewById(R.id.photosSection);
 		mPhotosLayout = (LinearLayout) findViewById(R.id.photosLayout);
 		
-		mReviewsList = (ListView) findViewById(R.id.reviewsList);
+		mReviewsList = (LinearLayout) findViewById(R.id.reviewsList);
 		
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
@@ -226,14 +229,23 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}else{
 			mPhotosSection.setVisibility(View.GONE);
 		}
-		
+			
 		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
-			ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this);
-			reviewsAdapter.setReviews(placeDetails.getReviews());
-			mReviewsList.setAdapter(reviewsAdapter);
+			
+			LayoutInflater inflater = LayoutInflater.from(this);
+			
+			for(GoogleReview review: placeDetails.getReviews()) {
+			
+				View v = inflater.inflate(R.layout.review_item, null);
+				TextView vText = (TextView) v.findViewById(R.id.reviewText);
+				vText.setText(review.getText());
+				mReviewsList.addView(v);
+			
+			}
+			
 		}else{
-			TextView emptyText = (TextView)findViewById(android.R.id.empty);
-			mReviewsList.setEmptyView(emptyText);		
+			//TextView emptyText = (TextView)findViewById(android.R.id.empty);
+			//mReviewsList.setEmptyView(emptyText);		
 		}
 		
 		if(placeDetails.getSchedules() != null) {
@@ -280,7 +292,16 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 						+ mPlace.getLocation().longitude;
 		
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,  Uri.parse(url));
-		startActivity(intent);
+		//startActivity(intent);
+		
+		//LayoutParams params = mReviewsList.getLayoutParams();
+		//params.height = LayoutParams.WRAP_CONTENT;
+		mReviewsList.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		
+		SwipperScrollView scroll = (SwipperScrollView) findViewById(R.id.centralScroll);
+		scroll.requestLayout();
+		scroll.invalidate();
+		
 	}
 	
 	protected void shareAction() {
