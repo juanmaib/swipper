@@ -7,10 +7,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -21,10 +24,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,18 +48,18 @@ import com.squareup.picasso.Picasso;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
-public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails>{
+public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
 	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
-	
+
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
 	public static final String PLACE_CATEGORY_EXTRA = "place-category-extra";
 	public static final String PLACE_DISTANCE_EXTRA = "place-distance-extra";
-	
+
 	protected int mCategoryStringId;
 	protected int mCategoryMarkerId;
-	
+
 	protected RelativeLayout mProgressBarLayout;
 	protected LinearLayout mDescriptionLayout;
 	protected LinearLayout mReviewsLayout;
@@ -73,43 +78,45 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected ImageButton mReportButton;
 	
 	protected PlaceDetails mPlace;
-	
+
+	protected String[] mPhotosURLs;
+
+	protected int mDeviceWidth;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.place_details);
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		Bundle extras = getIntent().getExtras();
 		String placeId = extras.getString(PLACE_ID_EXTRA);
 		String placeName = extras.getString(PLACE_NAME_EXTRA);
 		String placeCategory = extras.getString(PLACE_CATEGORY_EXTRA);
 		double placeDistance = extras.getDouble(PLACE_DISTANCE_EXTRA);
-		
-		Log.i("SWIPPER", "PlaceId: "+placeId);
-		
+
+		Log.i("SWIPPER", "PlaceId: " + placeId);
+
 		mCategoryMarkerId = CategoryMapper.getCategoryMarker(placeCategory);
 		mCategoryStringId = CategoryMapper.getCategoryText(placeCategory);
-		
+
 		setTitle(placeName);
-		
+
 		mAddressTextView = (TextView) findViewById(R.id.addressText);
 		mCityTextView = (TextView) findViewById(R.id.cityText);
 		mDistanceTextView = (TextView) findViewById(R.id.distanceText);
 		mPhoneTextView = (TextView) findViewById(R.id.phoneText);
 		mScheduleTextView = (TextView) findViewById(R.id.scheduleText);
 		mDescriptionText = (TextView) findViewById(R.id.descriptionText);
-		
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
 		mReviewsLayout = (LinearLayout) findViewById(R.id.reviewsLayout);
 		mScheduleLayout = (LinearLayout) findViewById(R.id.scheduleLayout);
 		mPhotosSection = (LinearLayout) findViewById(R.id.photosSection);
 		mPhotosLayout = (LinearLayout) findViewById(R.id.photosLayout);
-		
 		mReviewsList = (LinearLayout) findViewById(R.id.reviewsList);
-		
+
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
 		mReportButton = (ImageButton) findViewById(R.id.reportButton);
@@ -136,12 +143,35 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		});
 		 
 		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
-		PlaceDetailsRepository placeDetailsRepo = restAdapter.createRepository(PlaceDetailsRepository.class);
+		PlaceDetailsRepository placeDetailsRepo = restAdapter
+				.createRepository(PlaceDetailsRepository.class);
 		placeDetailsRepo.details(placeId, this);
 
 		DecimalFormat df = new DecimalFormat("0.00");
-		mDistanceTextView.setText(df.format(placeDistance)+" km");
-		
+		mDistanceTextView.setText(df.format(placeDistance) + " km");
+
+	}
+
+	@Override
+	protected void onStart() {
+		mDeviceWidth = getDeviceWidth();
+		super.onStart();
+	}
+
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	private int getDeviceWidth() {
+		int width = 0;
+		WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		if (Build.VERSION.SDK_INT > 12) {
+			Point size = new Point();
+			display.getSize(size);
+			width = size.x;
+		} else {
+			width = display.getWidth(); // yeah, I know...
+		}
+		return width;
 	}
 
 	@Override
@@ -151,13 +181,13 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		itemIcon.setIcon(mCategoryMarkerId);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		changeSizeTitle();
 	}
-	
+
 	private void changeSizeTitle() {
 	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_light.ttf");
 	    int actionBarTitleId;
@@ -171,17 +201,14 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	    TextView titleTextView = (TextView) findViewById(actionBarTitleId);
 	    titleTextView.setTypeface(typeFace);
 	}
-	
+
 	@Override
 	public void onSuccess(PlaceDetails placeDetails) {
-		
+
 		mPlace = placeDetails;
-		
+
 		mAddressTextView.setText(placeDetails.getAddress());
-		mCityTextView.setText(placeDetails.getCity()
-				+ ", "
-				+ placeDetails.getState()
-				+ ", "
+		mCityTextView.setText(placeDetails.getCity() + ", " + placeDetails.getState() + ", "
 				+ placeDetails.getCountry());
 		
 		mPhoneTextView.setText(placeDetails.getPhone());
@@ -212,51 +239,72 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}
 		
 		List<Photo> photos = placeDetails.getPhotos();
-		if(photos != null && photos.size() > 0) {
-			
+		if (photos != null && photos.size() > 0) {
+
 			Resources r = getResources();
-			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, r.getDisplayMetrics());
-			int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, r.getDisplayMetrics());
-			
-			LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(
-					size, 
-					size);
-			
+			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+					r.getDisplayMetrics());
+			int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100,
+					r.getDisplayMetrics());
+
+			LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(size, size);
+
 			imageLayoutParams.setMargins(0, 0, rightMargin, 0);
-			
-			for(Photo photo: photos) {
-				final ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleLarge);
+
+			mPhotosURLs = new String[photos.size()];
+			for (int i = 0; i < photos.size(); i++) {
+				final Photo photo = photos.get(i);
+				final ProgressBar progressBar = new ProgressBar(this, null,
+						android.R.attr.progressBarStyleLarge);
 				progressBar.setLayoutParams(imageLayoutParams);
 				mPhotosLayout.addView(progressBar);
-				
+
 				final ImageView imageView = new ImageView(this);
 				imageView.setLayoutParams(imageLayoutParams);
 				imageView.setVisibility(View.GONE);
 				mPhotosLayout.addView(imageView);
-				
-				Picasso.with(this)
-				  .load(getPhotoURL(photo.getPhoto_reference()))
-				  .resize(size, size)
-				  .centerCrop()
-				  .into(imageView, new Callback() {
-	
-					@Override
-					public void onError() {
-						progressBar.setVisibility(View.GONE);
-					}
-	
-					@Override
-					public void onSuccess() {
-						progressBar.setVisibility(View.GONE);
-						imageView.setVisibility(View.VISIBLE);
-					}
-					  
-				  });			
+
+				final int index = i;
+				mPhotosURLs[i] = getBiggerPhotoURL(photo.getPhoto_reference());
+				String photoURL = getPhotoURL(photo.getPhoto_reference());
+				Picasso.with(this).load(photoURL).resize(size, size).centerCrop()
+						.into(imageView, new Callback() {
+
+							@Override
+							public void onError() {
+								progressBar.setVisibility(View.GONE);
+							}
+
+							@Override
+							public void onSuccess() {
+								progressBar.setVisibility(View.GONE);
+								imageView.setVisibility(View.VISIBLE);
+								imageView.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										Intent gallery = new Intent(PlaceDetailActivity.this,
+												GalleryActivity.class);
+										// let's collect some info before we go
+										// to the gallery activity
+										Bundle extras = getIntent().getExtras();
+										gallery.putExtra(GalleryActivity.PLACE_NAME_EXTRA,
+												extras.getString(PLACE_NAME_EXTRA));
+										gallery.putExtra(GalleryActivity.PHOTO_INDEX_EXTRA, index);
+										gallery.putExtra(GalleryActivity.PHOTOS_URLS_EXTRA,
+												mPhotosURLs);
+										// here we go!
+										startActivity(gallery);
+									}
+								});
+							}
+
+						});
 			}
-		}else{
+		} else {
 			mPhotosSection.setVisibility(View.GONE);
 		}
-			
+
 		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
 			mDescriptionText.setText(mPlace.getDescription());
 		}else{
@@ -266,16 +314,18 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mProgressBarLayout.setVisibility(View.GONE);
 
 	}
-	
+
 	protected String getPhotoURL(String photoReference) {
-		return "https://maps.googleapis.com/maps/api/place/photo" +
-				"?maxwidth=300" +
-				"&photoreference=" +
-				photoReference +
-				"&key=" +
-				PHOTOS_API_KEY;
+		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=300"
+				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
 	}
-	
+
+	// ya know what they say...
+	protected String getBiggerPhotoURL(String photoReference) {
+		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=" + mDeviceWidth
+				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
+	}
+
 	@Override
 	public void onError(Throwable t) {
 		String errorMessage = getResources().getString(R.string.error_place_details_not_available);
@@ -376,5 +426,6 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
 		emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
 		startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));
+
 	}
 }
