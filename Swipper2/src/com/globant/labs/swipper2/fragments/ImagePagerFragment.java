@@ -48,7 +48,7 @@ public class ImagePagerFragment extends Fragment {
 
 		options = new DisplayImageOptions.Builder().showImageForEmptyUri(R.drawable.ic_empty)
 				.showImageOnFail(R.drawable.ic_error).resetViewBeforeLoading(true)
-				.cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
+				.cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 	}

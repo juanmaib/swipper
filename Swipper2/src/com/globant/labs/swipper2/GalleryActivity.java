@@ -24,19 +24,18 @@ public class GalleryActivity extends FragmentActivity {
 		Fragment fr = getSupportFragmentManager().findFragmentByTag(tag);
 		if (fr == null) {
 			fr = new ImagePagerFragment();
+			// let's recover the info we've got from place detail activity
+			Bundle extras = getIntent().getExtras();
+			// and throw it again to a more appropiate receiver
+			Bundle bundle = new Bundle();
+			bundle.putStringArray(ImagePagerFragment.PHOTOS_URLS_EXTRA,
+					extras.getStringArray(PHOTOS_URLS_EXTRA));
+			bundle.putInt(ImagePagerFragment.PHOTO_INDEX_EXTRA, extras.getInt(PHOTO_INDEX_EXTRA));
+			bundle.putString(ImagePagerFragment.PLACE_NAME_EXTRA, extras.getString(PLACE_NAME_EXTRA));
+			fr.setArguments(bundle);
+			// now that we have all we want, let's dismiss current view, and use the better one
+			getSupportFragmentManager().beginTransaction().replace(android.R.id.content, fr, tag)
+					.commit();
 		}
-
-		// let's recover the info we've got from place detail activity
-		Bundle extras = getIntent().getExtras();
-		// and throw it again to a more appropiate receiver
-		Bundle bundle = new Bundle();
-		bundle.putStringArray(ImagePagerFragment.PHOTOS_URLS_EXTRA,
-				extras.getStringArray(PHOTOS_URLS_EXTRA));
-		bundle.putInt(ImagePagerFragment.PHOTO_INDEX_EXTRA, extras.getInt(PHOTO_INDEX_EXTRA));
-		bundle.putString(ImagePagerFragment.PLACE_NAME_EXTRA, extras.getString(PLACE_NAME_EXTRA));
-		fr.setArguments(bundle);
-		// now that we have all we want, let's dismiss current view, and use the better one
-		getSupportFragmentManager().beginTransaction().replace(android.R.id.content, fr, tag)
-				.commit();
 	}
 }
