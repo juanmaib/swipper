@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp" >
+    android:orientation="vertical" >
     
     <com.globant.labs.swipper2.widget.SwipperTextView 
         android:id="@+id/reviewText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/light_font"
-        app:fontName="roboto_italic.ttf" />
+        android:textColor="@color/dark_font"
+        android:textSize="16sp"
+        app:fontName="roboto_light_italic.ttf" />
         
 </LinearLayout>

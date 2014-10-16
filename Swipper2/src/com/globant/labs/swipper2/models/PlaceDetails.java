@@ -12,6 +12,7 @@ import java.util.Map;
 public class PlaceDetails extends Place {
 
 	private String Url;
+	private String description;
 	private List<Photo> photos;
 	private ArrayList<GoogleReview> reviews;
 	private ArrayList<String> schedules;
@@ -67,6 +68,14 @@ public class PlaceDetails extends Place {
 
 	public void setUrl(String url) {
 		Url = url;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }
