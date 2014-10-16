@@ -4,8 +4,11 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -13,11 +16,13 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -61,8 +66,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected ImageView mNavImageView;
 
 	protected PlaceDetails mPlace;
-	
+
 	protected String[] mPhotosURLs;
+
+	protected int mDeviceWidth;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +115,28 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		DecimalFormat df = new DecimalFormat("0.00");
 		mDistanceTextView.setText(df.format(placeDistance) + " km");
 
+	}
+
+	@Override
+	protected void onStart() {
+		mDeviceWidth = getDeviceWidth();
+		super.onStart();
+	}
+
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	private int getDeviceWidth() {
+		int width = 0;
+		WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		if (Build.VERSION.SDK_INT > 12) {
+			Point size = new Point();
+			display.getSize(size);
+			width = size.x;
+		} else {
+			width = display.getWidth(); // yeah, I know...
+		}
+		return width;
 	}
 
 	@Override
@@ -167,7 +196,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			LinearLayout.LayoutParams imageLayoutParams = new LinearLayout.LayoutParams(size, size);
 
 			imageLayoutParams.setMargins(0, 0, rightMargin, 0);
-			
+
 			mPhotosURLs = new String[photos.size()];
 			for (int i = 0; i < photos.size(); i++) {
 				final Photo photo = photos.get(i);
@@ -182,10 +211,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 				mPhotosLayout.addView(imageView);
 
 				final int index = i;
+				mPhotosURLs[i] = getBiggerPhotoURL(photo.getPhoto_reference());
 				String photoURL = getPhotoURL(photo.getPhoto_reference());
-				mPhotosURLs[i] = photoURL;
-				Picasso.with(this).load(photoURL).resize(size, size)
-						.centerCrop().into(imageView, new Callback() {
+				Picasso.with(this).load(photoURL).resize(size, size).centerCrop()
+						.into(imageView, new Callback() {
 
 							@Override
 							public void onError() {
@@ -202,12 +231,14 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 									public void onClick(View v) {
 										Intent gallery = new Intent(PlaceDetailActivity.this,
 												GalleryActivity.class);
-										// let's collect some info before we go to the gallery activity
+										// let's collect some info before we go
+										// to the gallery activity
 										Bundle extras = getIntent().getExtras();
 										gallery.putExtra(GalleryActivity.PLACE_NAME_EXTRA,
 												extras.getString(PLACE_NAME_EXTRA));
 										gallery.putExtra(GalleryActivity.PHOTO_INDEX_EXTRA, index);
-										gallery.putExtra(GalleryActivity.PHOTOS_URLS_EXTRA, mPhotosURLs);
+										gallery.putExtra(GalleryActivity.PHOTOS_URLS_EXTRA,
+												mPhotosURLs);
 										// here we go!
 										startActivity(gallery);
 									}
@@ -243,6 +274,12 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	protected String getPhotoURL(String photoReference) {
 		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=300"
+				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
+	}
+
+	// ya know what they say...
+	protected String getBiggerPhotoURL(String photoReference) {
+		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=" + mDeviceWidth
 				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
 	}
 
