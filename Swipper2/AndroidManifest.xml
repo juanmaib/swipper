@@ -59,6 +59,11 @@
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="com.globant.labs.swipper2.MainActivity" />
         </activity>
+        
+        <activity
+            android:name=".GalleryActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

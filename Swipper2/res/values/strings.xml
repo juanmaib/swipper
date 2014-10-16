@@ -46,6 +46,7 @@
     <string name="imageSharePlaceDescription">Share place</string>
     <string name="imageSplashLogoDescription">Swipper Logo</string>
     <string name="imageSplashStreetsDescription">Splash footer image</string>
+    <string name="imageItemPagerDescription">Place photo</string>
 
     <string name="lodging">Lodging</string>
     <string name="carrental">Car Rental</string>
