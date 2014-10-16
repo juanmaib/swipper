@@ -23,6 +23,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,13 +33,13 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.globant.labs.swipper2.drawer.CategoryMapper;
+import com.globant.labs.swipper2.models.GoogleReview;
 import com.globant.labs.swipper2.models.Photo;
 import com.globant.labs.swipper2.models.PlaceDetails;
 import com.globant.labs.swipper2.repositories.PlaceDetailsRepository;
@@ -49,7 +50,7 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
-	public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
+	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
@@ -61,15 +62,17 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	protected RelativeLayout mProgressBarLayout;
 	protected LinearLayout mDescriptionLayout;
+	protected LinearLayout mReviewsLayout;
 	protected LinearLayout mScheduleLayout;
 	protected LinearLayout mPhotosSection;
 	protected LinearLayout mPhotosLayout;
-	protected ListView mReviewsList;
+	protected LinearLayout mReviewsList;
 	protected TextView mAddressTextView;
 	protected TextView mCityTextView;
 	protected TextView mDistanceTextView;
 	protected TextView mPhoneTextView;
 	protected TextView mScheduleTextView;
+	protected TextView mDescriptionText;
 	protected ImageButton mNavigateButton;
 	protected ImageButton mShareButton;
 	protected ImageButton mReportButton;
@@ -105,13 +108,14 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mDistanceTextView = (TextView) findViewById(R.id.distanceText);
 		mPhoneTextView = (TextView) findViewById(R.id.phoneText);
 		mScheduleTextView = (TextView) findViewById(R.id.scheduleText);
+		mDescriptionText = (TextView) findViewById(R.id.descriptionText);
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
+		mReviewsLayout = (LinearLayout) findViewById(R.id.reviewsLayout);
 		mScheduleLayout = (LinearLayout) findViewById(R.id.scheduleLayout);
 		mPhotosSection = (LinearLayout) findViewById(R.id.photosSection);
 		mPhotosLayout = (LinearLayout) findViewById(R.id.photosLayout);
-
-		mReviewsList = (ListView) findViewById(R.id.reviewsList);
+		mReviewsList = (LinearLayout) findViewById(R.id.reviewsList);
 
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
@@ -208,7 +212,32 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 				+ placeDetails.getCountry());
 		
 		mPhoneTextView.setText(placeDetails.getPhone());
-
+		
+		if(placeDetails.getSchedules() != null) {
+			Calendar calendar = Calendar.getInstance();
+			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1; 
+			mScheduleTextView.setText(placeDetails.getSchedules().get(dayOfWeek));
+		}else{
+			mScheduleLayout.setVisibility(View.GONE);
+		}
+			
+		//mScheduleTextView.setText("10:30 am - 20:30 pm");
+		
+		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
+			
+			LayoutInflater inflater = LayoutInflater.from(this);
+			
+			for(GoogleReview review: placeDetails.getReviews()) {			
+				View v = inflater.inflate(R.layout.review_item, null);
+				TextView vText = (TextView) v.findViewById(R.id.reviewText);
+				vText.setText("\"" + review.getText() + "\"");
+				mReviewsList.addView(v);
+			}
+			
+		}else{
+			mReviewsLayout.setVisibility(View.GONE);
+		}
+		
 		List<Photo> photos = placeDetails.getPhotos();
 		if (photos != null && photos.size() > 0) {
 
@@ -276,24 +305,11 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			mPhotosSection.setVisibility(View.GONE);
 		}
 
-		if (placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
-			ReviewsAdapter reviewsAdapter = new ReviewsAdapter(this);
-			reviewsAdapter.setReviews(placeDetails.getReviews());
-			mReviewsList.setAdapter(reviewsAdapter);
-		} else {
-			TextView emptyText = (TextView) findViewById(android.R.id.empty);
-			mReviewsList.setEmptyView(emptyText);
+		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
+			mDescriptionText.setText(mPlace.getDescription());
+		}else{
+			mDescriptionLayout.setVisibility(View.GONE);
 		}
-
-		if (placeDetails.getSchedules() != null) {
-			Calendar calendar = Calendar.getInstance();
-			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-			mScheduleTextView.setText(placeDetails.getSchedules().get(dayOfWeek));
-		} else {
-			mScheduleLayout.setVisibility(View.GONE);
-		}
-
-		//mScheduleTextView.setText("10:30 am - 20:30 pm");
 		
 		mProgressBarLayout.setVisibility(View.GONE);
 
@@ -403,8 +419,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		
 		stringBuilder.append("\n\n").append("What's the problem?\n...");
 		
+		String address = getResources().getString(R.string.contact_email);
+		
 		Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-	            "mailto","candy.tellez@globant.com", null));
+	            "mailto",address, null));
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
 		emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
 		startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));

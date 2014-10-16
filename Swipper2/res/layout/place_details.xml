@@ -117,86 +117,165 @@
         
     </LinearLayout>
     
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/centralScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/headerLayout"
         android:layout_above="@+id/bottomBarLayout"
-        android:orientation="vertical"
-        android:background="@color/white_background">
+        android:background="@color/white_background"
+        android:fillViewport="true" >
     
-    <LinearLayout
-        android:id="@+id/descriptionLayout"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="1"
-	    android:layout_below="@+id/headerLayout"
-	    android:background="@color/white_background"
-	    android:orientation="vertical"
-    	android:padding="10dp" >
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        app:fontName="roboto_bold.ttf"
-	        android:textColor="@color/dark_font"		            
-	        android:textSize="18sp"
-	        android:text="@string/reviews"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp" />
-        
-        <ListView
-            android:id="@+id/reviewsList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
-	        android:id="@android:id/empty"
+	    <LinearLayout
 	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:textColor="@color/light_font"
-        	app:fontName="roboto_light_italic.ttf"
-	        android:text="@string/no_reviews"/>
-        
-     </LinearLayout>
-     
-     <LinearLayout
-        android:id="@+id/photosSection"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@+id/descriptionLayout"
-	    android:background="@drawable/photos_background"
-	    android:orientation="vertical"
-    	android:padding="10dp" >
-        
-        <com.globant.labs.swipper2.widget.SwipperTextView 
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:background="@color/white_background">
+	    
+     		<com.globant.labs.swipper2.widget.ExpandablePanel 
+		        android:id="@+id/descriptionLayout"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:orientation="vertical"
+		    	android:paddingTop="10dp"
+		    	android:paddingRight="10dp"
+		    	android:paddingLeft="10dp"
+		    	android:paddingBottom="5dp"
+		    	android:background="@drawable/details_background"
+		    	app:collapsedHeight="66dip"
+		    	app:handle="@+id/readMoreDescription"
+	  			app:content="@+id/descriptionText" >
+		        
+		        <com.globant.labs.swipper2.widget.SwipperTextView 
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="4dp"
+			        android:paddingTop="6dp"
+			        android:textColor="@color/dark_font"		            
+			        android:textSize="18sp"
+			        app:fontName="roboto_bold.ttf"			        
+			        android:text="@string/description" />
+		        
+		        <com.globant.labs.swipper2.widget.SwipperTextView 
+		            android:id="@+id/descriptionText"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        app:fontName="roboto_light.ttf"
+			        android:textColor="@color/dark_font"		            
+			        android:textSize="16sp"
+			        android:ellipsize="end"
+			        android:text=""
+		            android:paddingBottom="4dp" />
+		        	        
+		        <com.globant.labs.swipper2.widget.SwipperButton  
+		            android:id="@+id/readMoreDescription"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            app:fontName="roboto_regular.ttf"
-		            android:textColor="@color/dark_font"		            
-		            android:textSize="18sp"
-		            android:text="@string/photos"
+		            android:layout_gravity="right"
+		            android:background="@drawable/blue_button"
+		            android:paddingLeft="25dp"	            
+		            android:paddingRight="25dp"		         
 		            android:paddingTop="10dp"
-		            android:paddingBottom="10dp" />
-        
-        <HorizontalScrollView 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-            
-            <LinearLayout
-                android:id="@+id/photosLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical" >
-                  	
-           	</LinearLayout>
-           	            
-        </HorizontalScrollView>
-        
-     </LinearLayout>
-     
-     </LinearLayout>
+		            android:paddingBottom="10dp"
+		            android:minHeight="0dp"
+		            android:minWidth="0dp"
+		            app:fontName="roboto_regular.ttf"
+		            android:textSize="15sp"
+		            android:textColor="@color/real_white"
+		            android:text="@string/more" />
+		        
+		     </com.globant.labs.swipper2.widget.ExpandablePanel>
+	        
+		    <com.globant.labs.swipper2.widget.ExpandablePanel 
+		        android:id="@+id/reviewsLayout"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:orientation="vertical"
+		    	android:paddingTop="10dp"
+		    	android:paddingRight="10dp"
+		    	android:paddingLeft="10dp"
+		    	android:paddingBottom="5dp"
+		    	android:background="@drawable/details_background"
+		    	app:collapsedHeight="66dip"
+		    	app:handle="@+id/readMoreReviews"
+	   			app:content="@+id/reviewsList" >
+		        
+		        <com.globant.labs.swipper2.widget.SwipperTextView 
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="4dp"
+			        android:paddingTop="6dp"
+			        android:textColor="@color/dark_font"		            
+			        android:textSize="18sp"
+			        app:fontName="roboto_bold.ttf"			  
+			        android:text="@string/reviews" />
+		        
+		        <LinearLayout
+		            android:id="@+id/reviewsList"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:orientation="vertical"
+		            android:paddingBottom="4dp" />
+		        	        
+		        <com.globant.labs.swipper2.widget.SwipperButton  
+		            android:id="@+id/readMoreReviews"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="right"
+		            android:background="@drawable/blue_button"
+		            android:paddingLeft="25dp"	            
+		            android:paddingRight="25dp"		         
+		            android:paddingTop="10dp"
+		            android:paddingBottom="10dp"
+		            android:minHeight="0dp"
+		            android:minWidth="0dp"
+		            app:fontName="roboto_regular.ttf"
+		            android:textSize="15sp"
+		            android:textColor="@color/real_white"
+		            android:text="@string/more" />
+		        
+		     </com.globant.labs.swipper2.widget.ExpandablePanel>
+		     
+		     <LinearLayout
+		        android:id="@+id/photosSection"		    	
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_weight="1"
+			    android:background="@color/white_background"
+			    android:orientation="vertical"
+		    	android:padding="10dp" >
+		        
+		        <com.globant.labs.swipper2.widget.SwipperTextView 
+					android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:paddingBottom="4dp"
+			        android:paddingTop="6dp"
+			        android:textColor="@color/dark_font"		            
+			        android:textSize="18sp"
+			        app:fontName="roboto_bold.ttf"	
+				    android:text="@string/photos" />
+		        
+		        <HorizontalScrollView 
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content" >
+		            
+		            <LinearLayout
+		                android:id="@+id/photosLayout"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:orientation="horizontal"
+		                android:gravity="center_vertical" >
+		                  	
+		           	</LinearLayout>
+		           	            
+		        </HorizontalScrollView>
+		        
+		     </LinearLayout>
+	     
+	     </LinearLayout>
+     </ScrollView>
      
      <LinearLayout
         android:id="@+id/bottomBarLayout"

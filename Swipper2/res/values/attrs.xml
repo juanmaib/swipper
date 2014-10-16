@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
 	<declare-styleable name="SwipperTextView">
 		<attr name="fontName" format="string" />
-	</declare-styleable>   
+	</declare-styleable>
+	
+    <declare-styleable name="ExpandablePanel">
+        <attr name="handle" format="reference" />
+        <attr name="content" format="reference" />
+        <attr name="collapsedHeight" format="dimension"/>
+        <attr name="animationDuration" format="integer"/>
+    </declare-styleable>
+    
 </resources>
