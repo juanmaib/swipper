@@ -21,4 +21,5 @@
 	
 	<item name="layout_separator" type="color">#4D272525</item>
 	<item name="white_background" type="color">#FFF2F2F2</item>
+	<item name="button_separator" type="color">#FFB9B9B9</item>
 </resources>

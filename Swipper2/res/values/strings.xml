@@ -63,4 +63,9 @@
     <string name="send_report">Send report...</string>
     <string name="no_reviews">No reviews for this place yet</string>
     
+    <string name="status_loading">Loading...</string>
+    <string name="status_done">All done</string>
+    <string name="status_no_places">No places found, try changing filters or location</string>
+    <string name="status_zoom_in">Zoom in to see the places</string>
+    
 </resources>

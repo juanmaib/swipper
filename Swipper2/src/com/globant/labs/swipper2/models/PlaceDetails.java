@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class PlaceDetails extends Place {
 
+	private String Url;
 	private List<Photo> photos;
 	private ArrayList<GoogleReview> reviews;
 	private ArrayList<String> schedules;
@@ -58,6 +59,14 @@ public class PlaceDetails extends Place {
 
 	public void setOpening_hours(ArrayList<String> schedules) {
 		this.schedules = schedules;
+	}
+
+	public String getUrl() {
+		return Url;
+	}
+
+	public void setUrl(String url) {
+		Url = url;
 	}
 
 }

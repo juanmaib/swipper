@@ -1,28 +1,35 @@
 package com.globant.labs.swipper2;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -63,8 +70,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected TextView mDistanceTextView;
 	protected TextView mPhoneTextView;
 	protected TextView mScheduleTextView;
-	protected ImageView mNavImageView;
-
+	protected ImageButton mNavigateButton;
+	protected ImageButton mShareButton;
+	protected ImageButton mReportButton;
+	
 	protected PlaceDetails mPlace;
 
 	protected String[] mPhotosURLs;
@@ -90,15 +99,12 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mCategoryStringId = CategoryMapper.getCategoryText(placeCategory);
 
 		setTitle(placeName);
-		getSupportActionBar().setIcon(mCategoryMarkerId);
 
 		mAddressTextView = (TextView) findViewById(R.id.addressText);
 		mCityTextView = (TextView) findViewById(R.id.cityText);
 		mDistanceTextView = (TextView) findViewById(R.id.distanceText);
 		mPhoneTextView = (TextView) findViewById(R.id.phoneText);
 		mScheduleTextView = (TextView) findViewById(R.id.scheduleText);
-		mNavImageView = (ImageView) findViewById(R.id.navImage);
-
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
 		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
 		mScheduleLayout = (LinearLayout) findViewById(R.id.scheduleLayout);
@@ -107,6 +113,31 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 		mReviewsList = (ListView) findViewById(R.id.reviewsList);
 
+		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
+		mShareButton = (ImageButton) findViewById(R.id.shareButton);
+		mReportButton = (ImageButton) findViewById(R.id.reportButton);
+		
+		mNavigateButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				navigateAction();
+			}
+		});
+		
+		mShareButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				shareAction();
+			}
+		});
+		
+		mReportButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reportAction();
+			}
+		});
+		 
 		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
 		PlaceDetailsRepository placeDetailsRepo = restAdapter
 				.createRepository(PlaceDetailsRepository.class);
@@ -141,8 +172,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.details, menu);
+		MenuItem itemIcon = menu.add(mCategoryStringId);
+		MenuItemCompat.setShowAsAction(itemIcon, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
+		itemIcon.setIcon(mCategoryMarkerId);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -153,17 +185,17 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	}
 
 	private void changeSizeTitle() {
-		Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_regular.ttf");
-		int actionBarTitleId;
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-		} else {
-			actionBarTitleId = R.id.action_bar_title;
-		}
-
-		TextView titleTextView = (TextView) findViewById(actionBarTitleId);
-		titleTextView.setTypeface(typeFace);
+	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_light.ttf");
+	    int actionBarTitleId;
+	    
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+	    	actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+	    } else {
+	    	actionBarTitleId = R.id.action_bar_title;
+	    }
+	    
+	    TextView titleTextView = (TextView) findViewById(actionBarTitleId);
+	    titleTextView.setTypeface(typeFace);
 	}
 
 	@Override
@@ -174,15 +206,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mAddressTextView.setText(placeDetails.getAddress());
 		mCityTextView.setText(placeDetails.getCity() + ", " + placeDetails.getState() + ", "
 				+ placeDetails.getCountry());
+		
 		mPhoneTextView.setText(placeDetails.getPhone());
-		// mScheduleTextView.setText();
-
-		mNavImageView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				displayNavigation();
-			}
-		});
 
 		List<Photo> photos = placeDetails.getPhotos();
 		if (photos != null && photos.size() > 0) {
@@ -268,6 +293,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			mScheduleLayout.setVisibility(View.GONE);
 		}
 
+		//mScheduleTextView.setText("10:30 am - 20:30 pm");
+		
 		mProgressBarLayout.setVisibility(View.GONE);
 
 	}
@@ -291,48 +318,96 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		finish();
 	}
 
-	public void displayNavigation() {
-		String url = "http://maps.google.com/maps?" + "daddr=" + mPlace.getLocation().latitude
-				+ "," + mPlace.getLocation().longitude;
-
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
-		startActivity(intent);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-
-		if (id == R.id.action_share) {
-
-			String placeString = mPlace.getName() + "\n" + mPlace.getAddress() + "\n"
-					+ mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
-					+ "\n" + mPlace.getPhone();
-
-			Intent sendIntent = new Intent();
-			sendIntent.setAction(Intent.ACTION_SEND);
-			sendIntent.putExtra(Intent.EXTRA_TEXT, placeString);
-			sendIntent.setType("text/plain");
-			startActivity(Intent.createChooser(sendIntent,
-					getResources().getText(R.string.action_share)));
-
-			return true;
-		} else if (id == R.id.action_report) {
-
-			String placeString = mPlace.getName() + "\n" + mPlace.getAddress() + "\n"
-					+ mPlace.getCity() + ", " + mPlace.getState() + ", " + mPlace.getCountry()
-					+ "\n" + mPlace.getPhone();
-
-			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto",
-					"bruno.demartino@globant.com", null));
-			emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
-			emailIntent.putExtra(Intent.EXTRA_TEXT, placeString + "\n\nWhat's the problem?\n...");
-			startActivity(Intent.createChooser(emailIntent,
-					getResources().getText(R.string.send_report)));
-
-			return true;
-		}
-
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public void navigateAction() {
+		String url = "http://maps.google.com/maps?"
+						+ "daddr="
+						+ mPlace.getLocation().latitude
+						+ ","
+						+ mPlace.getLocation().longitude;
+		
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,  Uri.parse(url));
+		startActivity(intent);
+	}
+	
+	protected void shareAction() {
+		StringBuilder stringBuilder = new StringBuilder()
+			.append(mPlace.getName())
+			.append("\n").append(mPlace.getAddress())
+			.append("\n").append(mPlace.getCity())
+			.append(", ").append(mPlace.getState())
+			.append(", ").append(mPlace.getCountry())
+			.append("\n").append(mPlace.getPhone());
+		
+		if(mPlace.getUrl() != null) {
+			stringBuilder.append("\n").append(mPlace.getUrl());
+		}
+					
+		Intent sendIntent = new Intent(Intent.ACTION_SEND);
+		sendIntent.setType("text/plain");
+		sendIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+				
+		final PackageManager packageManager = getPackageManager();
+		
+		List<Intent> targetedShareIntents = new ArrayList<Intent>();
+		List<ResolveInfo> resInfo = packageManager.queryIntentActivities(sendIntent, 0);
+
+		Collections.sort(resInfo, new Comparator<ResolveInfo>() {
+	        @Override
+	        public int compare(ResolveInfo first, ResolveInfo second) {
+	            String firstName = first.loadLabel(packageManager).toString();
+	            String secondName = second.loadLabel(packageManager).toString();
+	            return firstName.compareToIgnoreCase(secondName);
+	        }
+	    });
+		
+		for (ResolveInfo resolveInfo : resInfo) {
+			String packageName = resolveInfo.activityInfo.packageName;
+			String className = resolveInfo.activityInfo.name;
+			
+			if (mPlace.getUrl() != null || !packageName.equals("com.facebook.katana")) {
+				Intent targetedShareIntent = new Intent(Intent.ACTION_SEND);
+				targetedShareIntent.setType("text/plain");
+				targetedShareIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+				targetedShareIntent.setPackage(packageName);
+				targetedShareIntent.setClassName(packageName, className);
+						
+				targetedShareIntents.add(targetedShareIntent);
+			}
+		}
+		
+		Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), 
+				getResources().getString(R.string.action_share));
+		
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+		
+		startActivity(chooserIntent);
+	}
+	
+	protected void reportAction() {
+		StringBuilder stringBuilder = new StringBuilder()
+			.append(mPlace.getName())
+			.append("\n").append(mPlace.getAddress())
+			.append("\n").append(mPlace.getCity())
+			.append(", ").append(mPlace.getState())
+			.append(", ").append(mPlace.getCountry())
+			.append("\n").append(mPlace.getPhone());
+	
+		if(mPlace.getUrl() != null) {
+			stringBuilder.append("\n").append(mPlace.getUrl());
+		}
+		
+		stringBuilder.append("\n\n").append("What's the problem?\n...");
+		
+		Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+	            "mailto","candy.tellez@globant.com", null));
+		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
+		emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+		startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));
+
 	}
 }
