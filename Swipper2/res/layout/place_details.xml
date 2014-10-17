@@ -187,7 +187,7 @@
 		        
 		     </com.globant.labs.swipper2.widget.ExpandablePanel>
 	        
-		    <com.globant.labs.swipper2.widget.ExpandablePanel 
+		    <com.globant.labs.swipper2.widget.ReviewsExpandablePanel 
 		        android:id="@+id/reviewsLayout"
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
@@ -236,13 +236,12 @@
 		            android:textColor="@color/real_white"
 		            android:text="@string/more" />
 		        
-		     </com.globant.labs.swipper2.widget.ExpandablePanel>
+		     </com.globant.labs.swipper2.widget.ReviewsExpandablePanel>
 		     
 		     <LinearLayout
 		        android:id="@+id/photosSection"		    	
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
-			    android:layout_weight="1"
 			    android:background="@color/white_background"
 			    android:orientation="vertical"
 		    	android:padding="10dp" >
@@ -278,10 +277,40 @@
      </ScrollView>
      
      <LinearLayout
+        android:id="@+id/noMoreInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/headerLayout"
+        android:layout_above="@+id/bottomBarLayout"
+        android:gravity="center_horizontal"
+        android:background="@color/white_background"
+        android:orientation="vertical"
+        android:padding="60dp"
+        android:visibility="gone" >
+        
+         <ImageView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:src="@drawable/info_icon" />
+         
+        <com.globant.labs.swipper2.widget.SwipperTextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@color/button_separator"		            
+	        android:textSize="18sp"
+	        app:fontName="roboto_light_italic.ttf"	
+	        android:paddingTop="20dp"
+		    android:text="@string/no_place_details" />
+        
+    </LinearLayout>
+     
+     <LinearLayout
         android:id="@+id/bottomBarLayout"
 	    android:layout_width="match_parent"
 	    android:layout_height="68dp"
 	    android:layout_alignParentBottom="true"
+	    android:layout_marginTop="-13dp"
 	    android:background="@drawable/bottom_bar_background"
 	    android:orientation="horizontal" >
         

@@ -1,7 +1,5 @@
 package com.globant.labs.swipper2.widget;
 
-import com.globant.labs.swipper2.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -10,7 +8,9 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
-public class ExpandablePanel extends LinearLayout {
+import com.globant.labs.swipper2.R;
+
+public class ReviewsExpandablePanel extends LinearLayout {
 
     private final int mHandleId;
     private final int mContentId;
@@ -26,11 +26,11 @@ public class ExpandablePanel extends LinearLayout {
 
     private OnExpandListener mListener;
 
-    public ExpandablePanel(Context context) {
+    public ReviewsExpandablePanel(Context context) {
         this(context, null);
     }
 
-    public ExpandablePanel(Context context, AttributeSet attrs) {
+    public ReviewsExpandablePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mListener = new DefaultOnExpandListener();
 
@@ -105,7 +105,21 @@ public class ExpandablePanel extends LinearLayout {
         mHandleHeight = mHandle.getMeasuredHeight();
 
         if(!mExpanded) {
-	        if (mContentHeight < mCollapsedHeight) {
+	        LinearLayout layout = ((LinearLayout) mContent);
+	        if(layout.getChildAt(0) != null) {
+	        	mCollapsedHeight = layout.getChildAt(0).getMeasuredHeight() + layout.getPaddingTop() + layout.getPaddingBottom();
+	            android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+	            lp.height = mCollapsedHeight;
+	            mContent.setLayoutParams(lp);
+	        }
+        }
+        
+        mContent.measure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+        mContentHeight = mContent.getMeasuredHeight();
+        mHandleHeight = mHandle.getMeasuredHeight();        
+        
+        if(!mExpanded) {
+	        if (mContentHeight <= mCollapsedHeight) {
 	            mHandle.setVisibility(View.GONE);
 	        } else {
 	            mHandle.setVisibility(View.VISIBLE);
@@ -124,12 +138,13 @@ public class ExpandablePanel extends LinearLayout {
     
     public void expand() {
     	if(!mExpanded) {
+	    	mListener.onBeforeExpand(mHandle, mContent);
 	        Animation a;
-	        a = new ExpandAnimation(mCollapsedHeight, mContentHeight, mHandleHeight);             
+            a = new ExpandAnimation(mCollapsedHeight, mContentHeight, mHandleHeight);             
 	        mListener.onExpand(mHandle, mContent);
 	        a.setDuration(mAnimationDuration);
 	        mContent.startAnimation(a);
-	        mExpanded = !mExpanded;
+	        mExpanded = true;
     	}
     }
 
@@ -166,11 +181,13 @@ public class ExpandablePanel extends LinearLayout {
     }
 
     public interface OnExpandListener {
+    	public void onBeforeExpand(View handle, View content);
         public void onExpand(View handle, View content); 
         public void onCollapse(View handle, View content);
     }
 
     private class DefaultOnExpandListener implements OnExpandListener {
+    	public void onBeforeExpand(View handle, View content) {}
         public void onCollapse(View handle, View content) {}
         public void onExpand(View handle, View content) {}
     }
