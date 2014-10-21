@@ -3,6 +3,7 @@ package com.globant.labs.swipper2.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -23,6 +24,8 @@ public class ReviewsExpandablePanel extends LinearLayout {
     private int mContentHeight = 0;
     private int mAnimationDuration = 0;
     private int mHandleHeight = 0;
+    private int mLastHeight = 0;
+    private int mReviewCount = 1;
 
     private OnExpandListener mListener;
 
@@ -56,7 +59,7 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
         mHandleId = handleId;
         mContentId = contentId;
-
+        
         a.recycle();
     }
 
@@ -90,34 +93,61 @@ public class ReviewsExpandablePanel extends LinearLayout {
                     + " existing child.");
         }
 
-        android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
-        lp.height = mCollapsedHeight;
-        mContent.setLayoutParams(lp);
+        //android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+       // lp.height = mCollapsedHeight;
+        //mContent.setLayoutParams(lp);
 
         mHandle.setOnClickListener(new PanelToggler());
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // First, measure how high content wants to be
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {   	
+    	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    	String smode = "";
+    	switch(heightMode) {
+    		case MeasureSpec.UNSPECIFIED: 
+    			smode = "HMS_mode UNSPECIFIED";
+    			break;
+    		case MeasureSpec.AT_MOST:
+    			smode = "HMS_mode AT_MOST";
+    			break;
+    		case MeasureSpec.EXACTLY:
+    			smode = "HMS_mode EXACTLY";
+    			break;
+    	}
+    	Log.i("SWIPPER", "HMS_mode "+smode);
+    	Log.i("SWIPPER", "HMS_size "+MeasureSpec.getSize(heightMeasureSpec));
+    	
+    	LinearLayout layout = ((LinearLayout) mContent);
+    	
+    	if(heightMode == MeasureSpec.EXACTLY && mLastHeight < MeasureSpec.getSize(heightMeasureSpec) && layout.getChildCount() > 0) {
+    		mReviewCount++;
+    	}
+    	
         mContent.measure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
-        mContentHeight = mContent.getMeasuredHeight();
-        mHandleHeight = mHandle.getMeasuredHeight();
+        //mContentHeight = mContent.getMeasuredHeight();
+        //mHandleHeight = mHandle.getMeasuredHeight();
 
         if(!mExpanded) {
-	        LinearLayout layout = ((LinearLayout) mContent);
-	        if(layout.getChildAt(0) != null) {
-	        	mCollapsedHeight = layout.getChildAt(0).getMeasuredHeight() + layout.getPaddingTop() + layout.getPaddingBottom();
-	            android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
-	            lp.height = mCollapsedHeight;
-	            mContent.setLayoutParams(lp);
+	        
+	        mCollapsedHeight = 0;
+	        for(int i = 0; i < mReviewCount; i++) {
+		        if(layout.getChildAt(i) != null) {
+		        	int h = layout.getChildAt(i).getMeasuredHeight();
+		        	mCollapsedHeight += h;
+		        }
 	        }
+	        
+	        //Log.i("SWIPPER", "hm: "+smode+" hh: "+MeasureSpec.getSize(heightMeasureSpec)+" collapsed:"+mCollapsedHeight);
+	        
+	        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mContent.getLayoutParams();
+	        lp.height = mCollapsedHeight;
+	        mContent.setLayoutParams(lp);
         }
-        
+            
         mContent.measure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
-        mContentHeight = mContent.getMeasuredHeight();
-        mHandleHeight = mHandle.getMeasuredHeight();        
-        
+        mContentHeight = mContent.getMeasuredHeight();        
+               
         if(!mExpanded) {
 	        if (mContentHeight <= mCollapsedHeight) {
 	            mHandle.setVisibility(View.GONE);
@@ -128,6 +158,10 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
         // Then let the usual thing happen
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        
+        mLastHeight = getMeasuredHeight();
+        
+        Log.i("SWIPPER", "MH "+getMeasuredHeight());
     }
 
     private class PanelToggler implements OnClickListener {
@@ -146,6 +180,13 @@ public class ReviewsExpandablePanel extends LinearLayout {
 	        mContent.startAnimation(a);
 	        mExpanded = true;
     	}
+    }
+    
+    public void instantExpand() {
+    	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+        lp.height = (int) android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+        mContent.setLayoutParams(lp);
+        mExpanded = true;
     }
 
     private class ExpandAnimation extends Animation {

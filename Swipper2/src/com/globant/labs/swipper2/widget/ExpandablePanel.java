@@ -1,7 +1,5 @@
 package com.globant.labs.swipper2.widget;
 
-import com.globant.labs.swipper2.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -9,6 +7,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
+
+import com.globant.labs.swipper2.R;
 
 public class ExpandablePanel extends LinearLayout {
 
@@ -41,7 +41,7 @@ public class ExpandablePanel extends LinearLayout {
 
         // How long the animation should take
         mAnimationDuration = a.getInteger(R.styleable.ExpandablePanel_animationDuration, 500);
-
+        
         int handleId = a.getResourceId(R.styleable.ExpandablePanel_handle, 0);
         if (handleId == 0) {
             throw new IllegalArgumentException(
@@ -75,7 +75,7 @@ public class ExpandablePanel extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
+        
         mHandle = findViewById(mHandleId);
         if (mHandle == null) {
             throw new IllegalArgumentException(
@@ -131,6 +131,14 @@ public class ExpandablePanel extends LinearLayout {
 	        mContent.startAnimation(a);
 	        mExpanded = !mExpanded;
     	}
+    }
+    
+    public void instantExpand() {
+    	mHandle.setVisibility(View.GONE);
+    	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+        lp.height = (int) android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+        mContent.setLayoutParams(lp);
+        mExpanded = true;
     }
 
     private class ExpandAnimation extends Animation {
