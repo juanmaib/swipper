@@ -23,8 +23,8 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,8 @@ import com.globant.labs.swipper2.models.GoogleReview;
 import com.globant.labs.swipper2.models.Photo;
 import com.globant.labs.swipper2.models.PlaceDetails;
 import com.globant.labs.swipper2.repositories.PlaceDetailsRepository;
+import com.globant.labs.swipper2.widget.ExpandablePanel;
+import com.globant.labs.swipper2.widget.ReviewsExpandablePanel;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.strongloop.android.loopback.RestAdapter;
@@ -50,7 +53,8 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
-	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
+	//public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
+	public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
@@ -61,12 +65,13 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected int mCategoryMarkerId;
 
 	protected RelativeLayout mProgressBarLayout;
-	protected LinearLayout mDescriptionLayout;
-	protected LinearLayout mReviewsLayout;
+	protected ExpandablePanel mDescriptionLayout;
+	protected ReviewsExpandablePanel mReviewsLayout;
 	protected LinearLayout mScheduleLayout;
 	protected LinearLayout mPhotosSection;
 	protected LinearLayout mPhotosLayout;
 	protected LinearLayout mReviewsList;
+	protected LinearLayout mNoMoreInfoLayout;
 	protected TextView mAddressTextView;
 	protected TextView mCityTextView;
 	protected TextView mDistanceTextView;
@@ -110,12 +115,13 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mScheduleTextView = (TextView) findViewById(R.id.scheduleText);
 		mDescriptionText = (TextView) findViewById(R.id.descriptionText);
 		mProgressBarLayout = (RelativeLayout) findViewById(R.id.progressBarLayout);
-		mDescriptionLayout = (LinearLayout) findViewById(R.id.descriptionLayout);
-		mReviewsLayout = (LinearLayout) findViewById(R.id.reviewsLayout);
+		mDescriptionLayout = (ExpandablePanel) findViewById(R.id.descriptionLayout);
+		mReviewsLayout = (ReviewsExpandablePanel) findViewById(R.id.reviewsLayout);
 		mScheduleLayout = (LinearLayout) findViewById(R.id.scheduleLayout);
 		mPhotosSection = (LinearLayout) findViewById(R.id.photosSection);
 		mPhotosLayout = (LinearLayout) findViewById(R.id.photosLayout);
 		mReviewsList = (LinearLayout) findViewById(R.id.reviewsList);
+		mNoMoreInfoLayout = (LinearLayout) findViewById(R.id.noMoreInfoLayout);
 
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
@@ -202,6 +208,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	    titleTextView.setTypeface(typeFace);
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public void onSuccess(PlaceDetails placeDetails) {
 
@@ -222,24 +229,41 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}
 			
 		//mScheduleTextView.setText("10:30 am - 20:30 pm");
-		
+				
+		boolean hasDescription = false;
+		boolean hasReviews = false;
+		boolean hasPhotos = false;
+			
+		//if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
+		//	mDescriptionText.setText(mPlace.getDescription());
+		//	hasDescription = true;
+		//}else{
+			mDescriptionLayout.setVisibility(View.GONE);
+		//}
+	
 		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
 			
 			LayoutInflater inflater = LayoutInflater.from(this);
-			
-			for(GoogleReview review: placeDetails.getReviews()) {			
-				View v = inflater.inflate(R.layout.review_item, null);
-				TextView vText = (TextView) v.findViewById(R.id.reviewText);
-				vText.setText("\"" + review.getText() + "\"");
-				mReviewsList.addView(v);
+
+			for(GoogleReview review : placeDetails.getReviews()) {
+				if(review.getText() != null && !review.getText().equals("")) {
+					View v = inflater.inflate(R.layout.review_item, null);
+					TextView vText = (TextView) v.findViewById(R.id.reviewText);
+					vText.setText("\"" + review.getText() + "\"\u3000 ");
+					RatingBar vBar = (RatingBar) v.findViewById(R.id.reviewRating);
+					vBar.setProgress(review.getRating());
+					mReviewsList.addView(v);
+				}
 			}
+
+			hasReviews = true;
 			
 		}else{
 			mReviewsLayout.setVisibility(View.GONE);
 		}
 		
 		List<Photo> photos = placeDetails.getPhotos();
-		if (photos != null && photos.size() > 0) {
+		if(photos != null && photos.size() > 0) {
 
 			Resources r = getResources();
 			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
@@ -301,20 +325,29 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 						});
 			}
+			
+			hasPhotos = true;
+			
 		} else {
 			mPhotosSection.setVisibility(View.GONE);
 		}
 
-		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
-			mDescriptionText.setText(mPlace.getDescription());
-		}else{
-			mDescriptionLayout.setVisibility(View.GONE);
+		if(!hasPhotos) {
+			if(hasDescription && !hasReviews) {
+				mDescriptionLayout.instantExpand();
+			}else if(!hasDescription && hasReviews) {
+				mReviewsLayout.instantExpand();
+			}
+		}
+		
+		if(!hasDescription && !hasReviews && !hasPhotos) {
+			mNoMoreInfoLayout.setVisibility(View.VISIBLE);
 		}
 		
 		mProgressBarLayout.setVisibility(View.GONE);
 
 	}
-
+	
 	protected String getPhotoURL(String photoReference) {
 		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=300"
 				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;

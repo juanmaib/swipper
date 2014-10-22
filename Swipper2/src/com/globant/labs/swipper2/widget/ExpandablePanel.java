@@ -1,7 +1,5 @@
 package com.globant.labs.swipper2.widget;
 
-import com.globant.labs.swipper2.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -9,6 +7,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
+
+import com.globant.labs.swipper2.R;
 
 public class ExpandablePanel extends LinearLayout {
 
@@ -41,7 +41,7 @@ public class ExpandablePanel extends LinearLayout {
 
         // How long the animation should take
         mAnimationDuration = a.getInteger(R.styleable.ExpandablePanel_animationDuration, 500);
-
+        
         int handleId = a.getResourceId(R.styleable.ExpandablePanel_handle, 0);
         if (handleId == 0) {
             throw new IllegalArgumentException(
@@ -75,7 +75,7 @@ public class ExpandablePanel extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
+        
         mHandle = findViewById(mHandleId);
         if (mHandle == null) {
             throw new IllegalArgumentException(
@@ -105,31 +105,62 @@ public class ExpandablePanel extends LinearLayout {
         mHandleHeight = mHandle.getMeasuredHeight();
 
         if(!mExpanded) {
-	        if (mContentHeight < mCollapsedHeight) {
+        	
+        	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+            lp.height = mCollapsedHeight;
+            mContent.setLayoutParams(lp);
+        	
+            int heightDiff = 0;
+            
+        	if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+        		super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+        		heightDiff = MeasureSpec.getSize(heightMeasureSpec) - getMeasuredHeight();
+        		if(heightDiff > 0) {
+        			lp = mContent.getLayoutParams();
+    	            lp.height = mCollapsedHeight + heightDiff;
+    	            mContent.setLayoutParams(lp);
+        		}
+        	}
+        	
+	        if (mContentHeight < mCollapsedHeight + heightDiff) {
 	            mHandle.setVisibility(View.GONE);
+	        } else if (mContentHeight < mCollapsedHeight + heightDiff + mHandleHeight){
+	        	mHandle.setVisibility(View.GONE);
+	        	lp = mContent.getLayoutParams();
+	            lp.height = mContentHeight;
+	            mContent.setLayoutParams(lp);
 	        } else {
 	            mHandle.setVisibility(View.VISIBLE);
 	        }
         }
 
         // Then let the usual thing happen
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
     }
 
     private class PanelToggler implements OnClickListener {
         public void onClick(View v) {
-            Animation a;
-            if (mExpanded) {
-                a = new ExpandAnimation(mContentHeight, mCollapsedHeight, mHandleHeight);
-                mListener.onCollapse(mHandle, mContent);
-            } else {
-                a = new ExpandAnimation(mCollapsedHeight, mContentHeight, mHandleHeight);             
-                mListener.onExpand(mHandle, mContent);
-            }
-            a.setDuration(mAnimationDuration);
-            mContent.startAnimation(a);
-            mExpanded = !mExpanded;
+        	expand();
         }
+    }
+    
+    public void expand() {
+    	if(!mExpanded) {
+	        Animation a;
+	        a = new ExpandAnimation(mCollapsedHeight, mContentHeight, mHandleHeight);             
+	        mListener.onExpand(mHandle, mContent);
+	        a.setDuration(mAnimationDuration);
+	        mContent.startAnimation(a);
+	        mExpanded = !mExpanded;
+    	}
+    }
+    
+    public void instantExpand() {
+    	mHandle.setVisibility(View.GONE);
+    	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+        lp.height = (int) android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+        mContent.setLayoutParams(lp);
+        mExpanded = true;
     }
 
     private class ExpandAnimation extends Animation {
