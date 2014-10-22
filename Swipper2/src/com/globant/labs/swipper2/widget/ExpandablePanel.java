@@ -105,15 +105,37 @@ public class ExpandablePanel extends LinearLayout {
         mHandleHeight = mHandle.getMeasuredHeight();
 
         if(!mExpanded) {
-	        if (mContentHeight < mCollapsedHeight) {
+        	
+        	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
+            lp.height = mCollapsedHeight;
+            mContent.setLayoutParams(lp);
+        	
+            int heightDiff = 0;
+            
+        	if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+        		super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+        		heightDiff = MeasureSpec.getSize(heightMeasureSpec) - getMeasuredHeight();
+        		if(heightDiff > 0) {
+        			lp = mContent.getLayoutParams();
+    	            lp.height = mCollapsedHeight + heightDiff;
+    	            mContent.setLayoutParams(lp);
+        		}
+        	}
+        	
+	        if (mContentHeight < mCollapsedHeight + heightDiff) {
 	            mHandle.setVisibility(View.GONE);
+	        } else if (mContentHeight < mCollapsedHeight + heightDiff + mHandleHeight){
+	        	mHandle.setVisibility(View.GONE);
+	        	lp = mContent.getLayoutParams();
+	            lp.height = mContentHeight;
+	            mContent.setLayoutParams(lp);
 	        } else {
 	            mHandle.setVisibility(View.VISIBLE);
 	        }
         }
 
         // Then let the usual thing happen
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
     }
 
     private class PanelToggler implements OnClickListener {

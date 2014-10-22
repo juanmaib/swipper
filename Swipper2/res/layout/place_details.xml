@@ -198,7 +198,7 @@
 		    	android:paddingLeft="10dp"
 		    	android:paddingBottom="5dp"
 		    	android:background="@drawable/details_background"
-		    	app:collapsedHeight="66dip"
+		    	app:collapsedHeight="0dip"
 		    	app:handle="@+id/readMoreReviews"
 	   			app:content="@+id/reviewsList" >
 		        
@@ -215,9 +215,9 @@
 		        <LinearLayout
 		            android:id="@+id/reviewsList"
 		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
+		            android:layout_height="0dp"
 		            android:orientation="vertical"
-		            android:paddingBottom="4dp" />
+		            android:paddingBottom="0dp" />
 		        	        
 		        <com.globant.labs.swipper2.widget.SwipperButton  
 		            android:id="@+id/readMoreReviews"

@@ -53,8 +53,8 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
-	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
-	//public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
+	//public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
+	public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
@@ -234,12 +234,12 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		boolean hasReviews = false;
 		boolean hasPhotos = false;
 			
-		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
-			mDescriptionText.setText(mPlace.getDescription());
-			hasDescription = true;
-		}else{
+		//if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
+		//	mDescriptionText.setText(mPlace.getDescription());
+		//	hasDescription = true;
+		//}else{
 			mDescriptionLayout.setVisibility(View.GONE);
-		}
+		//}
 	
 		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
 			
@@ -255,9 +255,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 					mReviewsList.addView(v);
 				}
 			}
-			
-			mReviewsLayout.invalidate();
-			mReviewsLayout.forceLayout();
+
 			hasReviews = true;
 			
 		}else{
