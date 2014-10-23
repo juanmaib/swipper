@@ -253,11 +253,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 					RatingBar vBar = (RatingBar) v.findViewById(R.id.reviewRating);
 					vBar.setProgress(review.getRating());
 					mReviewsList.addView(v);
+					hasReviews = true;
 				}
 			}
-
-			hasReviews = true;
-			
+	
 		}else{
 			mReviewsLayout.setVisibility(View.GONE);
 		}
