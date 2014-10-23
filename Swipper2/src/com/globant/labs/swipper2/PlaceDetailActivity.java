@@ -385,7 +385,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	
 	protected void shareAction() {
 		StringBuilder stringBuilder = new StringBuilder()
-			.append(mPlace.getName())
+			.append(mPlace.getCategory())
+			.append("\n").append(mPlace.getName())
 			.append("\n").append(mPlace.getAddress())
 			.append("\n").append(mPlace.getCity())
 			.append(", ").append(mPlace.getState())
