@@ -27,6 +27,8 @@ public class GeoUtils {
 	}
 		
 	public static double getDistance(LatLng StartP, LatLng EndP) {
+		if(StartP == null || EndP == null) return Double.POSITIVE_INFINITY;
+		
 		int Radius = 6371;	// radius of earth in Km
 		double lat1 = StartP.latitude;
 		double lat2 = EndP.latitude;

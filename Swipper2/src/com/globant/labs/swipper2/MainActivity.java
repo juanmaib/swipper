@@ -156,14 +156,19 @@ public class MainActivity extends ActionBarActivity implements
 				}
 				
 				@Override
+				public void placesRetry(Throwable t) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
 				public void placesError(Throwable t) {
 					Log.i("SWIPPER", "Places error");
 					t.printStackTrace();
 				}
+				
 			});	
-			
-			
-			
+
 			
 			//showCoachMarks();
 
