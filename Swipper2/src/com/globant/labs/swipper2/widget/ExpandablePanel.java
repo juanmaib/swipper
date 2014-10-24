@@ -3,6 +3,7 @@ package com.globant.labs.swipper2.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -99,6 +100,22 @@ public class ExpandablePanel extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    	
+    	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+    	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+    	
+    	switch(heightMode) {
+    	case MeasureSpec.UNSPECIFIED:
+    		Log.i("SWIPPER", "UNSPECIFIED "+heightSize);
+    		break;
+    	case MeasureSpec.AT_MOST:
+    		Log.i("SWIPPER", "AT_MOST "+heightSize);
+    		break;
+    	case MeasureSpec.EXACTLY:
+    		Log.i("SWIPPER", "EXACTLY "+heightSize);
+    		break;
+    	}
+    	
         // First, measure how high content wants to be
         mContent.measure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
         mContentHeight = mContent.getMeasuredHeight();
@@ -112,15 +129,15 @@ public class ExpandablePanel extends LinearLayout {
         	
             int heightDiff = 0;
             
-        	if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
-        		super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
-        		heightDiff = MeasureSpec.getSize(heightMeasureSpec) - getMeasuredHeight();
-        		if(heightDiff > 0) {
-        			lp = mContent.getLayoutParams();
-    	            lp.height = mCollapsedHeight + heightDiff;
-    	            mContent.setLayoutParams(lp);
-        		}
-        	}
+        	//if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+        	//	super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+        	//	heightDiff = MeasureSpec.getSize(heightMeasureSpec) - getMeasuredHeight();
+        	//	if(heightDiff > 0) {
+        	//		lp = mContent.getLayoutParams();
+    	    //        lp.height = mCollapsedHeight + heightDiff;
+    	    //       mContent.setLayoutParams(lp);
+        	//	}
+        	//}
         	
 	        if (mContentHeight < mCollapsedHeight + heightDiff) {
 	            mHandle.setVisibility(View.GONE);
@@ -136,6 +153,10 @@ public class ExpandablePanel extends LinearLayout {
 
         // Then let the usual thing happen
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        
+        if(mExpanded && getMeasuredHeight() < heightSize) {
+        	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
     private class PanelToggler implements OnClickListener {

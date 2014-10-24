@@ -105,12 +105,12 @@ public class ReviewsExpandablePanel extends LinearLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {   	
     	
     	
-    	Log.i("SWIPPER", "Reviews onMeasure");
+    	//Log.i("SWIPPER", "Reviews onMeasure");
     	
     	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
     	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
     	
-    	Log.i("SWIPPER", "heightSize: "+heightSize);
+    	//Log.i("SWIPPER", "heightSize: "+heightSize);
     	
     	if(!mExpanded) {
     		
@@ -154,7 +154,11 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
     	
-        Log.i("SWIPPER", "measuredHeight "+getMeasuredHeight());
+        if(mExpanded && getMeasuredHeight() < heightSize) {
+        	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+        
+        //Log.i("SWIPPER", "measuredHeight "+getMeasuredHeight());
         
         //if(heightMode == MeasureSpec.EXACTLY && heightSize > getMeasuredHeight()) {
         //	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
