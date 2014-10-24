@@ -3,7 +3,6 @@ package com.globant.labs.swipper2.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -103,14 +102,8 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {   	
-    	
-    	
-    	//Log.i("SWIPPER", "Reviews onMeasure");
-    	
-    	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
     	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-    	
-    	//Log.i("SWIPPER", "heightSize: "+heightSize);
     	
     	if(!mExpanded) {
     		
@@ -121,6 +114,8 @@ public class ReviewsExpandablePanel extends LinearLayout {
 	        mContent.setLayoutParams(lp);
 	        
 	        super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+	        
+	        mHandleHeight = mHandle.getMeasuredHeight();
 	        
 	        int minHeight = getMeasuredHeight();
 	        int diffHeight = heightSize - minHeight;
@@ -157,12 +152,7 @@ public class ReviewsExpandablePanel extends LinearLayout {
         if(mExpanded && getMeasuredHeight() < heightSize) {
         	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
-        
-        //Log.i("SWIPPER", "measuredHeight "+getMeasuredHeight());
-        
-        //if(heightMode == MeasureSpec.EXACTLY && heightSize > getMeasuredHeight()) {
-        //	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //}
+
     }
 
     private class PanelToggler implements OnClickListener {

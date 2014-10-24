@@ -236,7 +236,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			
 		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed arcu.");
 		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec ipsum eget velit tempus luctus vel eget nisi. Fusce congue condimentum sem, luctus iaculis enim feugiat id. Praesent volutpat, libero.");
-		mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lobortis urna et facilisis ullamcorper. Curabitur eleifend accumsan molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec imperdiet eu libero ac pharetra. Aenean a eros vel nunc maximus facilisis. Ut porttitor sollicitudin ex, vel molestie sem euismod pharetra. Mauris sodales arcu vel odio eleifend, nec.");
+		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lobortis urna et facilisis ullamcorper. Curabitur eleifend accumsan molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec imperdiet eu libero ac pharetra. Aenean a eros vel nunc maximus facilisis. Ut porttitor sollicitudin ex, vel molestie sem euismod pharetra. Mauris sodales arcu vel odio eleifend, nec.");
 		
 		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
 			mDescriptionText.setText(mPlace.getDescription());
@@ -245,7 +245,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			mDescriptionLayout.setVisibility(View.GONE);
 		}
 	
-		if(true && placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
+		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
 			
 			LayoutInflater inflater = LayoutInflater.from(this);
 
@@ -266,7 +266,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}
 		
 		List<Photo> photos = placeDetails.getPhotos();
-		if(true && photos != null && photos.size() > 0) {
+		if(photos != null && photos.size() > 0) {
 
 			Resources r = getResources();
 			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,

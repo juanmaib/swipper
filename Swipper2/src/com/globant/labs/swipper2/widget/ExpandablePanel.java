@@ -3,7 +3,6 @@ package com.globant.labs.swipper2.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -17,7 +16,7 @@ public class ExpandablePanel extends LinearLayout {
     private final int mContentId;
 
     private View mHandle;
-    private View mContent;
+    private SwipperTextView mContent;
 
     private boolean mExpanded = false;
     private int mCollapsedHeight = 0;
@@ -84,16 +83,12 @@ public class ExpandablePanel extends LinearLayout {
                     + " existing child.");
         }
 
-        mContent = findViewById(mContentId);
+        mContent = (SwipperTextView) findViewById(mContentId);
         if (mContent == null) {
             throw new IllegalArgumentException(
                 "The content attribute must refer to an"
                     + " existing child.");
         }
-
-        android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
-        lp.height = mCollapsedHeight;
-        mContent.setLayoutParams(lp);
 
         mHandle.setOnClickListener(new PanelToggler());
     }
@@ -101,54 +96,43 @@ public class ExpandablePanel extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	
-    	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
     	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-    	
-    	switch(heightMode) {
-    	case MeasureSpec.UNSPECIFIED:
-    		Log.i("SWIPPER", "UNSPECIFIED "+heightSize);
-    		break;
-    	case MeasureSpec.AT_MOST:
-    		Log.i("SWIPPER", "AT_MOST "+heightSize);
-    		break;
-    	case MeasureSpec.EXACTLY:
-    		Log.i("SWIPPER", "EXACTLY "+heightSize);
-    		break;
-    	}
-    	
-        // First, measure how high content wants to be
-        mContent.measure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
-        mContentHeight = mContent.getMeasuredHeight();
-        mHandleHeight = mHandle.getMeasuredHeight();
 
         if(!mExpanded) {
-        	
-        	android.view.ViewGroup.LayoutParams lp = mContent.getLayoutParams();
-            lp.height = mCollapsedHeight;
-            mContent.setLayoutParams(lp);
-        	
-            int heightDiff = 0;
-            
-        	//if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
-        	//	super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
-        	//	heightDiff = MeasureSpec.getSize(heightMeasureSpec) - getMeasuredHeight();
-        	//	if(heightDiff > 0) {
-        	//		lp = mContent.getLayoutParams();
-    	    //        lp.height = mCollapsedHeight + heightDiff;
-    	    //       mContent.setLayoutParams(lp);
-        	//	}
-        	//}
-        	
-	        if (mContentHeight < mCollapsedHeight + heightDiff) {
+    		mHandle.setVisibility(View.VISIBLE);
+    		
+	    	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mContent.getLayoutParams();
+	        lp.height = 0;
+	        mContent.setLayoutParams(lp);
+	        
+	        super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+	        
+	        mHandleHeight = mHandle.getMeasuredHeight();
+	        
+	        int paddings = mContent.getPaddingBottom() + mContent.getPaddingTop();
+	        int lineHeight = mContent.getLineHeight();
+	        
+	        int minHeight = getMeasuredHeight();
+	        int diffHeight = heightSize - minHeight - paddings;
+	        diffHeight = (diffHeight > lineHeight) ? diffHeight : lineHeight; // Force at least one line
+	        
+	        mCollapsedHeight = ((int) ((float) diffHeight / lineHeight)) * lineHeight + paddings;	  
+	        
+	        mContent.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+	        mContentHeight = mContent.getMeasuredHeight();
+        
+	        if (mContentHeight <= mCollapsedHeight) {
 	            mHandle.setVisibility(View.GONE);
-	        } else if (mContentHeight < mCollapsedHeight + heightDiff + mHandleHeight){
+	        } else if(mContentHeight <= mCollapsedHeight + mHandleHeight) {
+	        	mCollapsedHeight += mHandleHeight;
 	        	mHandle.setVisibility(View.GONE);
-	        	lp = mContent.getLayoutParams();
-	            lp.height = mContentHeight;
-	            mContent.setLayoutParams(lp);
 	        } else {
 	            mHandle.setVisibility(View.VISIBLE);
 	        }
+	        
+	        lp = (LinearLayout.LayoutParams) mContent.getLayoutParams();
+	        lp.height = mCollapsedHeight;
+	        mContent.setLayoutParams(lp);
         }
 
         // Then let the usual thing happen
