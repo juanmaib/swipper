@@ -22,6 +22,8 @@ import com.strongloop.android.loopback.callbacks.ListCallback;
 
 public class PlacesProvider implements ListCallback<Place> {
 
+	protected final static int MAX_RETRIES = 2;
+	
 	protected PlacesCallback mCallback;
 	protected PlaceRepository mRepository;
 	protected Multimap<String, Place> mPlaces;
@@ -30,14 +32,17 @@ public class PlacesProvider implements ListCallback<Place> {
 	protected LatLng mCurrentLocation;
 	protected LatLngBounds mCurrentBounds;
 	protected Comparator<Place> mPlacesComparator;
+	protected int mRetriesLeft;
 	
 	public PlacesProvider(Context context) {
+		resetRetries();
+		
 		RestAdapter restAdapter = ((SwipperApp) context.getApplicationContext()).getRestAdapter();
 		mRepository = restAdapter.createRepository(PlaceRepository.class);
 		mPlaces = ArrayListMultimap.create();
 		mFilteredPlaces = new ArrayList<Place>();
 		mFilters = new HashSet<String>();
-		
+				
 		mPlacesComparator = new Comparator<Place>() {
 			
 			@Override
@@ -88,6 +93,10 @@ public class PlacesProvider implements ListCallback<Place> {
 			mRepository.nearBy(northWest, southEast, this);
 		}
 	}
+	
+	protected void resetRetries() {
+		mRetriesLeft = MAX_RETRIES;
+	}
 		
 	public void setFilters(List<String> filters) {
 		mFilters.clear();
@@ -118,6 +127,7 @@ public class PlacesProvider implements ListCallback<Place> {
 	
 	@Override
 	public void onSuccess(List<Place> places) {
+		resetRetries();
 		mPlaces.clear();
 		
 		for(Place p: places) {
@@ -130,8 +140,16 @@ public class PlacesProvider implements ListCallback<Place> {
 
 	@Override
 	public void onError(Throwable t) {
-		if(mCallback != null) {
-			mCallback.placesError(t);
+		if(mRetriesLeft > 0) {
+			if(mCallback != null) {
+				mCallback.placesRetry(t);
+			}
+			mRetriesLeft--;
+			loadPlaces();
+		}else{
+			if(mCallback != null) {
+				mCallback.placesError(t);
+			}
 		}
 	}
 	
@@ -171,6 +189,7 @@ public class PlacesProvider implements ListCallback<Place> {
 	
 	public interface PlacesCallback {
 		public void placesUpdated(List<Place> places);
+		public void placesRetry(Throwable t);
 		public void placesError(Throwable t);
 	}
 	

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
@@ -14,6 +16,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,6 +71,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 	protected String mStatusNoPlacesString;
 	protected String mStatusZoomInString;
 	
+	protected Timer mMapsWaiter;
+	
 	public PlacesMapFragment() {
 		super();
 	}
@@ -91,6 +96,15 @@ public class PlacesMapFragment extends SupportMapFragment {
 	public void onAttach(Activity activity) {
         super.onAttach(activity);
         mActivity = activity;  
+        
+		mMapsWaiter = new Timer();
+		mMapsWaiter.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				Log.i("SWIPPER", "map errorr");
+				((MainActivity) mActivity).networkErrorOnUiThread();
+			}
+		}, 20000);
     }
 	
 	@Override
@@ -125,7 +139,8 @@ public class PlacesMapFragment extends SupportMapFragment {
 		mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			
 			@Override
-			public void onCameraChange(CameraPosition camPosition) {					
+			public void onCameraChange(CameraPosition camPosition) {
+				mMapsWaiter.cancel();
 				if(camPosition.zoom > 10) {
 					
 					setStatusText(mStatusLoadingString);
@@ -271,5 +286,13 @@ public class PlacesMapFragment extends SupportMapFragment {
 	public void onDetach() {
 		mActivity = null;
 		super.onDetach();
+	}
+	
+	public void retrying() {
+		setStatusText(getResources().getString(R.string.status_retry));
+	}
+	
+	public void error() {
+		setStatusText("Can't load places, try again later");
 	}
 }

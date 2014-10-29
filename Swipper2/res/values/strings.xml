@@ -58,6 +58,7 @@
     <string name="food">Food</string>
     
     <string name="error_place_details_not_available">We have no info about that place</string>
+    <string name="error_network">We are having problems connecting to the server. Check your Internet connection or try again later.</string>
     
     <string name="description">DESCRIPTION</string>
     <string name="reviews">REVIEWS</string>
@@ -71,6 +72,7 @@
     <string name="status_done">All done</string>
     <string name="status_no_places">No places found, try changing filters or location</string>
     <string name="status_zoom_in">Zoom in to see the places</string>
+    <string name="status_retry">Network error, retrying...</string>
     
     
     
