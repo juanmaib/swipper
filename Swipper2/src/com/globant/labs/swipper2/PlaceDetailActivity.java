@@ -185,6 +185,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		MenuItem itemIcon = menu.add(mCategoryStringId);
 		MenuItemCompat.setShowAsAction(itemIcon, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
 		itemIcon.setIcon(mCategoryMarkerId);
+		itemIcon.setEnabled(false);
 		return super.onCreateOptionsMenu(menu);
 	}
 
