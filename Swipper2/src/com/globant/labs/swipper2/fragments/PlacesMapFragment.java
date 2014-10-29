@@ -226,7 +226,11 @@ public class PlacesMapFragment extends SupportMapFragment {
 		LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 		List<String> keeps = new ArrayList<String>();
 		
-		LatLng myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+		LatLng myLocation = null;
+		if(currentLocation != null) {
+			myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+		}
+		
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		for(Place p: places) {
 			if(!mMarkers.containsKey(p.getId())) {			

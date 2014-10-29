@@ -117,7 +117,7 @@
         
     </LinearLayout>
     
-    <ScrollView
+    <com.globant.labs.swipper2.widget.SwipperScrollView
         android:id="@+id/centralScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -126,16 +126,16 @@
         android:background="@color/white_background"
         android:fillViewport="true" >
     
-	    <LinearLayout
+	    <com.globant.labs.swipper2.widget.SwipperLinearLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:orientation="vertical"
 	        android:background="@color/white_background">
 	    
-     		<com.globant.labs.swipper2.widget.ExpandablePanel 
+     		<com.globant.labs.swipper2.widget.ExpandablePanel
 		        android:id="@+id/descriptionLayout"
 			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
+			    android:layout_height="0dp"
 			    android:layout_weight="1"
 			    android:orientation="vertical"
 		    	android:paddingTop="10dp"
@@ -190,7 +190,7 @@
 		    <com.globant.labs.swipper2.widget.ReviewsExpandablePanel 
 		        android:id="@+id/reviewsLayout"
 			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
+			    android:layout_height="0dp"
 			    android:layout_weight="1"
 			    android:orientation="vertical"
 		    	android:paddingTop="10dp"
@@ -273,8 +273,8 @@
 		        
 		     </LinearLayout>
 	     
-	     </LinearLayout>
-     </ScrollView>
+	     </com.globant.labs.swipper2.widget.SwipperLinearLayout>
+     </com.globant.labs.swipper2.widget.SwipperScrollView>
      
      <LinearLayout
         android:id="@+id/noMoreInfoLayout"

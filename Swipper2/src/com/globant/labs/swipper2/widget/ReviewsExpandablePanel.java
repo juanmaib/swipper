@@ -102,8 +102,7 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {   	
-    	
-    	int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
     	int heightSize = MeasureSpec.getSize(heightMeasureSpec);
     	
     	if(!mExpanded) {
@@ -115,6 +114,8 @@ public class ReviewsExpandablePanel extends LinearLayout {
 	        mContent.setLayoutParams(lp);
 	        
 	        super.onMeasure(widthMeasureSpec, MeasureSpec.UNSPECIFIED);
+	        
+	        mHandleHeight = mHandle.getMeasuredHeight();
 	        
 	        int minHeight = getMeasuredHeight();
 	        int diffHeight = heightSize - minHeight;
@@ -148,9 +149,10 @@ public class ReviewsExpandablePanel extends LinearLayout {
 
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
     	
-        if(heightMode == MeasureSpec.EXACTLY && heightSize > getMeasuredHeight()) {
+        if(mExpanded && getMeasuredHeight() < heightSize) {
         	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
+
     }
 
     private class PanelToggler implements OnClickListener {

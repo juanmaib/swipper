@@ -53,8 +53,8 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
-	//public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
-	public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
+	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
+	//public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
@@ -185,6 +185,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		MenuItem itemIcon = menu.add(mCategoryStringId);
 		MenuItemCompat.setShowAsAction(itemIcon, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
 		itemIcon.setIcon(mCategoryMarkerId);
+		itemIcon.setEnabled(false);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -234,12 +235,16 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		boolean hasReviews = false;
 		boolean hasPhotos = false;
 			
-		//if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
-		//	mDescriptionText.setText(mPlace.getDescription());
-		//	hasDescription = true;
-		//}else{
+		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed arcu.");
+		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec ipsum eget velit tempus luctus vel eget nisi. Fusce congue condimentum sem, luctus iaculis enim feugiat id. Praesent volutpat, libero.");
+		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lobortis urna et facilisis ullamcorper. Curabitur eleifend accumsan molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec imperdiet eu libero ac pharetra. Aenean a eros vel nunc maximus facilisis. Ut porttitor sollicitudin ex, vel molestie sem euismod pharetra. Mauris sodales arcu vel odio eleifend, nec.");
+		
+		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
+			mDescriptionText.setText(mPlace.getDescription());
+			hasDescription = true;
+		}else{
 			mDescriptionLayout.setVisibility(View.GONE);
-		//}
+		}
 	
 		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
 			
@@ -253,11 +258,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 					RatingBar vBar = (RatingBar) v.findViewById(R.id.reviewRating);
 					vBar.setProgress(review.getRating());
 					mReviewsList.addView(v);
+					hasReviews = true;
 				}
 			}
-
-			hasReviews = true;
-			
+	
 		}else{
 			mReviewsLayout.setVisibility(View.GONE);
 		}
@@ -385,7 +389,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	
 	protected void shareAction() {
 		StringBuilder stringBuilder = new StringBuilder()
-			.append(mPlace.getName())
+			.append(mPlace.getCategory())
+			.append("\n").append(mPlace.getName())
 			.append("\n").append(mPlace.getAddress())
 			.append("\n").append(mPlace.getCity())
 			.append(", ").append(mPlace.getState())

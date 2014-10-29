@@ -11,7 +11,8 @@
          As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions.
     -->
-	<android.support.v4.view.ViewPager
+
+	<com.globant.labs.swipper2.widget.NonSwipeableViewPager
 	    android:id="@+id/viewPager"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent" />
