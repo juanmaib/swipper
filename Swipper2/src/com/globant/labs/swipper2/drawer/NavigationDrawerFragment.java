@@ -296,6 +296,14 @@ public class NavigationDrawerFragment extends Fragment {
 		return ((ActionBarActivity) getActivity()).getSupportActionBar();
 	}
 
+	public void closeAndLock() {
+		mDrawerLayout.closeDrawers();
+		mDrawerToggle.setDrawerIndicatorEnabled(false);
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(false);
+		actionBar.setHomeButtonEnabled(false);
+	}
+	
 	/**
 	 * Callbacks interface that all activities using this fragment must
 	 * implement.

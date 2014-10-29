@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -69,7 +70,11 @@ public class MainActivity extends ActionBarActivity implements
 	protected PlacesMapFragment mMapFragment;
 	protected PlacesListFragment mListFragment;
 	
+	protected LinearLayout mNoticeLayout;
+	
 	protected boolean mDisplayedWalkthrough;
+	
+	protected Menu mMenu;
 	
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -90,10 +95,12 @@ public class MainActivity extends ActionBarActivity implements
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		mDisplayedWalkthrough = sp.getBoolean(PREF_WALKTHROUGH_DISPLAYED, false);
-		
+				
 		mPlacesProvider = new PlacesProvider(this);
 		
 		mFarZoom = false;
+		
+		mNoticeLayout = (LinearLayout) findViewById(R.id.noticeLayout);
 		
 		mViewPager = (ViewPager) findViewById(R.id.viewPager);
 		mFragmentsAdapter = new MainFragmentsAdapter(getSupportFragmentManager(), mPlacesProvider, this);
@@ -157,13 +164,13 @@ public class MainActivity extends ActionBarActivity implements
 				
 				@Override
 				public void placesRetry(Throwable t) {
-					// TODO Auto-generated method stub
-					
+					mMapFragment.retrying();
 				}
 				
 				@Override
 				public void placesError(Throwable t) {
-					Log.i("SWIPPER", "Places error");
+					Log.i("SWIPPER", "places errorr");
+					networkError();
 					t.printStackTrace();
 				}
 				
@@ -214,6 +221,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		mMenu = menu;
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
@@ -354,6 +362,21 @@ public class MainActivity extends ActionBarActivity implements
 		if(!mDisplayedWalkthrough) {
 			showCoachMarks();
 		}
+	}
+	
+	public void networkError() {
+    	mNoticeLayout.setVisibility(View.VISIBLE);
+		mNavigationDrawerFragment.closeAndLock();
+		mMapFragment.setHasOptionsMenu(false);
+		mListFragment.setHasOptionsMenu(false);		
+	}
+	
+	public void networkErrorOnUiThread() {
+		runOnUiThread(new Runnable() {
+		    public void run(){   
+		    	networkError();
+		    }
+		});	
 	}
 		
 

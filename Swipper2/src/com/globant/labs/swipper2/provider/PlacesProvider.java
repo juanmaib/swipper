@@ -22,7 +22,7 @@ import com.strongloop.android.loopback.callbacks.ListCallback;
 
 public class PlacesProvider implements ListCallback<Place> {
 
-	protected final static int MAX_RETRIES = 3;
+	protected final static int MAX_RETRIES = 2;
 	
 	protected PlacesCallback mCallback;
 	protected PlaceRepository mRepository;

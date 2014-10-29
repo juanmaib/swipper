@@ -101,9 +101,10 @@ public class PlacesMapFragment extends SupportMapFragment {
 		mMapsWaiter.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				Log.i("SWIPPER", "maps timeout");
+				Log.i("SWIPPER", "map errorr");
+				((MainActivity) mActivity).networkErrorOnUiThread();
 			}
-		}, 30000);
+		}, 20000);
     }
 	
 	@Override
@@ -284,7 +285,7 @@ public class PlacesMapFragment extends SupportMapFragment {
 	}
 	
 	public void retrying() {
-		setStatusText("Network error, retrying...");
+		setStatusText(getResources().getString(R.string.status_retry));
 	}
 	
 	public void error() {
