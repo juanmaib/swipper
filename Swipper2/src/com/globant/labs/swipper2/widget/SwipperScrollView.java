@@ -41,8 +41,7 @@ public class SwipperScrollView extends ScrollView {
         }
         
         setMeasuredDimension(
-        		MeasureSpec.getSize(widthMeasureSpec) | MEASURED_STATE_MASK,
-        		MeasureSpec.getSize(heightMeasureSpec) | MEASURED_STATE_MASK);
+        		MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
         		//Math.min(MeasureSpec.getSize(heightMeasureSpec), childrenHeight) | MEASURED_STATE_MASK);
     }
 
