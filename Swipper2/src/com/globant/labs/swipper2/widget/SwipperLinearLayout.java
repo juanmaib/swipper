@@ -57,8 +57,7 @@ public class SwipperLinearLayout extends LinearLayout {
 		}
 
 		setMeasuredDimension(
-				MeasureSpec.getSize(widthMeasureSpec) | MEASURED_STATE_MASK,
-				resultingHeight | MEASURED_STATE_MASK);
+				MeasureSpec.getSize(widthMeasureSpec), resultingHeight);
 	}
     
     
