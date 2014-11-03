@@ -8,4 +8,5 @@
     android:divider="@color/ligth_grey"
     android:dividerHeight="1dp"
     android:footerDividersEnabled="false"
+    android:cacheColorHint="@android:color/transparent"
     tools:context="com.globant.labs.swipper2.drawer.NavigationDrawerFragment" />
