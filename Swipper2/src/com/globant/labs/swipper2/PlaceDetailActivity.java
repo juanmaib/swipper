@@ -106,7 +106,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mCategoryMarkerId = CategoryMapper.getCategoryMarker(placeCategory);
 		mCategoryStringId = CategoryMapper.getCategoryText(placeCategory);
 
-		setTitle(placeName);
+		getSupportActionBar().setTitle(placeName);
 
 		mAddressTextView = (TextView) findViewById(R.id.addressText);
 		mCityTextView = (TextView) findViewById(R.id.cityText);
