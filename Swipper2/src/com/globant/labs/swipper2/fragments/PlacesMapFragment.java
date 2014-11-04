@@ -289,10 +289,18 @@ public class PlacesMapFragment extends SupportMapFragment {
 	}
 	
 	public void retrying() {
-		setStatusText(getResources().getString(R.string.status_retry));
+		setStatusText(getActivity().getResources().getString(R.string.status_retry));
 	}
 	
 	public void error() {
 		setStatusText("Can't load places, try again later");
+	}
+	
+	public void restoreCameraPosition(CameraPosition cameraPosition){
+		mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000, null);
+	}
+
+	public CameraPosition getCameraPosition() {
+		return mMap.getCameraPosition();
 	}
 }
