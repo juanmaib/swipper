@@ -71,6 +71,7 @@
     <string name="status_loading">Loading...</string>
     <string name="status_done">All done</string>
     <string name="status_no_places">No places found, try changing filters or location</string>
+    <string name="status_no_places_dual_line">No places found.\nTry changing filters or location.</string>
     <string name="status_zoom_in">Zoom in to see the places</string>
     <string name="status_retry">Network error, retrying...</string>
     
