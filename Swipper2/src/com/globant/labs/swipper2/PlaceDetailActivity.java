@@ -251,7 +251,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			LayoutInflater inflater = LayoutInflater.from(this);
 
 			for(GoogleReview review : placeDetails.getReviews()) {
-				if(review.getText() != null && !review.getText().equals("")) {
+				if(review.getText() != null && !review.getText().trim().isEmpty()) {
 					View v = inflater.inflate(R.layout.review_item, null);
 					TextView vText = (TextView) v.findViewById(R.id.reviewText);
 					vText.setText("\"" + review.getText() + "\"\u3000 ");
@@ -261,8 +261,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 					hasReviews = true;
 				}
 			}
-	
-		}else{
+		}
+
+		if (!hasReviews) {
 			mReviewsLayout.setVisibility(View.GONE);
 		}
 		
