@@ -1,5 +1,6 @@
 package com.globant.labs.swipper2.drawer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -119,6 +120,19 @@ public class NavigationDrawerFragment extends Fragment {
 	public void setAdapter(CategoriesAdapter adapter) {
 		mAdapter = adapter;
 		mDrawerListView.setAdapter(adapter);		
+	}
+	
+	public List<String> getSelectedCategories(){
+		return mAdapter.getCheckedIds();
+	}
+	
+	public void restoreSelectedCategories(ArrayList<String> selected){
+		mAdapter.setCheckedIds(selected);
+		if (selected.size() != (mAdapter.getCount() - 1)) {
+			mAdapter.getItem(0).setChecked(false);
+		}
+		mAdapter.applyChanges();
+		mCallbacks.onSelectionApplied(selected);
 	}
 	
 	public boolean isDrawerOpen() {
@@ -295,9 +309,14 @@ public class NavigationDrawerFragment extends Fragment {
 	private ActionBar getActionBar() {
 		return ((ActionBarActivity) getActivity()).getSupportActionBar();
 	}
+	
+	public void closeDrawer() {
+		mDrawerLayout.closeDrawer(mFragmentContainerView);
+	}
 
 	public void closeAndLock() {
 		mDrawerLayout.closeDrawers();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 		mDrawerToggle.setDrawerIndicatorEnabled(false);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);

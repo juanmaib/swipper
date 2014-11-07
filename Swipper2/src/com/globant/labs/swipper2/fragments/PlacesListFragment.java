@@ -102,6 +102,12 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+		/*
+		 * int index = getListView().getFirstVisiblePosition(); View v =
+		 * getListView().getChildAt(0); int top = (v == null) ? 0 : v.getTop();
+		 * ((MainActivity) getActivity()).setSelectedPlacePosition(index, top);
+		 */
+
 		Place p = (Place) adapter.getItemAtPosition(position);
 		Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
 		intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
@@ -112,4 +118,8 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		startActivity(intent);
 	}
 
+	/*
+	 * public void setSelectionFromTop(int index, int top) {
+	 * getListView().setSelectionFromTop(index, top); }
+	 */
 }

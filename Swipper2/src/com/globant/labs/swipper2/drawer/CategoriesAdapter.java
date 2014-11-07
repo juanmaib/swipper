@@ -110,6 +110,14 @@ public class CategoriesAdapter extends BaseAdapter {
 		return chekedIds;	
 	}
 	
+	public void setCheckedIds(ArrayList<String> selected){
+		for (int i = 1; i < mCategories.size(); i++) {
+			DrawerCategoryItem item = (DrawerCategoryItem) mCategories.get(i);
+			item.setChecked(selected.contains(item.getName()));
+		}
+		notifyDataSetChanged();
+	}
+	
 	@Override
 	public int getCount() {
 		return mCategories.size();
