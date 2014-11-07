@@ -316,6 +316,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 	public void closeAndLock() {
 		mDrawerLayout.closeDrawers();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 		mDrawerToggle.setDrawerIndicatorEnabled(false);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
