@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
+import com.globant.labs.swipper2.utils.DroidUtils;
 import com.globant.labs.swipper2.widget.SwipperTextView;
 
 public class PlacesListFragment extends ListFragment implements OnItemClickListener {
@@ -62,7 +63,7 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		emptyListLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT));
 		emptyListLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-		emptyListLayout.setPadding(0, dpToPixels(60), 0, 0);
+		emptyListLayout.setPadding(0, DroidUtils.dpToPx(60, getActivity()), 0, 0);
 		emptyListLayout.setBackgroundColor(getResources().getColor(android.R.color.white));
 		emptyListLayout.setVisibility(View.GONE);
 
@@ -81,7 +82,7 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		textEmptyList.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 		textEmptyList.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),
 				"fonts/roboto_light_italic.ttf"));
-		textEmptyList.setPadding(0, dpToPixels(20), 0, 0);
+		textEmptyList.setPadding(0, DroidUtils.dpToPx(20, getActivity()), 0, 0);
 		textEmptyList.setText(R.string.status_no_places_dual_line);
 
 		// Add both views to the linear layout
@@ -92,12 +93,6 @@ public class PlacesListFragment extends ListFragment implements OnItemClickListe
 		// empty
 		((ViewGroup) getListView().getParent()).addView(emptyListLayout);
 		getListView().setEmptyView(emptyListLayout);
-	}
-
-	public int dpToPixels(int dp) {
-		float scale = getResources().getDisplayMetrics().density;
-		int dpAsPixels = (int) (dp * scale + 0.5f);
-		return dpAsPixels;
 	}
 
 	@Override
