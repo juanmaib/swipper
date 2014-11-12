@@ -82,6 +82,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected TextView mScheduleTextView;
 	protected TextView mDescriptionText;
 	protected ImageButton mNavigateButton;
+	protected ImageButton mDialButton;
 	protected ImageButton mShareButton;
 	protected ImageButton mReportButton;
 
@@ -128,6 +129,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mNoMoreInfoLayout = (LinearLayout) findViewById(R.id.noMoreInfoLayout);
 
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
+		mDialButton = (ImageButton) findViewById(R.id.dialButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
 		mReportButton = (ImageButton) findViewById(R.id.reportButton);
 
@@ -359,6 +361,20 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 		mProgressBarLayout.setVisibility(View.GONE);
 
+		// set up the dial button
+		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
+				&& mPlace.getPhone() != null && !mPlace.getPhone().trim().isEmpty()) {
+
+			mDialButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialAction();
+				}
+			});
+		} else {
+			mDialButton.setVisibility(View.GONE);
+			findViewById(R.id.dialButtonSeparator).setVisibility(View.GONE);
+		}
 	}
 
 	protected String getPhotoURL(String photoReference) {
@@ -400,6 +416,13 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
+	}
+
+	public void dialAction() {
+		// show the dialer and let the user have the last word
+		Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+		dialIntent.setData(Uri.parse("tel:" + mPlace.getPhone()));
+		startActivity(dialIntent);
 	}
 
 	protected void shareAction() {
