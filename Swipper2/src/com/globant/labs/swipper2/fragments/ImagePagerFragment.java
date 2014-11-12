@@ -9,9 +9,12 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,10 +38,18 @@ public class ImagePagerFragment extends Fragment {
 
 	DisplayImageOptions options;
 
+	private LinearLayout mTitleBar;
+	private AlphaAnimation mTitleFade;
+	private static final int TITLE_FADE_ANIMATION_DURATION = 500;
+	private static final int TITLE_FADE_ANIMATION_OFFSET = 2500;
+
 	@Override
 	public void onAttach(Activity activity) {
 		// let's recover our photos' url as soon as we can
 		mImageUrls = getArguments().getStringArray(PHOTOS_URLS_EXTRA);
+
+		setUpTitleAnimation();
+
 		super.onAttach(activity);
 	}
 
@@ -56,12 +67,13 @@ public class ImagePagerFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_image_pager, container, false);
+		mTitleBar = (LinearLayout) rootView.findViewById(R.id.titleBar_Gallery);
 		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
 		pager.setAdapter(new ImageAdapter());
-		
+
 		// go to the photo we've done clic long ago in the place detail activity
 		pager.setCurrentItem(getArguments().getInt(PHOTO_INDEX_EXTRA, 0));
-		
+
 		// as always, let's preload the other views
 		pager.setOffscreenPageLimit(3);
 
@@ -69,22 +81,43 @@ public class ImagePagerFragment extends Fragment {
 		TextView title = (TextView) rootView.findViewById(R.id.placeName_Gallery);
 		title.setText(getArguments().getString(PLACE_NAME_EXTRA));
 
-		// exit button
-		// dis gunna be bad
-		ImageView exit = (ImageView) rootView.findViewById(R.id.galleryExit);
-		exit.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// this is bad, and I should feel bad
-				// i've dissapointed you, android design guidelines...
-				getActivity().finish();
-			}
-		});
-
 		return rootView;
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		onScreenTouched();
+	}
+
+	private void setUpTitleAnimation() {
+		mTitleFade = new AlphaAnimation(1.0f, 0.0f);
+		mTitleFade.setDuration(TITLE_FADE_ANIMATION_DURATION);
+		mTitleFade.setStartOffset(TITLE_FADE_ANIMATION_OFFSET);
+		mTitleFade.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				mTitleBar.setVisibility(View.VISIBLE);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mTitleBar.setVisibility(View.GONE);
+			}
+		});
+	}
+	
+	public void onScreenTouched() {
+		mTitleFade.cancel();
+		mTitleFade.reset();
+		mTitleBar.startAnimation(mTitleFade);
+	}
+
 	// mostly demo code below. modified some bits to adapt to our scenario
 	private class ImageAdapter extends PagerAdapter {
 

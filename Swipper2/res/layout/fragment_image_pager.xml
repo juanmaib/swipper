@@ -13,15 +13,15 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/titleBar_Gallery"
+        style="@style/Swipper.Gallery.TitleBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:background="@color/black_translucent"
+        android:layout_height="?attr/actionBarSize"
         tools:ignore="UseCompoundDrawables" >
 
-        <TextView
+        <com.globant.labs.swipper2.widget.SwipperTextView
             android:id="@+id/placeName_Gallery"
+            style="@style/Swipper.Gallery.TitleBar.Text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -29,12 +29,22 @@
             android:paddingLeft="@dimen/galleryPadding" />
 
         <ImageView
+            android:id="@+id/shareImage_Gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/imageExitButtonDescription"
+            android:paddingRight="@dimen/galleryPadding"
+            android:src="@drawable/bar_share_button" />
+
+        <!--
+             <ImageView
             android:id="@+id/galleryExit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/imageExitButtonDescription"
             android:padding="@dimen/galleryPadding"
             android:src="@drawable/ic_exit" />
+        -->
     </LinearLayout>
 
 </RelativeLayout>
