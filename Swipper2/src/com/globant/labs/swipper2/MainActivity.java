@@ -36,6 +36,7 @@ import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
 import com.globant.labs.swipper2.drawer.DrawerCategoryItem;
 import com.globant.labs.swipper2.drawer.NavigationDrawerFragment;
+import com.globant.labs.swipper2.drawer.NavigationDrawerFragment.NavigationDrawerSlideCallbacks;
 import com.globant.labs.swipper2.fragments.PlacesAdapter;
 import com.globant.labs.swipper2.fragments.PlacesListFragment;
 import com.globant.labs.swipper2.fragments.PlacesMapFragment;
@@ -49,7 +50,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks, LocationListener,
-		ViewTreeObserver.OnGlobalLayoutListener {
+		ViewTreeObserver.OnGlobalLayoutListener, NavigationDrawerSlideCallbacks {
 
 	private static final String PREF_WALKTHROUGH_DISPLAYED = "walkthrough_displayed";
 	private static final String SAVED_LOCATION = "location";
@@ -428,6 +429,10 @@ public class MainActivity extends ActionBarActivity implements
 					.getStringArrayList(SAVED_CATEGORIES));
 			mViewPager.setCurrentItem(mRestoreLater.getInt(SAVED_PAGE));
 		}
+		
+		if (mNavigationDrawerFragment.isDrawerOpen()) {
+			onDrawerOpened();
+		}
 	}
 
 	public void networkError() {
@@ -443,6 +448,21 @@ public class MainActivity extends ActionBarActivity implements
 				networkError();
 			}
 		});
+	}
+	
+	@Override
+	public void onDrawerOpened() {
+		mMapFragment.onDrawerOpened();
+	}
+	
+	@Override
+	public void onDrawerClosed() {
+		mMapFragment.onDrawerClosed();
+	}
+
+	@Override
+	public void onDrawerSlide(float slideOffset) {
+		mMapFragment.onDrawerSlide(slideOffset);
 	}
 
 	/*
