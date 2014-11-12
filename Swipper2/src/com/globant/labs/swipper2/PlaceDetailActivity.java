@@ -54,7 +54,8 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 public class PlaceDetailActivity extends ActionBarActivity implements ObjectCallback<PlaceDetails> {
 
 	public static final String PHOTOS_API_KEY = "AIzaSyDT_7HU59iNKx1zEQDj2wbCGP65BkoEXqs";
-	//public static final String PHOTOS_API_KEY = "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
+	// public static final String PHOTOS_API_KEY =
+	// "AIzaSyAyeLAbHzmMtrjOO_yVwGYs4Xg7iYbpVdM";
 
 	public static final String PLACE_ID_EXTRA = "place-id-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
@@ -79,9 +80,10 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected TextView mScheduleTextView;
 	protected TextView mDescriptionText;
 	protected ImageButton mNavigateButton;
+	protected ImageButton mDialButton;
 	protected ImageButton mShareButton;
 	protected ImageButton mReportButton;
-	
+
 	protected PlaceDetails mPlace;
 
 	protected String[] mPhotosURLs;
@@ -124,30 +126,31 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mNoMoreInfoLayout = (LinearLayout) findViewById(R.id.noMoreInfoLayout);
 
 		mNavigateButton = (ImageButton) findViewById(R.id.navigateButton);
+		mDialButton = (ImageButton) findViewById(R.id.dialButton);
 		mShareButton = (ImageButton) findViewById(R.id.shareButton);
 		mReportButton = (ImageButton) findViewById(R.id.reportButton);
-		
+
 		mNavigateButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				navigateAction();
 			}
 		});
-		
+
 		mShareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				shareAction();
 			}
 		});
-		
+
 		mReportButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				reportAction();
 			}
 		});
-		 
+
 		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
 		PlaceDetailsRepository placeDetailsRepo = restAdapter
 				.createRepository(PlaceDetailsRepository.class);
@@ -196,17 +199,17 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	}
 
 	private void changeSizeTitle() {
-	    Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_light.ttf");
-	    int actionBarTitleId;
-	    
-	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-	    	actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-	    } else {
-	    	actionBarTitleId = R.id.action_bar_title;
-	    }
-	    
-	    TextView titleTextView = (TextView) findViewById(actionBarTitleId);
-	    titleTextView.setTypeface(typeFace);
+		Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto_light.ttf");
+		int actionBarTitleId;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			actionBarTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+		} else {
+			actionBarTitleId = R.id.action_bar_title;
+		}
+
+		TextView titleTextView = (TextView) findViewById(actionBarTitleId);
+		titleTextView.setTypeface(typeFace);
 	}
 
 	@SuppressLint("InflateParams")
@@ -218,40 +221,40 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		mAddressTextView.setText(placeDetails.getAddress());
 		mCityTextView.setText(placeDetails.getCity() + ", " + placeDetails.getState() + ", "
 				+ placeDetails.getCountry());
-		
+
 		mPhoneTextView.setText(placeDetails.getPhone());
-		
-		if(placeDetails.getSchedules() != null) {
+
+		if (placeDetails.getSchedules() != null) {
 			Calendar calendar = Calendar.getInstance();
-			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1; 
+			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
 			mScheduleTextView.setText(placeDetails.getSchedules().get(dayOfWeek));
-		}else{
+		} else {
 			mScheduleLayout.setVisibility(View.GONE);
 		}
-			
-		//mScheduleTextView.setText("10:30 am - 20:30 pm");
-				
+
+		// mScheduleTextView.setText("10:30 am - 20:30 pm");
+
 		boolean hasDescription = false;
 		boolean hasReviews = false;
 		boolean hasPhotos = false;
-			
-		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed arcu.");
-		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec ipsum eget velit tempus luctus vel eget nisi. Fusce congue condimentum sem, luctus iaculis enim feugiat id. Praesent volutpat, libero.");
-		//mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lobortis urna et facilisis ullamcorper. Curabitur eleifend accumsan molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec imperdiet eu libero ac pharetra. Aenean a eros vel nunc maximus facilisis. Ut porttitor sollicitudin ex, vel molestie sem euismod pharetra. Mauris sodales arcu vel odio eleifend, nec.");
-		
-		if(mPlace.getDescription() != null && mPlace.getDescription() != "") {
+
+		// mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed arcu.");
+		// mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec ipsum eget velit tempus luctus vel eget nisi. Fusce congue condimentum sem, luctus iaculis enim feugiat id. Praesent volutpat, libero.");
+		// mPlace.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus lobortis urna et facilisis ullamcorper. Curabitur eleifend accumsan molestie. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec imperdiet eu libero ac pharetra. Aenean a eros vel nunc maximus facilisis. Ut porttitor sollicitudin ex, vel molestie sem euismod pharetra. Mauris sodales arcu vel odio eleifend, nec.");
+
+		if (mPlace.getDescription() != null && mPlace.getDescription() != "") {
 			mDescriptionText.setText(mPlace.getDescription());
 			hasDescription = true;
-		}else{
+		} else {
 			mDescriptionLayout.setVisibility(View.GONE);
 		}
-	
-		if(placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
-			
+
+		if (placeDetails.getReviews() != null && placeDetails.getReviews().size() > 0) {
+
 			LayoutInflater inflater = LayoutInflater.from(this);
 
-			for(GoogleReview review : placeDetails.getReviews()) {
-				if(review.getText() != null && !review.getText().trim().isEmpty()) {
+			for (GoogleReview review : placeDetails.getReviews()) {
+				if (review.getText() != null && !review.getText().trim().isEmpty()) {
 					View v = inflater.inflate(R.layout.review_item, null);
 					TextView vText = (TextView) v.findViewById(R.id.reviewText);
 					vText.setText("\"" + review.getText() + "\"\u3000 ");
@@ -266,9 +269,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		if (!hasReviews) {
 			mReviewsLayout.setVisibility(View.GONE);
 		}
-		
+
 		List<Photo> photos = placeDetails.getPhotos();
-		if(photos != null && photos.size() > 0) {
+		if (photos != null && photos.size() > 0) {
 
 			Resources r = getResources();
 			int rightMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
@@ -330,29 +333,43 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 						});
 			}
-			
+
 			hasPhotos = true;
-			
+
 		} else {
 			mPhotosSection.setVisibility(View.GONE);
 		}
 
-		if(!hasPhotos) {
-			if(hasDescription && !hasReviews) {
+		if (!hasPhotos) {
+			if (hasDescription && !hasReviews) {
 				mDescriptionLayout.instantExpand();
-			}else if(!hasDescription && hasReviews) {
+			} else if (!hasDescription && hasReviews) {
 				mReviewsLayout.instantExpand();
 			}
 		}
-		
-		if(!hasDescription && !hasReviews && !hasPhotos) {
+
+		if (!hasDescription && !hasReviews && !hasPhotos) {
 			mNoMoreInfoLayout.setVisibility(View.VISIBLE);
 		}
-		
-		mProgressBarLayout.setVisibility(View.GONE);
 
+		mProgressBarLayout.setVisibility(View.GONE);
+		
+		// set up the dial button
+		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
+				&& mPlace.getPhone() != null && !mPlace.getPhone().trim().isEmpty()) {
+
+			mDialButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialAction();
+				}
+			});
+		} else {
+			mDialButton.setVisibility(View.GONE);
+			findViewById(R.id.dialButtonSeparator).setVisibility(View.GONE);
+		}
 	}
-	
+
 	protected String getPhotoURL(String photoReference) {
 		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=300"
 				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
@@ -376,95 +393,95 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void navigateAction() {
-		String url = "http://maps.google.com/maps?"
-						+ "daddr="
-						+ mPlace.getLocation().latitude
-						+ ","
-						+ mPlace.getLocation().longitude;
-		
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW,  Uri.parse(url));
+		String url = "http://maps.google.com/maps?" + "daddr=" + mPlace.getLocation().latitude
+				+ "," + mPlace.getLocation().longitude;
+
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
-	
+
+	public void dialAction() {
+		// show the dialer and let the user have the last word
+		Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+		dialIntent.setData(Uri.parse("tel:" + mPlace.getPhone()));
+		startActivity(dialIntent);
+	}
+
 	protected void shareAction() {
-		StringBuilder stringBuilder = new StringBuilder()
-			.append(mPlace.getCategory())
-			.append("\n").append(mPlace.getName())
-			.append("\n").append(mPlace.getAddress())
-			.append("\n").append(mPlace.getCity())
-			.append(", ").append(mPlace.getState())
-			.append(", ").append(mPlace.getCountry())
-			.append("\n").append(mPlace.getPhone());
-		
-		if(mPlace.getUrl() != null) {
+		StringBuilder stringBuilder = new StringBuilder().append(mPlace.getCategory()).append("\n")
+				.append(mPlace.getName()).append("\n").append(mPlace.getAddress()).append("\n")
+				.append(mPlace.getCity()).append(", ").append(mPlace.getState()).append(", ")
+				.append(mPlace.getCountry()).append("\n").append(mPlace.getPhone());
+
+		if (mPlace.getUrl() != null) {
 			stringBuilder.append("\n").append(mPlace.getUrl());
 		}
-					
+
 		Intent sendIntent = new Intent(Intent.ACTION_SEND);
 		sendIntent.setType("text/plain");
 		sendIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
-				
+
 		final PackageManager packageManager = getPackageManager();
-		
+
 		List<Intent> targetedShareIntents = new ArrayList<Intent>();
 		List<ResolveInfo> resInfo = packageManager.queryIntentActivities(sendIntent, 0);
 
 		Collections.sort(resInfo, new Comparator<ResolveInfo>() {
-	        @Override
-	        public int compare(ResolveInfo first, ResolveInfo second) {
-	            String firstName = first.loadLabel(packageManager).toString();
-	            String secondName = second.loadLabel(packageManager).toString();
-	            return firstName.compareToIgnoreCase(secondName);
-	        }
-	    });
-		
+			@Override
+			public int compare(ResolveInfo first, ResolveInfo second) {
+				String firstName = first.loadLabel(packageManager).toString();
+				String secondName = second.loadLabel(packageManager).toString();
+				return firstName.compareToIgnoreCase(secondName);
+			}
+		});
+
 		for (ResolveInfo resolveInfo : resInfo) {
 			String packageName = resolveInfo.activityInfo.packageName;
 			String className = resolveInfo.activityInfo.name;
-			
+
 			if (mPlace.getUrl() != null || !packageName.equals("com.facebook.katana")) {
 				Intent targetedShareIntent = new Intent(Intent.ACTION_SEND);
 				targetedShareIntent.setType("text/plain");
 				targetedShareIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
 				targetedShareIntent.setPackage(packageName);
 				targetedShareIntent.setClassName(packageName, className);
-						
+
 				targetedShareIntents.add(targetedShareIntent);
 			}
 		}
-		
-		Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), 
+
+		Intent chooserIntent = Intent.createChooser(targetedShareIntents
+				.remove(targetedShareIntents.size() - 1),
 				getResources().getString(R.string.action_share));
-		
-		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-		
+
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+				targetedShareIntents.toArray(new Parcelable[] {}));
+
 		startActivity(chooserIntent);
 	}
-	
+
 	protected void reportAction() {
-		StringBuilder stringBuilder = new StringBuilder()
-			.append(mPlace.getName())
-			.append("\n").append(mPlace.getAddress())
-			.append("\n").append(mPlace.getCity())
-			.append(", ").append(mPlace.getState())
-			.append(", ").append(mPlace.getCountry())
-			.append("\n").append(mPlace.getPhone());
-	
-		if(mPlace.getUrl() != null) {
+		StringBuilder stringBuilder = new StringBuilder().append(mPlace.getName()).append("\n")
+				.append(mPlace.getAddress()).append("\n").append(mPlace.getCity()).append(", ")
+				.append(mPlace.getState()).append(", ").append(mPlace.getCountry()).append("\n")
+				.append(mPlace.getPhone());
+
+		if (mPlace.getUrl() != null) {
 			stringBuilder.append("\n").append(mPlace.getUrl());
 		}
-		
+
 		stringBuilder.append("\n\n").append("What's the problem?\n...");
-		
+
 		String address = getResources().getString(R.string.contact_email);
-		
-		Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-	            "mailto",address, null));
+
+		Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
+				Uri.fromParts("mailto", address, null));
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SWIPPER REPORT");
 		emailIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
-		startActivity(Intent.createChooser(emailIntent, getResources().getText(R.string.send_report)));
+		startActivity(Intent.createChooser(emailIntent, getResources()
+				.getText(R.string.send_report)));
 
 	}
 }
