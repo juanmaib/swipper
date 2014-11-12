@@ -44,6 +44,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 * A pointer to the current callbacks instance (the Activity).
 	 */
 	private NavigationDrawerCallbacks mCallbacks;
+	private NavigationDrawerSlideCallbacks mSlideCallbacks;
 
 	/**
 	 * Helper component that ties the action bar to the navigation drawer.
@@ -177,6 +178,7 @@ public class NavigationDrawerFragment extends Fragment {
 		) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
+				mSlideCallbacks.onDrawerClosed();
 				super.onDrawerClosed(drawerView);
 				
 				mApplyButton.setEnabled(true);
@@ -193,6 +195,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 			@Override
 			public void onDrawerOpened(View drawerView) {
+				mSlideCallbacks.onDrawerOpened();
 				super.onDrawerOpened(drawerView);
 				if (!isAdded()) {
 					return;
@@ -210,6 +213,12 @@ public class NavigationDrawerFragment extends Fragment {
 
 				getActivity().supportInvalidateOptionsMenu(); // calls
 																// onPrepareOptionsMenu()
+			}
+			
+			@Override
+			public void onDrawerSlide(View drawerView, float slideOffset) {
+				mSlideCallbacks.onDrawerSlide(slideOffset);
+				super.onDrawerSlide(drawerView, slideOffset);
 			}
 		};
 
@@ -245,6 +254,11 @@ public class NavigationDrawerFragment extends Fragment {
 			mCallbacks = (NavigationDrawerCallbacks) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
+		}
+		try {
+			mSlideCallbacks = (NavigationDrawerSlideCallbacks) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException("Activity must implement NavigationDrawerSlideCallbacks.");
 		}
 	}
 
@@ -332,5 +346,11 @@ public class NavigationDrawerFragment extends Fragment {
 		 * Called when an item in the navigation drawer is selected.
 		 */
 		void onSelectionApplied(List<String> ids);
+	}
+	
+	public static interface NavigationDrawerSlideCallbacks {
+		void onDrawerOpened();
+		void onDrawerSlide(float slideOffset);
+		void onDrawerClosed();
 	}
 }

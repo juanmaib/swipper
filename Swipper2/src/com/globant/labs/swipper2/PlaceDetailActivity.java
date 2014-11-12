@@ -62,6 +62,8 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	public static final String PLACE_CATEGORY_EXTRA = "place-category-extra";
 	public static final String PLACE_DISTANCE_EXTRA = "place-distance-extra";
 
+	private int mRetriesLeft = 2;
+
 	protected int mCategoryStringId;
 	protected int mCategoryMarkerId;
 
@@ -89,6 +91,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	protected String[] mPhotosURLs;
 
 	protected int mDeviceWidth;
+	private String mPlaceId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +101,12 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Bundle extras = getIntent().getExtras();
-		String placeId = extras.getString(PLACE_ID_EXTRA);
+		mPlaceId = extras.getString(PLACE_ID_EXTRA);
 		String placeName = extras.getString(PLACE_NAME_EXTRA);
 		String placeCategory = extras.getString(PLACE_CATEGORY_EXTRA);
 		double placeDistance = extras.getDouble(PLACE_DISTANCE_EXTRA);
 
-		Log.i("SWIPPER", "PlaceId: " + placeId);
+		Log.i("SWIPPER", "PlaceId: " + mPlaceId);
 
 		mCategoryMarkerId = CategoryMapper.getCategoryMarker(placeCategory);
 		mCategoryStringId = CategoryMapper.getCategoryText(placeCategory);
@@ -151,14 +154,18 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 			}
 		});
 
-		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
-		PlaceDetailsRepository placeDetailsRepo = restAdapter
-				.createRepository(PlaceDetailsRepository.class);
-		placeDetailsRepo.details(placeId, this);
+		requestDetails();
 
 		DecimalFormat df = new DecimalFormat("0.00");
 		mDistanceTextView.setText(df.format(placeDistance) + " km");
 
+	}
+
+	private void requestDetails() {
+		RestAdapter restAdapter = ((SwipperApp) getApplication()).getRestAdapter();
+		PlaceDetailsRepository placeDetailsRepo = restAdapter
+				.createRepository(PlaceDetailsRepository.class);
+		placeDetailsRepo.details(mPlaceId, this);
 	}
 
 	@Override
@@ -353,7 +360,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 		}
 
 		mProgressBarLayout.setVisibility(View.GONE);
-		
+
 		// set up the dial button
 		if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
 				&& mPlace.getPhone() != null && !mPlace.getPhone().trim().isEmpty()) {
@@ -383,10 +390,19 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	@Override
 	public void onError(Throwable t) {
-		String errorMessage = getResources().getString(R.string.error_place_details_not_available);
-		Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
-		toast.show();
-		finish();
+		Log.i("onError", "cause: " + t.getCause() + ", message: " + t.getMessage());
+		if (mRetriesLeft > 0) {
+			requestDetails();
+			mRetriesLeft--;
+			String errorMessage = getResources().getString(R.string.error_place_details_retry);
+			Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+		} else {
+			String errorMessage = getResources().getString(
+					R.string.error_place_details_not_available);
+			Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+			toast.show();
+			finish();
+		}
 	}
 
 	@Override
