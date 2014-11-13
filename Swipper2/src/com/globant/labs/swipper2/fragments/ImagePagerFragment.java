@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -44,7 +45,9 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	public static final String PHOTOS_URLS_EXTRA = "photos-urls-extra";
 	public static final String PHOTO_INDEX_EXTRA = "photo-index-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
-	public static final String LAST_PHOTO_LOCATION_PREF = "last-photo-location";
+	private static final String LAST_PHOTO_LOCATION_PREF = "last-photo-location";
+	private static final String ERROR_NO_DIRECTORY = "io-exception-directory";
+	private static final String ERROR_NO_FILE = "io-exception-file";
 
 	private int mCurrentPage;
 
@@ -61,13 +64,16 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	private ImageView mShareImage;
 	private Bitmap[] mBitmaps;
 	private File mSharedFile;
-	private String mFilePath;
+	private String mSwipperFolderPath;
+	private ProgressBar mLoadingView;
+
+	private boolean mSharing = false;
 
 	@Override
 	public void onAttach(Activity activity) {
 		// let's recover our photos' url as soon as we can
 		mImageUrls = getArguments().getStringArray(PHOTOS_URLS_EXTRA);
-		mFilePath = Environment.getExternalStorageDirectory().getPath() + File.separator
+		mSwipperFolderPath = Environment.getExternalStorageDirectory().getPath() + File.separator
 				+ "Swipper";
 
 		setUpTitleAnimation();
@@ -109,6 +115,8 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 		// share image
 		mShareImage = (ImageView) rootView.findViewById(R.id.shareImage_Gallery);
 		mShareImage.setOnClickListener(this);
+
+		mLoadingView = (ProgressBar) rootView.findViewById(R.id.progressBar_Gallery);
 
 		return rootView;
 	}
@@ -155,9 +163,128 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	}
 
 	public void onScreenTouched() {
+		if (!mSharing) {
+			mTitleFade.cancel();
+			mTitleFade.reset();
+			mTitleBar.startAnimation(mTitleFade);
+		}
+	}
+
+	private void hideTitleBar() {
 		mTitleFade.cancel();
+		mTitleBar.setVisibility(View.GONE);
 		mTitleFade.reset();
-		mTitleBar.startAnimation(mTitleFade);
+	}
+
+	private void onLoadingStart() {
+		mSharing = true;
+		hideTitleBar();
+		mLoadingView.setVisibility(View.VISIBLE);
+	}
+
+	private void onLoadingFinish() {
+		mLoadingView.setVisibility(View.GONE);
+		mSharing = false;
+	}
+
+	@Override
+	public void onClick(View shareImage) {
+		shareImage();
+	}
+
+	private void shareImage() {
+		Bitmap image = mBitmaps[mCurrentPage];
+		if (image != null) {
+			// as the write of the bitmap to the new file is a task that could
+			// take a couple of seconds, let's do it in an AsyncTask.
+			new ShareImageTask().execute(image);
+		} else {
+			Toast.makeText(getActivity(), R.string.toastGallery_waitForImageLoad,
+					Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private class ShareImageTask extends AsyncTask<Bitmap, Void, String> {
+
+		@Override
+		protected void onPreExecute() {
+			onLoadingStart();
+		}
+
+		@Override
+		protected String doInBackground(Bitmap... params) {
+			// here are the core actions that, added up, may take a couple of
+			// seconds (we don't want to block the UI thread for longer than
+			// 16ms :P)
+			File directory = new File(mSwipperFolderPath);
+			directory.mkdirs();
+
+			if (directory.isDirectory()) {
+
+				String path = mSwipperFolderPath + File.separator
+						+ Integer.toHexString(params[0].hashCode()) + ".jpg";
+				mSharedFile = new File(path);
+
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				params[0].compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+				try {
+					mSharedFile.createNewFile();
+					FileOutputStream fo = new FileOutputStream(mSharedFile);
+					fo.write(bytes.toByteArray());
+					fo.close();
+				} catch (IOException e) {
+					return ERROR_NO_FILE;
+				}
+
+				return path;
+			}
+			return ERROR_NO_DIRECTORY;
+		}
+
+		@Override
+		protected void onPostExecute(String path) {
+
+			// cannot use switch :(
+			if (ERROR_NO_DIRECTORY == path) {
+				Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingDir,
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+			if (ERROR_NO_FILE == path) {
+				Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingFile,
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			// just in case, preserve the last shared photo, so that we try to
+			// remove it the next time the fragment resumes (to avoid filling
+			// the external storage with temporary files)
+			PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+					.putString(LAST_PHOTO_LOCATION_PREF, path).commit();
+
+			// aaand do what we came to do
+			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+			shareIntent.setType("image/jpg");
+			Uri uri = Uri.parse("file://" + path);
+			shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+			startActivity(shareIntent);
+
+			onLoadingFinish();
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		mCurrentPage = position;
 	}
 
 	// mostly demo code below. modified some bits to adapt to our scenario
@@ -242,66 +369,5 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 		public Parcelable saveState() {
 			return null;
 		}
-	}
-
-	@Override
-	public void onClick(View shareImage) {
-		shareImage();
-	}
-
-	private void shareImage() {
-		Bitmap image = mBitmaps[mCurrentPage];
-		if (image != null) {
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-
-			File directory = new File(mFilePath);
-			directory.mkdirs();
-
-			if (directory.isDirectory()) {
-				String path = mFilePath + File.separator + Integer.toHexString(image.hashCode())
-						+ ".jpg";
-				mSharedFile = new File(path);
-
-				try {
-					mSharedFile.createNewFile();
-					FileOutputStream fo = new FileOutputStream(mSharedFile);
-					fo.write(bytes.toByteArray());
-					fo.close();
-				} catch (IOException e) {
-					Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingFile,
-							Toast.LENGTH_SHORT).show();
-					return;
-				}
-
-				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-						.putString(LAST_PHOTO_LOCATION_PREF, path).commit();
-
-				Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-				shareIntent.setType("image/jpg");
-				Uri uri = Uri.parse("file://" + path);
-				shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-				startActivity(shareIntent);
-			} else {
-				Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingDir,
-						Toast.LENGTH_SHORT).show();
-			}
-		} else {
-			Toast.makeText(getActivity(), R.string.toastGallery_waitForImageLoad,
-					Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	@Override
-	public void onPageScrollStateChanged(int state) {
-	}
-
-	@Override
-	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-	}
-
-	@Override
-	public void onPageSelected(int position) {
-		mCurrentPage = position;
 	}
 }
