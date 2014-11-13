@@ -1,14 +1,25 @@
 package com.globant.labs.swipper2.fragments;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -27,12 +38,15 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class ImagePagerFragment extends Fragment {
+public class ImagePagerFragment extends Fragment implements OnClickListener, OnPageChangeListener {
 
 	public static final int INDEX = 2;
 	public static final String PHOTOS_URLS_EXTRA = "photos-urls-extra";
 	public static final String PHOTO_INDEX_EXTRA = "photo-index-extra";
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
+	public static final String LAST_PHOTO_LOCATION_PREF = "last-photo-location";
+
+	private int mCurrentPage;
 
 	protected String[] mImageUrls;
 
@@ -43,10 +57,18 @@ public class ImagePagerFragment extends Fragment {
 	private static final int TITLE_FADE_ANIMATION_DURATION = 500;
 	private static final int TITLE_FADE_ANIMATION_OFFSET = 2500;
 
+	private ViewPager mPager;
+	private ImageView mShareImage;
+	private Bitmap[] mBitmaps;
+	private File mSharedFile;
+	private String mFilePath;
+
 	@Override
 	public void onAttach(Activity activity) {
 		// let's recover our photos' url as soon as we can
 		mImageUrls = getArguments().getStringArray(PHOTOS_URLS_EXTRA);
+		mFilePath = Environment.getExternalStorageDirectory().getPath() + File.separator
+				+ "Swipper";
 
 		setUpTitleAnimation();
 
@@ -62,32 +84,52 @@ public class ImagePagerFragment extends Fragment {
 				.cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
+
+		mBitmaps = new Bitmap[mImageUrls.length];
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_image_pager, container, false);
 		mTitleBar = (LinearLayout) rootView.findViewById(R.id.titleBar_Gallery);
-		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
-		pager.setAdapter(new ImageAdapter());
+		mPager = (ViewPager) rootView.findViewById(R.id.pager);
+		mPager.setAdapter(new ImageAdapter());
+		mPager.setOnPageChangeListener(this);
 
 		// go to the photo we've done clic long ago in the place detail activity
-		pager.setCurrentItem(getArguments().getInt(PHOTO_INDEX_EXTRA, 0));
+		mPager.setCurrentItem(getArguments().getInt(PHOTO_INDEX_EXTRA, 0));
 
 		// as always, let's preload the other views
-		pager.setOffscreenPageLimit(3);
+		mPager.setOffscreenPageLimit(3);
 
 		// title bar
 		TextView title = (TextView) rootView.findViewById(R.id.placeName_Gallery);
 		title.setText(getArguments().getString(PLACE_NAME_EXTRA));
 
+		// share image
+		mShareImage = (ImageView) rootView.findViewById(R.id.shareImage_Gallery);
+		mShareImage.setOnClickListener(this);
+
 		return rootView;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		onScreenTouched();
+		deleteLastSharedPhoto();
+	}
+
+	private void deleteLastSharedPhoto() {
+		String path = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(
+				LAST_PHOTO_LOCATION_PREF, null);
+		if (path != null) {
+			File file = new File(path);
+			if (file.exists() && file.delete()) {
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+						.remove(LAST_PHOTO_LOCATION_PREF).commit();
+			}
+		}
 	}
 
 	private void setUpTitleAnimation() {
@@ -111,7 +153,7 @@ public class ImagePagerFragment extends Fragment {
 			}
 		});
 	}
-	
+
 	public void onScreenTouched() {
 		mTitleFade.cancel();
 		mTitleFade.reset();
@@ -138,9 +180,8 @@ public class ImagePagerFragment extends Fragment {
 		}
 
 		@Override
-		public Object instantiateItem(ViewGroup view, int position) {
+		public Object instantiateItem(ViewGroup view, final int position) {
 			View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
-			assert imageLayout != null;
 			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
@@ -180,6 +221,7 @@ public class ImagePagerFragment extends Fragment {
 						@Override
 						public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 							spinner.setVisibility(View.GONE);
+							mBitmaps[position] = loadedImage;
 						}
 					});
 
@@ -200,5 +242,66 @@ public class ImagePagerFragment extends Fragment {
 		public Parcelable saveState() {
 			return null;
 		}
+	}
+
+	@Override
+	public void onClick(View shareImage) {
+		shareImage();
+	}
+
+	private void shareImage() {
+		Bitmap image = mBitmaps[mCurrentPage];
+		if (image != null) {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+			File directory = new File(mFilePath);
+			directory.mkdirs();
+
+			if (directory.isDirectory()) {
+				String path = mFilePath + File.separator + Integer.toHexString(image.hashCode())
+						+ ".jpg";
+				mSharedFile = new File(path);
+
+				try {
+					mSharedFile.createNewFile();
+					FileOutputStream fo = new FileOutputStream(mSharedFile);
+					fo.write(bytes.toByteArray());
+					fo.close();
+				} catch (IOException e) {
+					Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingFile,
+							Toast.LENGTH_SHORT).show();
+					return;
+				}
+
+				PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+						.putString(LAST_PHOTO_LOCATION_PREF, path).commit();
+
+				Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+				shareIntent.setType("image/jpg");
+				Uri uri = Uri.parse("file://" + path);
+				shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				startActivity(shareIntent);
+			} else {
+				Toast.makeText(getActivity(), R.string.toastGallery_errorCreatingDir,
+						Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			Toast.makeText(getActivity(), R.string.toastGallery_waitForImageLoad,
+					Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		mCurrentPage = position;
 	}
 }
