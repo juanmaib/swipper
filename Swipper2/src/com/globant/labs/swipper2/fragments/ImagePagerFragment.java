@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,9 +32,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.globant.labs.swipper2.ExtendedViewPager;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.widget.TouchImageView;
+import com.globant.labs.swipper2.widget.ZoomableViewPager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -62,7 +63,7 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	private static final int TITLE_FADE_ANIMATION_DURATION = 500;
 	private static final int TITLE_FADE_ANIMATION_OFFSET = 2500;
 
-	private ExtendedViewPager mPager;
+	private ZoomableViewPager mPager;
 	private ImageView mShareImage;
 	private Bitmap[] mBitmaps;
 	private File mSharedFile;
@@ -100,7 +101,7 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_image_pager, container, false);
 		mTitleBar = (LinearLayout) rootView.findViewById(R.id.titleBar_Gallery);
-		mPager = (ExtendedViewPager) rootView.findViewById(R.id.gallery_pager);
+		mPager = (ZoomableViewPager) rootView.findViewById(R.id.gallery_pager);
 		mPager.setAdapter(new TouchImageAdapter());
 		mPager.setOnPageChangeListener(this);
 
@@ -367,6 +368,11 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 							// we need to cause an update to the view now
 							view.setVisibility(View.VISIBLE);
 							mBitmaps[position] = loadedImage;
+							Log.i("onLoadingComplete",
+									imageUri + "view width: " + view.getWidth() + ", view height: "
+											+ view.getHeight() + ", bitmap width: "
+											+ loadedImage.getWidth() + ", bitmap height: "
+											+ loadedImage.getHeight());
 						}
 					});
 

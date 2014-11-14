@@ -1,19 +1,18 @@
-package com.globant.labs.swipper2;
+package com.globant.labs.swipper2.widget;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.globant.labs.swipper2.widget.TouchImageView;
 
-public class ExtendedViewPager extends ViewPager {
+public class ZoomableViewPager extends ViewPager {
 
-	public ExtendedViewPager(Context context) {
+	public ZoomableViewPager(Context context) {
 		super(context);
 	}
 
-	public ExtendedViewPager(Context context, AttributeSet attrs) {
+	public ZoomableViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
