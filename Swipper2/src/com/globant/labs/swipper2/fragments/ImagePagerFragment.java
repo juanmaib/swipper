@@ -16,12 +16,12 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -31,7 +31,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.globant.labs.swipper2.ExtendedViewPager;
 import com.globant.labs.swipper2.R;
+import com.globant.labs.swipper2.widget.TouchImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -60,7 +62,7 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	private static final int TITLE_FADE_ANIMATION_DURATION = 500;
 	private static final int TITLE_FADE_ANIMATION_OFFSET = 2500;
 
-	private ViewPager mPager;
+	private ExtendedViewPager mPager;
 	private ImageView mShareImage;
 	private Bitmap[] mBitmaps;
 	private File mSharedFile;
@@ -98,8 +100,8 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_image_pager, container, false);
 		mTitleBar = (LinearLayout) rootView.findViewById(R.id.titleBar_Gallery);
-		mPager = (ViewPager) rootView.findViewById(R.id.pager);
-		mPager.setAdapter(new ImageAdapter());
+		mPager = (ExtendedViewPager) rootView.findViewById(R.id.gallery_pager);
+		mPager.setAdapter(new TouchImageAdapter());
 		mPager.setOnPageChangeListener(this);
 
 		// go to the photo we've done clic long ago in the place detail activity
@@ -288,11 +290,11 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 	}
 
 	// mostly demo code below. modified some bits to adapt to our scenario
-	private class ImageAdapter extends PagerAdapter {
+	private class TouchImageAdapter extends PagerAdapter {
 
 		private LayoutInflater inflater;
 
-		ImageAdapter() {
+		TouchImageAdapter() {
 			inflater = LayoutInflater.from(getActivity());
 		}
 
@@ -309,19 +311,24 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 		@Override
 		public Object instantiateItem(ViewGroup view, final int position) {
 			View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
-			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
-			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
+			TouchImageView imageView = (TouchImageView) imageLayout
+					.findViewById(R.id.image_gallery);
+			final ProgressBar spinner = (ProgressBar) imageLayout
+					.findViewById(R.id.loading_gallery);
 
 			ImageLoader.getInstance().displayImage(mImageUrls[position], imageView, options,
 					new SimpleImageLoadingListener() {
 						@Override
 						public void onLoadingStarted(String imageUri, View view) {
 							spinner.setVisibility(View.VISIBLE);
+							// we need to cause an update to the view later on
+							view.setVisibility(View.GONE);
 						}
 
 						@Override
 						public void onLoadingFailed(String imageUri, View view,
 								FailReason failReason) {
+
 							String message = null;
 							switch (failReason.getType()) {
 							case IO_ERROR:
@@ -343,11 +350,22 @@ public class ImagePagerFragment extends Fragment implements OnClickListener, OnP
 							Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 
 							spinner.setVisibility(View.GONE);
+
+							// make the view displayed to wrap the error image
+							LayoutParams lp = view.getLayoutParams();
+							lp.width = LayoutParams.WRAP_CONTENT;
+							lp.height = LayoutParams.WRAP_CONTENT;
+							// and disable the "zoom" functionality for this
+							// view
+							view.setEnabled(false);
+							view.setVisibility(View.VISIBLE);
 						}
 
 						@Override
 						public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 							spinner.setVisibility(View.GONE);
+							// we need to cause an update to the view now
+							view.setVisibility(View.VISIBLE);
 							mBitmaps[position] = loadedImage;
 						}
 					});
