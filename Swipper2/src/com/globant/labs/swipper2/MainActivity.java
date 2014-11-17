@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.globant.labs.swipper2.drawer.CategoriesAdapter;
 import com.globant.labs.swipper2.drawer.CategoryMapper;
@@ -300,17 +302,24 @@ public class MainActivity extends ActionBarActivity implements
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
 
-		if (id == R.id.action_list) {
+		switch (item.getItemId()) {
+		case R.id.action_monocle:
+			if (checkCameraHardware(this)) {
+				startActivity(new Intent(this, MonocleActivity.class));
+			} else {
+				Toast.makeText(this, R.string.error_no_camera, Toast.LENGTH_SHORT).show();
+			}
+			return true;
+		case R.id.action_list:
 			mViewPager.setCurrentItem(MainFragmentsAdapter.LIST_FRAGMENT);
 			return true;
-		} else if (id == R.id.action_map) {
+		case R.id.action_map:
 			mViewPager.setCurrentItem(MainFragmentsAdapter.MAP_FRAGMENT);
 			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-
-		return super.onOptionsItemSelected(item);
 	}
 
 	public void displayNavigation(Place p) {
@@ -429,7 +438,7 @@ public class MainActivity extends ActionBarActivity implements
 					.getStringArrayList(SAVED_CATEGORIES));
 			mViewPager.setCurrentItem(mRestoreLater.getInt(SAVED_PAGE));
 		}
-		
+
 		if (mNavigationDrawerFragment.isDrawerOpen()) {
 			onDrawerOpened();
 		}
@@ -449,12 +458,12 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		});
 	}
-	
+
 	@Override
 	public void onDrawerOpened() {
 		mMapFragment.onDrawerOpened();
 	}
-	
+
 	@Override
 	public void onDrawerClosed() {
 		mMapFragment.onDrawerClosed();
@@ -463,6 +472,17 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onDrawerSlide(float slideOffset) {
 		mMapFragment.onDrawerSlide(slideOffset);
+	}
+
+	/** Check if this device has a camera */
+	private boolean checkCameraHardware(Context context) {
+		if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			// this device has a camera
+			return true;
+		} else {
+			// no camera on this device
+			return false;
+		}
 	}
 
 	/*

@@ -12,5 +12,8 @@
     
     <!-- GalleryActivity -->
     <dimen name="galleryPadding">8dp</dimen>
+    
+    <!-- Monocle -->
+    <dimen name="brand_monocle_margin">8dp</dimen>
 
 </resources>
