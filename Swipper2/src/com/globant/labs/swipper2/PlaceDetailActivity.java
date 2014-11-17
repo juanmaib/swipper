@@ -264,7 +264,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 				if (review.getText() != null && !review.getText().trim().isEmpty()) {
 					View v = inflater.inflate(R.layout.review_item, null);
 					TextView vText = (TextView) v.findViewById(R.id.reviewText);
-					vText.setText("\"" + review.getText() + "\"\u3000 ");
+					vText.setText("\"" + review.getText() + "\"");
 					RatingBar vBar = (RatingBar) v.findViewById(R.id.reviewRating);
 					vBar.setProgress(review.getRating());
 					mReviewsList.addView(v);
