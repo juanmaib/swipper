@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.globant.labs.swipper2.MainActivity" >
+    
+    <item
+        android:id="@+id/action_monocle"
+        android:icon="@drawable/ic_monocle"
+        android:title="@string/action_monocle"
+        app:showAsAction="always"/>
 
  	<item
         android:id="@+id/action_list"

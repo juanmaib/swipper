@@ -24,6 +24,7 @@
     <!-- MainActivity -->
     <string name="myLocationButtonTapped">Getting your location...\nPlease wait...</string>
     <string name="my_location">My Location</string>
+    <string name="action_monocle">Monocle</string>
     <string name="action_list">List</string>
     <string name="action_map">Map</string>
      
@@ -76,6 +77,7 @@
     <string name="status_zoom_in">Zoom in to see the places</string>
     <string name="status_retry">Network error, retrying...</string>
     
-    
+    <!-- Monocle -->
+    <string name="scanning">Scanning...</string>
     
 </resources>
