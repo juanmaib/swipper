@@ -46,7 +46,7 @@ public class RadarView extends ViewGroup {
 	public void onLocationChanged(Location location) {
 		setCurrentLocation(location);
 		setSpeed();
-		setBounds();
+		setBounds(1);
 	}
 
 	private void setCurrentLocation(Location location) {
@@ -76,11 +76,11 @@ public class RadarView extends ViewGroup {
 		}
 	}
 
-	private void setBounds() {
+	private void setBounds(double baseMultiplier) {
 		// Set the bounds of the radar dinamically, according to speed
 		// The idea is that between each update, the points do not get
 		// completely removed, but just displaced halfway, instead.
-		double speedMultiplier = 1 + (getSpeed() / DEFAULT_RADIUS);
+		double speedMultiplier = baseMultiplier + (getSpeed() / DEFAULT_RADIUS);
 		setRadius(DEFAULT_RADIUS * speedMultiplier);
 		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(), getCurrentLocation()
 				.getLongitude());
