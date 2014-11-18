@@ -15,5 +15,7 @@
     
     <!-- Monocle -->
     <dimen name="brand_monocle_margin">8dp</dimen>
+    <dimen name="radar_monocle_margin">8dp</dimen>
+    <dimen name="radar_monocle_size">96dp</dimen>
 
 </resources>

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,11 +15,21 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.globant.labs.swipper2.widget.CameraPreview;
+import com.globant.labs.swipper2.widget.RadarView;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
-public class MonocleActivity extends Activity implements AutoFocusCallback {
+public class MonocleActivity extends Activity implements AutoFocusCallback, ConnectionCallbacks,
+		OnConnectionFailedListener, LocationListener {
 
 	private static final String TAG = MonocleActivity.class.getSimpleName();
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
+	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
 
 	private Camera mCamera;
 	private CameraPreview mPreview;
@@ -27,11 +38,20 @@ public class MonocleActivity extends Activity implements AutoFocusCallback {
 	private boolean mFocusing;
 
 	private TextView mBrand;
+	private RadarView mRadar;
+
+	private GoogleApiClient mGoogleApiClient;
+	private LocationRequest mLocationRequest;
+	private Location mLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_monocle);
+
+		// Set up the google api client
+		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
+				.addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
 
 		mBrand = (TextView) findViewById(R.id.et_brand_monocle);
 		mBrand.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/roboto_italic.ttf"));
@@ -45,6 +65,36 @@ public class MonocleActivity extends Activity implements AutoFocusCallback {
 		preview.addView(mPreview);
 
 		checkAndEnableAutoFocus();
+
+		mRadar = (RadarView) findViewById(R.id.radar_monocle);
+
+		// Create a new global location parameters object
+		mLocationRequest = LocationRequest.create();
+
+		// Set the update interval
+		mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+		// Use high accuracy
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	}
+
+	@Override
+	protected void onStart() {
+		mGoogleApiClient.connect();
+		super.onStart();
+	}
+
+	@Override
+	protected void onPause() {
+		stopAutoFocus();
+		releaseCamera(); // release the camera immediately on pause event
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		mGoogleApiClient.disconnect();
+		super.onStop();
 	}
 
 	private void checkAndEnableAutoFocus() {
@@ -66,13 +116,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback {
 			mCamera.setParameters(params);
 			startAutoFocus();
 		}
-	}
-
-	@Override
-	protected void onPause() {
-		stopAutoFocus();
-		releaseCamera(); // release the camera immediately on pause event
-		super.onPause();
 	}
 
 	private void releaseCamera() {
@@ -160,5 +203,29 @@ public class MonocleActivity extends Activity implements AutoFocusCallback {
 	public void onAutoFocus(boolean success, Camera camera) {
 		mFocusing = false;
 		autoFocusAgainLater();
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+		mRadar.onLocationChanged(mLocation);
+		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+				mLocationRequest, this);
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		Log.i("onConnectionSuspended", "cause: " + cause);
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		Log.i("onConnectionFailed", "result: " + result);
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		mLocation = location;
+		mRadar.onLocationChanged(location);
 	}
 }

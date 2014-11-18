@@ -51,12 +51,22 @@
     </style>
 
     <style name="Swipper.Monocle.Brand" parent="@android:style/TextAppearance">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_margin">@dimen/brand_monocle_margin</item>
         <item name="android:textColor">@color/gray_brand_monocle</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="fontName">roboto_bold_italic.ttf</item>
+    </style>
+
+    <style name="Swipper.Monocle.Radar" parent="@android:style/Widget">
+        <item name="android:layout_width">@dimen/radar_monocle_size</item>
+        <item name="android:layout_height">@dimen/radar_monocle_size</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">@drawable/radar_background</item>
+        <item name="android:layout_margin">@dimen/radar_monocle_margin</item>
     </style>
 
 </resources>

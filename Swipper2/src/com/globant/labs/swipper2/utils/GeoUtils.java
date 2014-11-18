@@ -5,12 +5,15 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
 public class GeoUtils {
 
-	public static int MILLION = 1000000;
+	private static int MILLION = 1000000;
+	private static int EARTH_RADIUS = 6371009;
 
 	public static JSONObject latLngToJson(LatLng latLng) {
 		JSONObject jsonObject = new JSONObject();
@@ -97,5 +100,25 @@ public class GeoUtils {
 	 */
 	public static double radToBearing(double rad) {
 		return (Math.toDegrees(rad) + 360) % 360;
+	}
+
+	public static LatLng locationPlusDistanceAndBearing(Location location, double distance,
+			double bearing) {
+
+		// φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
+		// λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
+		// where φ is latitude, λ is longitude, θ is the bearing (clockwise from
+		// north), δ is the angular distance d/R; d being the distance
+		// travelled, R the earth’s radius
+
+		double newLat = Math.asin(Math.sin(location.getLatitude())
+				* Math.cos(distance / EARTH_RADIUS) + Math.cos(location.getLatitude())
+				* Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
+
+		double newLong = location.getLongitude()
+				+ Math.atan2(Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS) * Math.cos(location.getLatitude()),
+						Math.cos(distance / EARTH_RADIUS) - Math.sin(location.getLatitude()) * Math.sin(newLat));
+
+		return new LatLng(newLat, newLong);
 	}
 }
