@@ -15,10 +15,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class RadarView extends ViewGroup {
-	
-	private static final int DEFAULT_RADIUS = 1000;
-	private static final int NORTH_WEST_BEARING = 315;
-	private static final int SOUTH_EAST_BEARING = 135;
+
+	private static final double DEFAULT_RADIUS = 1000;
+	// private static final int NORTH_WEST_BEARING = 315;
+	// private static final int SOUTH_EAST_BEARING = 135;
+	private static final double NORTH_EAST_BEARING = 45;
+	private static final double SOUTH_WEST_BEARING = 225;
 
 	private Context mContext;
 	private ArrayList<Place> mPlaces;
@@ -45,8 +47,6 @@ public class RadarView extends ViewGroup {
 		setCurrentLocation(location);
 		setSpeed();
 		setBounds();
-		Log.i("onLocationChanged", "mCurrentLocation: " + mCurrentLocation);
-		Log.i("onLocationChanged", "mSpeed: " + mSpeed);
 	}
 
 	private void setCurrentLocation(Location location) {
@@ -75,14 +75,21 @@ public class RadarView extends ViewGroup {
 			}
 		}
 	}
-	
+
 	private void setBounds() {
-		double latitude = getCurrentLocation().getLatitude();
-		double longitude = getCurrentLocation().getLongitude();
-		LatLng latlng = new LatLng(latitude, longitude);
-		LatLng northEastLatLng = GeoUtils.locationPlusDistanceAndBearing(getCurrentLocation(), DEFAULT_RADIUS, NORTH_WEST_BEARING);
-		LatLng northWest = new LatLng(latitude, longitude);
-		LatLngBounds llb = LatLngBounds.builder().include(latlng).build();
+		// Set the bounds of the radar dinamically, according to speed
+		// The idea is that between each update, the points do not get
+		// completely removed, but just displaced halfway, instead.
+		double speedMultiplier = 1 + (getSpeed() / DEFAULT_RADIUS);
+		setRadius(DEFAULT_RADIUS * speedMultiplier);
+		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(), getCurrentLocation()
+				.getLongitude());
+		LatLng northEastLatLng = GeoUtils.getDestinationLocation(currentLatLng, getRadius(),
+				NORTH_EAST_BEARING);
+		LatLng southWestLatLng = GeoUtils.getDestinationLocation(currentLatLng, getRadius(),
+				SOUTH_WEST_BEARING);
+		mLatLngBounds = LatLngBounds.builder().include(northEastLatLng).include(southWestLatLng)
+				.build();
 	}
 
 	public void addPlace(Place place) {
@@ -136,6 +143,14 @@ public class RadarView extends ViewGroup {
 
 	public void setPreviousLocation(Location mPreviousLocation) {
 		this.mPreviousLocation = mPreviousLocation;
+	}
+
+	public double getRadius() {
+		return mRadius;
+	}
+
+	private void setRadius(double mRadius) {
+		this.mRadius = mRadius;
 	}
 
 }

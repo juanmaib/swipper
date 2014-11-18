@@ -5,15 +5,14 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.location.Location;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
 public class GeoUtils {
 
-	private static int MILLION = 1000000;
-	private static int EARTH_RADIUS = 6371009;
+	private static final int MILLION = 1000000;
+	private static final int EARTH_RADIUS = 6371009;
+	private static final double RAD_CONV = 180 / Math.PI;
 
 	public static JSONObject latLngToJson(LatLng latLng) {
 		JSONObject jsonObject = new JSONObject();
@@ -102,23 +101,70 @@ public class GeoUtils {
 		return (Math.toDegrees(rad) + 360) % 360;
 	}
 
-	public static LatLng locationPlusDistanceAndBearing(Location location, double distance,
-			double bearing) {
+	// public static LatLng displaceLatLng(LatLng latLng, double distance,
+	// double bearing) {
+	//
+	// // φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
+	// // λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
+	// // where φ is latitude, λ is longitude, θ is the bearing (clockwise from
+	// // north), δ is the angular distance d/R; d being the distance
+	// // travelled, R the earth’s radius
+	//
+	// Log.i("displaceLatLng", "latLng: " + latLng);
+	//
+	// double newLatitude = Math.asin(Math.sin(latLng.latitude)
+	// * Math.cos(distance / EARTH_RADIUS) + Math.cos(latLng.latitude)
+	// * Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
+	//
+	// Log.i("displaceLatLng", "newLatitude: " + newLatitude);
+	//
+	// double newLongitude = latLng.longitude
+	// + Math.atan2(
+	// Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS)
+	// * Math.cos(latLng.latitude), Math.cos(distance / EARTH_RADIUS)
+	// - Math.sin(latLng.latitude) * Math.sin(newLatitude));
+	//
+	// Log.i("displaceLatLng", "newLongitude: " + newLongitude);
+	//
+	// return new LatLng(newLatitude, newLongitude);
+	// }
 
-		// φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
-		// λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
-		// where φ is latitude, λ is longitude, θ is the bearing (clockwise from
-		// north), δ is the angular distance d/R; d being the distance
-		// travelled, R the earth’s radius
+	/**
+	 * Gets the location specified by a start location, a bearing, and a
+	 * distance.
+	 * 
+	 * @param latLng
+	 *            The start location.
+	 * @param bearing
+	 *            The bearing in degrees.
+	 * @param distance
+	 *            The distance in meters.
+	 * @return The destination location.
+	 */
+	public static LatLng getDestinationLocation(LatLng latLng, double bearing, double distance) {
+		double lat1 = getRadians(latLng.latitude);
+		double lon1 = getRadians(latLng.longitude);
+		double b = getRadians(bearing);
+		double dr = distance / EARTH_RADIUS;
 
-		double newLat = Math.asin(Math.sin(location.getLatitude())
-				* Math.cos(distance / EARTH_RADIUS) + Math.cos(location.getLatitude())
-				* Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
+		double lat2 = Math.asin(Math.sin(lat1) * Math.cos(dr) + Math.cos(lat1) * Math.sin(dr)
+				* Math.cos(b));
+		double lon2 = lon1
+				+ Math.atan2(Math.sin(b) * Math.sin(dr) * Math.cos(lat1),
+						Math.cos(dr) - Math.sin(lat1) * Math.sin(lat2));
+		lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
 
-		double newLong = location.getLongitude()
-				+ Math.atan2(Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS) * Math.cos(location.getLatitude()),
-						Math.cos(distance / EARTH_RADIUS) - Math.sin(location.getLatitude()) * Math.sin(newLat));
+		double lat2d = getDegree(lat2);
+		double lon2d = getDegree(lon2);
 
-		return new LatLng(newLat, newLong);
+		return new LatLng(lat2d, lon2d);
+	}
+
+	public static double getRadians(double angle) {
+		return angle / RAD_CONV;
+	}
+
+	public static double getDegree(double rad) {
+		return rad * RAD_CONV;
 	}
 }
