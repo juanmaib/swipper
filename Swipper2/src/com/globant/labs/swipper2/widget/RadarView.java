@@ -80,13 +80,11 @@ public class RadarView extends ViewGroup {
 	}
 
 	public void onLocationChanged(Location location) {
-		Log.i("RadarView", "onLocationChanged");
 		mCurrentLocation = location;
 		removeOutOfScopePlaces();
 	}
 
 	public void onPlacesUpdate(List<Place> places) {
-		Log.i("RadarView", "onPlacesUpdate");
 		for (Place place : places) {
 			if (isPlaceWithinScope(place, mCurrentLocation,
 					mActivity.getRadius(MonocleActivity.BASE_COEFICIENT)))
@@ -100,6 +98,7 @@ public class RadarView extends ViewGroup {
 		} else {
 			mAzimut = GeoUtils.getDegree(azimut);
 		}
+		Log.i("onAzimuthChanged", "mAzimut: " + mAzimut);
 	}
 
 	public void addPlace(Place place) {
@@ -169,7 +168,6 @@ public class RadarView extends ViewGroup {
 		// them. You can check source code of FrameLayout (one of the simpliest
 		// subclasses of ViewGroup) to find out how it works.
 
-		Log.i("RadarView", "onLayout");
 		if (mCurrentLocation != null) {
 			LatLngBounds latLngBounds = mActivity.getBounds(2 * MonocleActivity.BASE_COEFICIENT);
 			int size_x = right - left;

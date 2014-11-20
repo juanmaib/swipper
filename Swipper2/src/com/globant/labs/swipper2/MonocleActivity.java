@@ -3,7 +3,6 @@ package com.globant.labs.swipper2;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
@@ -11,9 +10,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -25,6 +21,8 @@ import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.utils.GeoUtils;
+import com.globant.labs.swipper2.utils.OrientationSensor;
+import com.globant.labs.swipper2.utils.OrientationSensor.OnAzimuthChangeListener;
 import com.globant.labs.swipper2.widget.CameraPreview;
 import com.globant.labs.swipper2.widget.RadarView;
 import com.google.android.gms.common.ConnectionResult;
@@ -38,12 +36,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class MonocleActivity extends Activity implements AutoFocusCallback, ConnectionCallbacks,
-		OnConnectionFailedListener, LocationListener, SensorEventListener {
+		OnConnectionFailedListener, LocationListener, OnAzimuthChangeListener {
 
 	public static final double BASE_COEFICIENT = 1;
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
 	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
-	private static final int SENSOR_DELAY_RADAR = 200000;
+	private static final int SENSOR_DELAY_RADAR = SensorManager.SENSOR_DELAY_UI;
 	private static final int RADAR_LAYOUT_DELAY_MILLIS = 100;
 
 	public static final double DEFAULT_RADIUS = 1000;
@@ -67,13 +65,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private Location mPreviousLocation;
 
 	private PlacesProvider mPlacesProvider;
-
+	private OrientationSensor mOrientationSensor;
 	private SensorManager mSensorManager;
-	private Sensor mAccelerometer;
-	private Sensor mMagnetometer;
-	private float[] mGravity;
-	private float[] mGeomagnetic;
-	private double mAzimut;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +120,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		});
 
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		mOrientationSensor = new OrientationSensor(mSensorManager, null);
 	}
 
 	@Override
@@ -140,11 +132,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mSensorManager.registerListener(this, mAccelerometer, SENSOR_DELAY_RADAR);
-		mSensorManager.registerListener(this, mMagnetometer, SENSOR_DELAY_RADAR);
-		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-		scheduler.scheduleAtFixedRate(new Runnable() {
+		mOrientationSensor.Register(this, SENSOR_DELAY_RADAR, this);
+
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				runOnUiThread(new Runnable() {
 
@@ -159,9 +150,9 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	@Override
 	protected void onPause() {
+		mOrientationSensor.Unregister();
 		stopAutoFocus();
 		releaseCamera(); // release the camera immediately on pause event
-		mSensorManager.unregisterListener(this);
 		super.onPause();
 	}
 
@@ -357,28 +348,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	}
 
 	@Override
-	public void onSensorChanged(SensorEvent event) {
-		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-			mGravity = event.values;
-		if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-			mGeomagnetic = event.values;
-		if (mGravity != null && mGeomagnetic != null) {
-			float R[] = new float[9];
-			float I[] = new float[9];
-			boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
-			if (success) {
-				float orientation[] = new float[3];
-				SensorManager.getOrientation(R, orientation);
-				// orientation contains: azimut, pitch and roll
-				mAzimut = orientation[0];
-				mRadar.onAzimutChanged(mAzimut);
-				// float pitch = orientation[1];
-				// float roll = orientation[2];
-			}
-		}
+	public void onAzimuthChanged(double azimuthRadians) {
+		mRadar.onAzimutChanged(-azimuthRadians);
 	}
 
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-	}
 }
