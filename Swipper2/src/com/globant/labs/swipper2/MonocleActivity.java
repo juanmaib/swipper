@@ -1,16 +1,23 @@
 package com.globant.labs.swipper2;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -31,22 +38,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class MonocleActivity extends Activity implements AutoFocusCallback, ConnectionCallbacks,
-		OnConnectionFailedListener, LocationListener {
+		OnConnectionFailedListener, LocationListener, SensorEventListener {
 
-	public static final double MULTIPLIER_PLACE_PROVIDER = 1.1;
-
-	private static final String TAG = MonocleActivity.class.getSimpleName();
+	public static final double BASE_COEFICIENT = 1;
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
 	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
+	private static final int SENSOR_DELAY_RADAR = 200000;
+	private static final int RADAR_LAYOUT_DELAY_MILLIS = 100;
 
 	public static final double DEFAULT_RADIUS = 1000;
-	// private static final int NORTH_WEST_BEARING = 315;
-	// private static final int SOUTH_EAST_BEARING = 135;
 	private static final double NORTH_EAST_BEARING = 45;
 	private static final double SOUTH_WEST_BEARING = 225;
 
 	private double mSpeed;
-	private double mRadius;
 
 	private Camera mCamera;
 	private CameraPreview mPreview;
@@ -63,6 +67,13 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private Location mPreviousLocation;
 
 	private PlacesProvider mPlacesProvider;
+
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private Sensor mMagnetometer;
+	private float[] mGravity;
+	private float[] mGeomagnetic;
+	private double mAzimut;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,14 +119,16 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 			@Override
 			public void placesRetry(Throwable t) {
-				Log.i("setPlacesCallback", "placesRetry. Throwable: " + t);
 			}
 
 			@Override
 			public void placesError(Throwable t) {
-				Log.i("setPlacesCallback", "placesError. Throwable: " + t);
 			}
 		});
+
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 	}
 
 	@Override
@@ -125,9 +138,30 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		mSensorManager.registerListener(this, mAccelerometer, SENSOR_DELAY_RADAR);
+		mSensorManager.registerListener(this, mMagnetometer, SENSOR_DELAY_RADAR);
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+		scheduler.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						mRadar.requestLayout();
+					}
+				});
+			}
+		}, 0, RADAR_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
 	protected void onPause() {
 		stopAutoFocus();
 		releaseCamera(); // release the camera immediately on pause event
+		mSensorManager.unregisterListener(this);
 		super.onPause();
 	}
 
@@ -199,7 +233,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 			} catch (RuntimeException re) {
 				// Have heard RuntimeException reported in Android 4.0.x+;
 				// continue?
-				Log.w(TAG, "Unexpected exception while focusing", re);
 				// Try again later to keep cycle going
 				autoFocusAgainLater();
 			}
@@ -214,7 +247,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 			mCamera.cancelAutoFocus();
 		} catch (RuntimeException re) {
 			// Have heard RuntimeException reported in Android 4.0.x+; continue?
-			Log.w(TAG, "Unexpected exception while cancelling focusing", re);
 		}
 	}
 
@@ -225,7 +257,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 				newTask.execute();
 				mAutoFocusTask = newTask;
 			} catch (RejectedExecutionException ree) {
-				Log.w(TAG, "Could not request auto focus", ree);
 			}
 		}
 	}
@@ -255,12 +286,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	@Override
 	public void onConnectionSuspended(int cause) {
-		Log.i("onConnectionSuspended", "cause: " + cause);
 	}
 
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
-		Log.i("onConnectionFailed", "result: " + result);
 	}
 
 	@Override
@@ -270,7 +299,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mRadar.onLocationChanged(location);
 		mPlacesProvider.setCurrentLocation(new LatLng(location.getLatitude(), location
 				.getLongitude()));
-		if (mPlacesProvider.updateLocation(getBounds(MULTIPLIER_PLACE_PROVIDER))) {
+		if (mPlacesProvider.updateLocation(getBounds(BASE_COEFICIENT))) {
 			mRadar.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
 		}
 	}
@@ -315,26 +344,41 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		// The idea is that between each update, the points do not get
 		// completely replaced, but just displaced halfway, instead.
 		double radius = getRadius(baseCoeficient);
-		Log.i("getBounds", "radius: " + radius);
 		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(), getCurrentLocation()
 				.getLongitude());
-		// LatLng northEastLatLng =
-		// GeoUtils.getDestinationLocation(currentLatLng, radius,
-		// NORTH_EAST_BEARING);
-		// LatLng southWestLatLng =
-		// GeoUtils.getDestinationLocation(currentLatLng, radius,
-		// SOUTH_WEST_BEARING);
 		LatLng northEastLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, NORTH_EAST_BEARING);
 		LatLng southWestLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, SOUTH_WEST_BEARING);
-		Log.i("getBounds", "northEastLatLng: " + northEastLatLng);
-		Log.i("getBounds", "southWestLatLng: " + southWestLatLng);
-		double distance = GeoUtils.getDistance(northEastLatLng, southWestLatLng) * 1000;
-		Log.i("getBounds", "distance: " + distance);
 		return LatLngBounds.builder().include(northEastLatLng).include(southWestLatLng).build();
 	}
 
 	public double getRadius(double baseCoeficient) {
 		double speedMultiplier = baseCoeficient + (getSpeed() / DEFAULT_RADIUS);
 		return DEFAULT_RADIUS * speedMultiplier;
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+			mGravity = event.values;
+		if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+			mGeomagnetic = event.values;
+		if (mGravity != null && mGeomagnetic != null) {
+			float R[] = new float[9];
+			float I[] = new float[9];
+			boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+			if (success) {
+				float orientation[] = new float[3];
+				SensorManager.getOrientation(R, orientation);
+				// orientation contains: azimut, pitch and roll
+				mAzimut = orientation[0];
+				mRadar.onAzimutChanged(mAzimut);
+				// float pitch = orientation[1];
+				// float roll = orientation[2];
+			}
+		}
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	}
 }

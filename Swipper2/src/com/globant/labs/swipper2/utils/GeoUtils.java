@@ -5,8 +5,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
@@ -104,7 +102,7 @@ public class GeoUtils {
 	}
 
 	public static LatLng displaceLatLng(LatLng latLng, double distance, double bearing) {
-		
+
 		// ALL ANGLES IN RADIANS
 
 		// φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
@@ -124,10 +122,6 @@ public class GeoUtils {
 		double lng2 = lng1
 				+ Math.atan2(Math.sin(b) * Math.sin(dR) * Math.cos(lat1),
 						Math.cos(dR) - Math.sin(lat1) * Math.sin(lat2));
-
-		Log.i("displaceLatLng", "latLng: " + latLng);
-		Log.i("displaceLatLng", "newLatitude: " + lat2);
-		Log.i("displaceLatLng", "newLongitude: " + lng2);
 
 		return new LatLng(getDegree(lat2), getDegree(lng2));
 	}
@@ -156,13 +150,9 @@ public class GeoUtils {
 				+ Math.atan2(Math.sin(b) * Math.sin(dr) * Math.cos(lat1),
 						Math.cos(dr) - Math.sin(lat1) * Math.sin(lat2));
 		lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-		Log.i("getDestinationLocation", "lat2: " + lat2);
-		Log.i("getDestinationLocation", "lon2: " + lon2);
 
 		double lat2d = getDegree(lat2);
 		double lon2d = getDegree(lon2);
-		Log.i("getDestinationLocation", "lat2d: " + lat2d);
-		Log.i("getDestinationLocation", "lon2d: " + lon2d);
 		return new LatLng(lat2d, lon2d);
 	}
 

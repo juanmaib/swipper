@@ -24,9 +24,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public class RadarView extends ViewGroup {
 
-	private static final double COEFICIENT_RADAR = 1;
 	private static final int RADAR_POINTS_SIZE_DP = 8;
 	private static int RADAR_POINTS_SIZE_PX;
+	private static int RADAR_POINTS_SIZE_PX_HALF;
+
 	private static String LODGING;
 	private static String TAXI;
 	private static String GAS;
@@ -44,6 +45,7 @@ public class RadarView extends ViewGroup {
 	private Location mCurrentLocation;
 	private LayoutParams mLayoutParams;
 	private Resources mResources;
+	private double mAzimut;
 
 	public RadarView(Context context) {
 		this(context, null);
@@ -59,6 +61,7 @@ public class RadarView extends ViewGroup {
 		mContext = context;
 		mActivity = (MonocleActivity) context;
 		RADAR_POINTS_SIZE_PX = DroidUtils.dpToPx(RADAR_POINTS_SIZE_DP, mContext);
+		RADAR_POINTS_SIZE_PX_HALF = RADAR_POINTS_SIZE_PX / 2;
 		mLayoutParams = new LayoutParams(RADAR_POINTS_SIZE_PX, RADAR_POINTS_SIZE_PX);
 		mResources = mContext.getResources();
 
@@ -73,18 +76,30 @@ public class RadarView extends ViewGroup {
 		GAS_DRAWABLE = mResources.getDrawable(R.drawable.radar_item_gas);
 		CAR_RENTAL_DRAWABLE = mResources.getDrawable(R.drawable.radar_item_car_rental);
 		FOOD_DRAWABLE = mResources.getDrawable(R.drawable.radar_item_food);
+		mAzimut = 0;
 	}
 
 	public void onLocationChanged(Location location) {
+		Log.i("RadarView", "onLocationChanged");
 		mCurrentLocation = location;
 		removeOutOfScopePlaces();
 	}
 
 	public void onPlacesUpdate(List<Place> places) {
+		Log.i("RadarView", "onPlacesUpdate");
 		for (Place place : places) {
-			addPlace(place);
+			if (isPlaceWithinScope(place, mCurrentLocation,
+					mActivity.getRadius(MonocleActivity.BASE_COEFICIENT)))
+				addPlace(place);
 		}
-		removeOutOfScopePlaces();
+	}
+
+	public void onAzimutChanged(double azimut) {
+		if (azimut < 0) {
+			mAzimut = 360 + GeoUtils.getDegree(azimut);
+		} else {
+			mAzimut = GeoUtils.getDegree(azimut);
+		}
 	}
 
 	public void addPlace(Place place) {
@@ -128,6 +143,12 @@ public class RadarView extends ViewGroup {
 		}
 	}
 
+	private boolean isPlaceWithinScope(Place place, Location location, double distance) {
+		return (GeoUtils.getDistance(new LatLng(place.getLocation().latitude,
+				place.getLocation().longitude), new LatLng(mCurrentLocation.getLatitude(),
+				mCurrentLocation.getLongitude()))) * 1000 <= distance;
+	}
+
 	private void removeOutOfScopePlaces() {
 		for (int i = 0; i < getChildCount(); i++) {
 			String placeId = (String) getChildAt(i).getTag();
@@ -148,21 +169,18 @@ public class RadarView extends ViewGroup {
 		// them. You can check source code of FrameLayout (one of the simpliest
 		// subclasses of ViewGroup) to find out how it works.
 
+		Log.i("RadarView", "onLayout");
 		if (mCurrentLocation != null) {
-			LatLngBounds latLngBounds = mActivity.getBounds(COEFICIENT_RADAR);
+			LatLngBounds latLngBounds = mActivity.getBounds(2 * MonocleActivity.BASE_COEFICIENT);
 			int size_x = right - left;
 			int size_y = bottom - top;
 			int count = getChildCount();
-			Log.i("onLayout", "count: " + count);
 			for (int i = 0; i < count; i++) {
 				View v = getChildAt(i);
-				int half_child_width = RADAR_POINTS_SIZE_PX / 2;
-				int half_child_height = RADAR_POINTS_SIZE_PX / 2;
 				String placeId = (String) v.getTag();
-				Place place = mPlaces.get(placeId);
-				Point point = locationToPoint(place, latLngBounds, size_x, size_y);
-				v.layout(point.x - half_child_width, point.y - half_child_height, point.x
-						+ half_child_width, point.y + half_child_height);
+				Point point = locationToPoint(mPlaces.get(placeId), latLngBounds, size_x, size_y);
+				v.layout(point.x - RADAR_POINTS_SIZE_PX_HALF, point.y - RADAR_POINTS_SIZE_PX_HALF,
+						point.x + RADAR_POINTS_SIZE_PX_HALF, point.y + RADAR_POINTS_SIZE_PX_HALF);
 			}
 		}
 	}
@@ -182,13 +200,29 @@ public class RadarView extends ViewGroup {
 		double max_delta_lat = max_lat - min_lat;
 		double max_delta_long = max_long - min_long;
 
-		Point p = new Point();
-		p.x = (int) Math.floor((size_x * delta_long) / max_delta_long);
-		p.y = (int) Math.floor((size_y * delta_lat) / max_delta_lat);
-		return p;
+		Point point = new Point();
+		point.x = (int) Math.floor((size_x * delta_long) / max_delta_long);
+		point.y = (int) Math.floor((size_y * delta_lat) / max_delta_lat);
+
+		int centerx = (int) Math.floor(size_x / 2);
+		int centery = (int) Math.floor(size_y / 2);
+		Point center = new Point(centerx, centery);
+		return rotatePoint(point, center, mAzimut);
 	}
 
-	private boolean between(double min, double max, double value) {
-		return ((value >= min) && (value <= max));
+	private Point rotatePoint(Point point, Point center, double angle) {
+		double sin = Math.sin(GeoUtils.getRadians(angle));
+		double cos = Math.cos(GeoUtils.getRadians(angle));
+
+		point.x -= center.x;
+		point.y -= center.y;
+
+		double newx = point.x * cos - point.y * sin;
+		double newy = point.x * sin + point.y * cos;
+
+		point.x = (int) (newx + center.x);
+		point.y = (int) (newy + center.y);
+
+		return point;
 	}
 }
