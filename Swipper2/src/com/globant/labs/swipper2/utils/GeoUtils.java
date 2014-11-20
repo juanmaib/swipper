@@ -5,6 +5,8 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
@@ -101,33 +103,34 @@ public class GeoUtils {
 		return (Math.toDegrees(rad) + 360) % 360;
 	}
 
-	// public static LatLng displaceLatLng(LatLng latLng, double distance,
-	// double bearing) {
-	//
-	// // φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
-	// // λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
-	// // where φ is latitude, λ is longitude, θ is the bearing (clockwise from
-	// // north), δ is the angular distance d/R; d being the distance
-	// // travelled, R the earth’s radius
-	//
-	// Log.i("displaceLatLng", "latLng: " + latLng);
-	//
-	// double newLatitude = Math.asin(Math.sin(latLng.latitude)
-	// * Math.cos(distance / EARTH_RADIUS) + Math.cos(latLng.latitude)
-	// * Math.sin(distance / EARTH_RADIUS) * Math.cos(bearing));
-	//
-	// Log.i("displaceLatLng", "newLatitude: " + newLatitude);
-	//
-	// double newLongitude = latLng.longitude
-	// + Math.atan2(
-	// Math.sin(bearing) * Math.sin(distance / EARTH_RADIUS)
-	// * Math.cos(latLng.latitude), Math.cos(distance / EARTH_RADIUS)
-	// - Math.sin(latLng.latitude) * Math.sin(newLatitude));
-	//
-	// Log.i("displaceLatLng", "newLongitude: " + newLongitude);
-	//
-	// return new LatLng(newLatitude, newLongitude);
-	// }
+	public static LatLng displaceLatLng(LatLng latLng, double distance, double bearing) {
+		
+		// ALL ANGLES IN RADIANS
+
+		// φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
+		// λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
+		// where φ is latitude, λ is longitude, θ is the bearing (clockwise from
+		// north), δ is the angular distance d/R; d being the distance
+		// travelled, R the earth’s radius
+
+		double lat1 = getRadians(latLng.latitude);
+		double lng1 = getRadians(latLng.longitude);
+		double b = getRadians(bearing);
+		double dR = distance / EARTH_RADIUS;
+
+		double lat2 = Math.asin(Math.sin(lat1) * Math.cos(dR) + Math.cos(lat1) * Math.sin(dR)
+				* Math.cos(b));
+
+		double lng2 = lng1
+				+ Math.atan2(Math.sin(b) * Math.sin(dR) * Math.cos(lat1),
+						Math.cos(dR) - Math.sin(lat1) * Math.sin(lat2));
+
+		Log.i("displaceLatLng", "latLng: " + latLng);
+		Log.i("displaceLatLng", "newLatitude: " + lat2);
+		Log.i("displaceLatLng", "newLongitude: " + lng2);
+
+		return new LatLng(getDegree(lat2), getDegree(lng2));
+	}
 
 	/**
 	 * Gets the location specified by a start location, a bearing, and a
@@ -153,10 +156,13 @@ public class GeoUtils {
 				+ Math.atan2(Math.sin(b) * Math.sin(dr) * Math.cos(lat1),
 						Math.cos(dr) - Math.sin(lat1) * Math.sin(lat2));
 		lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+		Log.i("getDestinationLocation", "lat2: " + lat2);
+		Log.i("getDestinationLocation", "lon2: " + lon2);
 
 		double lat2d = getDegree(lat2);
 		double lon2d = getDegree(lon2);
-
+		Log.i("getDestinationLocation", "lat2d: " + lat2d);
+		Log.i("getDestinationLocation", "lon2d: " + lon2d);
 		return new LatLng(lat2d, lon2d);
 	}
 

@@ -23,5 +23,17 @@
 	<item name="white_background" type="color">#FFF2F2F2</item>
 	<item name="button_separator" type="color">#FFB9B9B9</item>
 	
-	<item name="gray_brand_monocle" type="color">#AAAAAAAA</item>
+	
+	<!-- Monocle -->
+	<item name="monocle_brand" type="color">#AAAAAAAA</item>
+	<item name="monocle_radar_food_border" type="color">@color/food</item>
+	<item name="monocle_radar_gas_border" type="color">@color/gas</item>
+	<item name="monocle_radar_taxi_border" type="color">@color/taxi</item>
+	<item name="monocle_radar_carrental_border" type="color">@color/carrental</item>
+	<item name="monocle_radar_lodging_border" type="color">@color/lodging</item>
+	<item name="monocle_radar_food" type="color">#CCBB215B</item>
+	<item name="monocle_radar_gas" type="color">#CC5FCBC2</item>
+	<item name="monocle_radar_taxi" type="color">#CC7C56E4</item>
+	<item name="monocle_radar_carrental" type="color">#CCAAC130</item>
+	<item name="monocle_radar_lodging" type="color">#CC214CBB</item>
 </resources>

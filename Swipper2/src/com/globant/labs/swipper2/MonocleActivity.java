@@ -14,7 +14,9 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
+import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.globant.labs.swipper2.widget.CameraPreview;
 import com.globant.labs.swipper2.widget.RadarView;
@@ -30,15 +32,14 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public class MonocleActivity extends Activity implements AutoFocusCallback, ConnectionCallbacks,
 		OnConnectionFailedListener, LocationListener {
-	
-	public static final double MULTIPLIER_RADAR = 1;
+
 	public static final double MULTIPLIER_PLACE_PROVIDER = 1.1;
 
 	private static final String TAG = MonocleActivity.class.getSimpleName();
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
 	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
 
-	private static final double DEFAULT_RADIUS = 1000;
+	public static final double DEFAULT_RADIUS = 1000;
 	// private static final int NORTH_WEST_BEARING = 315;
 	// private static final int SOUTH_EAST_BEARING = 135;
 	private static final double NORTH_EAST_BEARING = 45;
@@ -97,6 +98,24 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 		mPlacesProvider = new PlacesProvider(this);
+		mPlacesProvider.refreshFilteredPlaces();
+		mPlacesProvider.setPlacesCallback(new PlacesCallback() {
+
+			@Override
+			public void placesUpdated(List<Place> places) {
+				mRadar.onPlacesUpdate(places);
+			}
+
+			@Override
+			public void placesRetry(Throwable t) {
+				Log.i("setPlacesCallback", "placesRetry. Throwable: " + t);
+			}
+
+			@Override
+			public void placesError(Throwable t) {
+				Log.i("setPlacesCallback", "placesError. Throwable: " + t);
+			}
+		});
 	}
 
 	@Override
@@ -249,7 +268,11 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		setCurrentLocation(location);
 		setSpeed();
 		mRadar.onLocationChanged(location);
-		// mPlacesProvider.updateLocation(bounds);
+		mPlacesProvider.setCurrentLocation(new LatLng(location.getLatitude(), location
+				.getLongitude()));
+		if (mPlacesProvider.updateLocation(getBounds(MULTIPLIER_PLACE_PROVIDER))) {
+			mRadar.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
+		}
 	}
 
 	private double getSpeed() {
@@ -270,14 +293,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		}
 	}
 
-	public double getRadius() {
-		return mRadius;
-	}
-
-	private void setRadius(double mRadius) {
-		this.mRadius = mRadius;
-	}
-
 	private void setCurrentLocation(Location location) {
 		setPreviousLocation(mCurrentLocation);
 		this.mCurrentLocation = location;
@@ -287,7 +302,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		return mCurrentLocation;
 	}
 
-	public Location getPreviousLocation() {
+	private Location getPreviousLocation() {
 		return mPreviousLocation;
 	}
 
@@ -295,19 +310,31 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		this.mPreviousLocation = mPreviousLocation;
 	}
 
-	private LatLngBounds getBounds(double baseMultiplier) {
+	public LatLngBounds getBounds(double baseCoeficient) {
 		// Set the bounds of the radar dinamically, according to speed
 		// The idea is that between each update, the points do not get
 		// completely replaced, but just displaced halfway, instead.
-		double speedMultiplier = baseMultiplier + (getSpeed() / DEFAULT_RADIUS);
-		setRadius(DEFAULT_RADIUS * speedMultiplier);
+		double radius = getRadius(baseCoeficient);
+		Log.i("getBounds", "radius: " + radius);
 		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(), getCurrentLocation()
 				.getLongitude());
-		LatLng northEastLatLng = GeoUtils.getDestinationLocation(currentLatLng, getRadius(),
-				NORTH_EAST_BEARING);
-		LatLng southWestLatLng = GeoUtils.getDestinationLocation(currentLatLng, getRadius(),
-				SOUTH_WEST_BEARING);
-		return LatLngBounds.builder().include(northEastLatLng).include(southWestLatLng)
-				.build();
+		// LatLng northEastLatLng =
+		// GeoUtils.getDestinationLocation(currentLatLng, radius,
+		// NORTH_EAST_BEARING);
+		// LatLng southWestLatLng =
+		// GeoUtils.getDestinationLocation(currentLatLng, radius,
+		// SOUTH_WEST_BEARING);
+		LatLng northEastLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, NORTH_EAST_BEARING);
+		LatLng southWestLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, SOUTH_WEST_BEARING);
+		Log.i("getBounds", "northEastLatLng: " + northEastLatLng);
+		Log.i("getBounds", "southWestLatLng: " + southWestLatLng);
+		double distance = GeoUtils.getDistance(northEastLatLng, southWestLatLng) * 1000;
+		Log.i("getBounds", "distance: " + distance);
+		return LatLngBounds.builder().include(northEastLatLng).include(southWestLatLng).build();
+	}
+
+	public double getRadius(double baseCoeficient) {
+		double speedMultiplier = baseCoeficient + (getSpeed() / DEFAULT_RADIUS);
+		return DEFAULT_RADIUS * speedMultiplier;
 	}
 }

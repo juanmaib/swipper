@@ -55,7 +55,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_margin">@dimen/brand_monocle_margin</item>
-        <item name="android:textColor">@color/gray_brand_monocle</item>
+        <item name="android:textColor">@color/monocle_brand</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="fontName">roboto_bold_italic.ttf</item>
