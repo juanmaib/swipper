@@ -50,6 +50,11 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="Swipper.Monocle.Reality" parent="@android:style/Widget">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="Swipper.Monocle.Brand" parent="@android:style/TextAppearance">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -67,6 +72,23 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:background">@drawable/radar_background</item>
         <item name="android:layout_margin">@dimen/radar_monocle_margin</item>
+    </style>
+
+    <style name="Swipper.Monocle.Reality.PlaceName" parent="@android:style/TextAppearance">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontName">roboto_bold_italic.ttf</item>
+    </style>
+
+    <style name="Swipper.Monocle.Reality.PlaceDistance" parent="@android:style/TextAppearance">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_below">@id/stv_place_name</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontName">roboto_bold_italic.ttf</item>
     </style>
 
 </resources>

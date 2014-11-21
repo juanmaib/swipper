@@ -5,6 +5,9 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
+import com.globant.labs.swipper2.models.Place;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
@@ -138,6 +141,7 @@ public class GeoUtils {
 	 *            The distance in meters.
 	 * @return The destination location.
 	 */
+	@Deprecated
 	public static LatLng getDestinationLocation(LatLng latLng, double bearing, double distance) {
 		double lat1 = getRadians(latLng.latitude);
 		double lon1 = getRadians(latLng.longitude);
@@ -162,5 +166,11 @@ public class GeoUtils {
 
 	public static double getDegree(double rad) {
 		return rad * RAD_CONV;
+	}
+
+	public static boolean isPlaceWithinScope(Place place, Location location, double distance) {
+		return (GeoUtils.getDistance(new LatLng(place.getLocation().latitude,
+				place.getLocation().longitude),
+				new LatLng(location.getLatitude(), location.getLongitude()))) * 1000 <= distance;
 	}
 }
