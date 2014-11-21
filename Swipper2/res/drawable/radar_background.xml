@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <solid android:color="#AAFFBB33" />
+    <item>
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval" >
+            <solid android:color="#AAFFBB33" />
 
-    <stroke
-        android:width="1dip"
-        android:color="#AAFF8800" />
+            <stroke
+                android:width="1dip"
+                android:color="#AAFF8800" />
+        </shape>
+    </item>
+    <item>
+        <rotate
+            android:fromDegrees="45"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:toDegrees="45" >
+            <shape
+                android:shape="line"
+                android:top="1dip" >
+                <stroke
+                    android:width="1dip"
+                    android:color="#AAFF8800" />
+            </shape>
+        </rotate>
+    </item>
+    <item>
+        <rotate
+            android:fromDegrees="-45"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:toDegrees="-45" >
+            <shape
+                android:shape="line"
+                android:top="1dip" >
+                <stroke
+                    android:width="1dip"
+                    android:color="#AAFF8800" />
+            </shape>
+        </rotate>
+    </item>
 
-</shape>
+</layer-list>
