@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.SensorManager;
@@ -15,7 +14,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
@@ -56,7 +54,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private boolean mStopped;
 	private boolean mFocusing;
 
-	private TextView mBrand;
+	// private SwipperTextView mBrand;
 	private RadarView mRadar;
 
 	private GoogleApiClient mGoogleApiClient;
@@ -77,8 +75,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
 				.addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
 
-		mBrand = (TextView) findViewById(R.id.et_brand_monocle);
-		mBrand.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/roboto_italic.ttf"));
+		// mBrand = (SwipperTextView) findViewById(R.id.et_brand_monocle);
 
 		// Create an instance of Camera
 		mCamera = getCameraInstance();
