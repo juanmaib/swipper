@@ -149,13 +149,14 @@ public class RadarView extends ViewGroup {
 	}
 
 	private void removeOutOfScopePlaces() {
+		double radius = mActivity.getRadius(MonocleActivity.BASE_COEFICIENT);
 		for (int i = 0; i < getChildCount(); i++) {
 			String placeId = (String) getChildAt(i).getTag();
 			Place place = mPlaces.get(placeId);
 			Double distance = GeoUtils.getDistance(
 					new LatLng(place.getLocation().latitude, place.getLocation().longitude),
 					new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())) * 1000;
-			if (distance > MonocleActivity.DEFAULT_RADIUS) {
+			if (distance > radius) {
 				removePlace(place);
 			}
 		}
