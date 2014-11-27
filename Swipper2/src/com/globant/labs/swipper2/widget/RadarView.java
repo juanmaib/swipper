@@ -99,7 +99,7 @@ public class RadarView extends MonocleComponentViewGroup {
 			for (int i = 0; i < getChildCount(); i++) {
 				View v = getChildAt(i);
 				String placeId = (String) v.getTag();
-				Point point = GeometryUtils.locationToPoint(getPlaces().get(placeId), latLngBounds,
+				Point point = GeometryUtils.locationToRadarPoint(getPlaces().get(placeId), latLngBounds,
 						size_x, size_y, getActivity().getAzimuthDegrees());
 				v.layout(point.x - RADAR_POINTS_SIZE_PX_HALF, point.y - RADAR_POINTS_SIZE_PX_HALF,
 						point.x + RADAR_POINTS_SIZE_PX_HALF, point.y + RADAR_POINTS_SIZE_PX_HALF);
