@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/black" >
+
+    <com.globant.labs.swipper2.widget.SwipperTextView
+        android:id="@+id/placeName_monocle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="20dp"
+        android:drawableRight="@drawable/details_arrow"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:fontName="roboto_light.ttf" />
+
+    <com.globant.labs.swipper2.widget.SwipperTextView
+        android:id="@+id/distance_monocle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/placeName_monocle"
+        android:drawableLeft="@drawable/distance_icon"
+        android:drawablePadding="4dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:fontName="roboto_light.ttf" />
+
+</RelativeLayout>

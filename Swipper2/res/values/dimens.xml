@@ -9,15 +9,15 @@
          https://developer.android.com/design/patterns/navigation-drawer.html
     -->
     <dimen name="navigation_drawer_width">240dp</dimen>
-    
+
     <!-- GalleryActivity -->
     <dimen name="galleryPadding">8dp</dimen>
-    
+
     <!-- Monocle -->
     <dimen name="brand_monocle_margin">8dp</dimen>
     <dimen name="radar_monocle_margin">8dp</dimen>
     <dimen name="radar_monocle_size">96dp</dimen>
-    <dimen name="item_reality_monocle_width">100dp</dimen>
-    <dimen name="item_reality_monocle_height">50dp</dimen>
+    <dimen name="item_reality_monocle_width">150dp</dimen>
+    <dimen name="item_reality_monocle_height">75dp</dimen>
 
 </resources>

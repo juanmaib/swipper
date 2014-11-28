@@ -41,8 +41,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
 	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
 	private static final int SENSOR_DELAY_RADAR = SensorManager.SENSOR_DELAY_UI;
-	private static final int RADAR_LAYOUT_DELAY_MILLIS = 100;
-	private static final int REALITY_LAYOUT_DELAY_MILLIS = 100;
+	private static final int RADAR_LAYOUT_DELAY_MILLIS = 200;
+	private static final int REALITY_LAYOUT_DELAY_MILLIS = 200;
 
 	public static final double DEFAULT_RADIUS = 1000;
 	private static final double NORTH_EAST_BEARING = 45;
@@ -338,6 +338,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	public Location getCurrentLocation() {
 		return mCurrentLocation;
+	}
+
+	public LatLng getCurrentLatLng() {
+		return new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 	}
 
 	private Location getPreviousLocation() {

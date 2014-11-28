@@ -9,14 +9,14 @@ import android.location.Location;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.globant.labs.swipper2.MonocleActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 
-public abstract class MonocleComponentViewGroup extends ViewGroup {
+public abstract class MonocleComponentViewGroup extends FrameLayout {
 
 	private static String LODGING;
 	private static String TAXI;
@@ -46,7 +46,7 @@ public abstract class MonocleComponentViewGroup extends ViewGroup {
 		super(context, attrs, defStyle);
 		setActivity((MonocleActivity) getContext());
 		setPlaces(new HashMap<String, Place>());
-		setInflater(getActivity().getLayoutInflater());
+		setInflater(LayoutInflater.from(context));
 		setUpCategoriesStrings();
 		setUpBackgroundDrawables();
 	}
