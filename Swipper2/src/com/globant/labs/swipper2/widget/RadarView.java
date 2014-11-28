@@ -2,7 +2,6 @@ package com.globant.labs.swipper2.widget;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
@@ -20,17 +19,6 @@ public class RadarView extends MonocleComponentViewGroup {
 	private static int RADAR_POINTS_SIZE_PX;
 	private static int RADAR_POINTS_SIZE_PX_HALF;
 
-	private static String LODGING;
-	private static String TAXI;
-	private static String GAS;
-	private static String CAR_RENTAL;
-	private static String FOOD;
-	private static Drawable LODGING_DRAWABLE;
-	private static Drawable TAXI_DRAWABLE;
-	private static Drawable GAS_DRAWABLE;
-	private static Drawable CAR_RENTAL_DRAWABLE;
-	private static Drawable FOOD_DRAWABLE;
-
 	private LayoutParams mLayoutParams;
 
 	public RadarView(Context context) {
@@ -44,18 +32,6 @@ public class RadarView extends MonocleComponentViewGroup {
 	public RadarView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-		LODGING = getResources().getString(R.string.lodging);
-		TAXI = getResources().getString(R.string.taxi);
-		GAS = getResources().getString(R.string.gas);
-		CAR_RENTAL = getResources().getString(R.string.carrental);
-		FOOD = getResources().getString(R.string.food);
-
-		LODGING_DRAWABLE = getResources().getDrawable(R.drawable.radar_item_lodging);
-		TAXI_DRAWABLE = getResources().getDrawable(R.drawable.radar_item_taxi);
-		GAS_DRAWABLE = getResources().getDrawable(R.drawable.radar_item_gas);
-		CAR_RENTAL_DRAWABLE = getResources().getDrawable(R.drawable.radar_item_car_rental);
-		FOOD_DRAWABLE = getResources().getDrawable(R.drawable.radar_item_food);
-
 		RADAR_POINTS_SIZE_PX = DroidUtils.dpToPx(RADAR_POINTS_SIZE_DP, getContext());
 		RADAR_POINTS_SIZE_PX_HALF = RADAR_POINTS_SIZE_PX / 2;
 
@@ -63,20 +39,21 @@ public class RadarView extends MonocleComponentViewGroup {
 	}
 
 	@SuppressWarnings("deprecation")
+	@Override
 	protected void addPlaceView(Place place) {
 		View placeView = new View(getContext());
 		placeView.setLayoutParams(mLayoutParams);
 		// cannot use switch e.e
-		if (place.getCategory().equals(LODGING)) {
-			placeView.setBackgroundDrawable(LODGING_DRAWABLE);
-		} else if (place.getCategory().equals(TAXI)) {
-			placeView.setBackgroundDrawable(TAXI_DRAWABLE);
-		} else if (place.getCategory().equals(GAS)) {
-			placeView.setBackgroundDrawable(GAS_DRAWABLE);
-		} else if (place.getCategory().equals(CAR_RENTAL)) {
-			placeView.setBackgroundDrawable(CAR_RENTAL_DRAWABLE);
-		} else if (place.getCategory().equals(FOOD)) {
-			placeView.setBackgroundDrawable(FOOD_DRAWABLE);
+		if (place.getCategory().equals(getLodgingString())) {
+			placeView.setBackgroundDrawable(getLodgingDrawable());
+		} else if (place.getCategory().equals(getTaxiString())) {
+			placeView.setBackgroundDrawable(getTaxiDrawable());
+		} else if (place.getCategory().equals(getGasString())) {
+			placeView.setBackgroundDrawable(getGasDrawable());
+		} else if (place.getCategory().equals(getCarRentalString())) {
+			placeView.setBackgroundDrawable(getCarRentalDrawable());
+		} else if (place.getCategory().equals(getFoodString())) {
+			placeView.setBackgroundDrawable(getFoodDrawable());
 		} else {
 			Toast.makeText(getContext(), "da fuq?", Toast.LENGTH_SHORT).show();
 		}
@@ -99,11 +76,20 @@ public class RadarView extends MonocleComponentViewGroup {
 			for (int i = 0; i < getChildCount(); i++) {
 				View v = getChildAt(i);
 				String placeId = (String) v.getTag();
-				Point point = GeometryUtils.locationToRadarPoint(getPlaces().get(placeId), latLngBounds,
-						size_x, size_y, getActivity().getAzimuthDegrees());
+				Point point = GeometryUtils.locationToRadarPoint(getPlaces().get(placeId),
+						latLngBounds, size_x, size_y, getActivity().getAzimuthDegrees());
 				v.layout(point.x - RADAR_POINTS_SIZE_PX_HALF, point.y - RADAR_POINTS_SIZE_PX_HALF,
 						point.x + RADAR_POINTS_SIZE_PX_HALF, point.y + RADAR_POINTS_SIZE_PX_HALF);
 			}
 		}
+	}
+
+	@Override
+	protected void setUpBackgroundDrawables() {
+		setLodgingDrawable(getResources().getDrawable(R.drawable.radar_item_lodging));
+		setTaxiDrawable(getResources().getDrawable(R.drawable.radar_item_taxi));
+		setGasDrawable(getResources().getDrawable(R.drawable.radar_item_gas));
+		setCarRentalDrawable(getResources().getDrawable(R.drawable.radar_item_car_rental));
+		setFoodDrawable(getResources().getDrawable(R.drawable.radar_item_food));
 	}
 }
