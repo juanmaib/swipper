@@ -121,7 +121,8 @@
         android:layout_above="@+id/bottomBarLayout"
         android:layout_below="@+id/headerLayout"
         android:background="@color/white_background"
-        android:fillViewport="true" >
+        android:fillViewport="true"
+        android:layout_marginRight="10dp" >
 
         <com.globant.labs.swipper2.widget.SwipperLinearLayout
             android:layout_width="match_parent"
@@ -136,10 +137,9 @@
                 android:layout_weight="1"
                 android:background="@drawable/details_background"
                 android:orientation="vertical"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 app:collapsedHeight="66dip"
                 app:content="@+id/descriptionText"
                 app:handle="@+id/readMoreDescription" >
@@ -147,8 +147,8 @@
                 <com.globant.labs.swipper2.widget.SwipperTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="6dp"
                     android:text="@string/description"
                     android:textColor="@color/dark_font"
                     android:textSize="18sp"
@@ -159,7 +159,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:paddingBottom="4dp"
+                    android:layout_marginBottom="4dp"
                     android:text=""
                     android:textColor="@color/dark_font"
                     android:textSize="16sp"
@@ -176,6 +176,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="25dp"
                     android:paddingRight="25dp"
+                    android:layout_marginRight="10dp"
                     android:paddingTop="10dp"
                     android:text="@string/more"
                     android:textColor="@color/real_white"
@@ -190,10 +191,10 @@
                 android:layout_weight="1"
                 android:background="@drawable/details_background"
                 android:orientation="vertical"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
                 app:collapsedHeight="0dip"
                 app:content="@+id/reviewsList"
                 app:handle="@+id/readMoreReviews" >
@@ -201,8 +202,8 @@
                 <com.globant.labs.swipper2.widget.SwipperTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="4dp"
-                    android:paddingTop="6dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="6dp"
                     android:text="@string/reviews"
                     android:textColor="@color/dark_font"
                     android:textSize="18sp"
@@ -213,7 +214,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:orientation="vertical"
-                    android:paddingBottom="0dp" />
+                    android:layout_marginBottom="0dp" />
 
                 <com.globant.labs.swipper2.widget.SwipperButton
                     android:id="@+id/readMoreReviews"
@@ -226,6 +227,7 @@
                     android:paddingBottom="10dp"
                     android:paddingLeft="25dp"
                     android:paddingRight="25dp"
+                    android:layout_marginRight="10dp"
                     android:paddingTop="10dp"
                     android:text="@string/more"
                     android:textColor="@color/real_white"
@@ -239,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white_background"
                 android:orientation="vertical"
-                android:padding="10dp" >
+                android:paddingLeft="10dp" >
 
                 <com.globant.labs.swipper2.widget.SwipperTextView
                     android:layout_width="wrap_content"
