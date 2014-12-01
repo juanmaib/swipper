@@ -76,6 +76,10 @@
     <string name="status_zoom_in">Zoom in to see the places</string>
     <string name="status_retry">Network error, retrying...</string>
     
+    <!-- Gallery Activity -->
     
+    <string name="toastGallery_errorCreatingFile">There was an error creating the temporary image file to be shared. That\'s all we know.</string>
+    <string name="toastGallery_errorCreatingDir">There was an error creating the temporary image directory. That\'s all we know.</string>
+    <string name="toastGallery_waitForImageLoad">Please, wait for the image to be fully loaded before sharing it.</string>
     
 </resources>

@@ -6,22 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".GalleryActivity" >
 
-    <android.support.v4.view.ViewPager
+    <!-- <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" /> -->
+    
+    <com.globant.labs.swipper2.widget.ZoomableViewPager 
+	    android:id="@+id/gallery_pager"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/titleBar_Gallery"
+        style="@style/Swipper.Gallery.TitleBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:background="@color/black_translucent"
+        android:layout_height="?attr/actionBarSize"
         tools:ignore="UseCompoundDrawables" >
 
-        <TextView
+        <com.globant.labs.swipper2.widget.SwipperTextView
             android:id="@+id/placeName_Gallery"
+            style="@style/Swipper.Gallery.TitleBar.Text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -29,12 +34,23 @@
             android:paddingLeft="@dimen/galleryPadding" />
 
         <ImageView
-            android:id="@+id/galleryExit"
+            android:id="@+id/shareImage_Gallery"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:contentDescription="@string/imageExitButtonDescription"
-            android:padding="@dimen/galleryPadding"
-            android:src="@drawable/ic_exit" />
+            android:paddingLeft="@dimen/galleryPadding"
+            android:paddingRight="@dimen/galleryPadding"
+            android:src="@drawable/bar_share_button" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar_Gallery"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

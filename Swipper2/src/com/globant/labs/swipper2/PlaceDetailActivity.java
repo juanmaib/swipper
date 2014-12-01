@@ -61,6 +61,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 	public static final String PLACE_NAME_EXTRA = "place-name-extra";
 	public static final String PLACE_CATEGORY_EXTRA = "place-category-extra";
 	public static final String PLACE_DISTANCE_EXTRA = "place-distance-extra";
+	private static final int MAX_PHOTO_SIZE_GOOGLE = 1600;
 
 	private int mRetriesLeft = 2;
 
@@ -90,7 +91,7 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	protected String[] mPhotosURLs;
 
-	protected int mDeviceWidth;
+	protected int mLargeImageSize;
 	private String mPlaceId;
 
 	@Override
@@ -170,24 +171,29 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	@Override
 	protected void onStart() {
-		mDeviceWidth = getDeviceWidth();
+		mLargeImageSize = getLargeImageSize();
 		super.onStart();
 	}
 
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	private int getDeviceWidth() {
-		int width = 0;
+	private int getLargeImageSize() {
+		int width;
+		int height;
 		WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		if (Build.VERSION.SDK_INT > 12) {
 			Point size = new Point();
 			display.getSize(size);
 			width = size.x;
+			height = size.y;
 		} else {
 			width = display.getWidth(); // yeah, I know...
+			height = display.getHeight();
 		}
-		return width;
+		int deviceLongestSideSize = width >= height ? width : height;
+		return deviceLongestSideSize <= MAX_PHOTO_SIZE_GOOGLE ? deviceLongestSideSize
+				: MAX_PHOTO_SIZE_GOOGLE;
 	}
 
 	@Override
@@ -384,8 +390,9 @@ public class PlaceDetailActivity extends ActionBarActivity implements ObjectCall
 
 	// ya know what they say...
 	protected String getBiggerPhotoURL(String photoReference) {
-		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=" + mDeviceWidth
-				+ "&photoreference=" + photoReference + "&key=" + PHOTOS_API_KEY;
+		return "https://maps.googleapis.com/maps/api/place/photo" + "?maxwidth=" + mLargeImageSize
+				+ "&maxheight=" + mLargeImageSize + "&photoreference=" + photoReference + "&key="
+				+ PHOTOS_API_KEY;
 	}
 
 	@Override
