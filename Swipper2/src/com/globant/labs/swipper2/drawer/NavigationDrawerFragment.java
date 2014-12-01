@@ -152,6 +152,7 @@ public class NavigationDrawerFragment extends Fragment {
 	public void setUp(int fragmentId, DrawerLayout drawerLayout) {
 		mFragmentContainerView = getActivity().findViewById(fragmentId);
 		mDrawerLayout = drawerLayout;
+		mDrawerLayout.setScrimColor(getActivity().getResources().getColor(R.color.navigation_drawer_scrim));
 
 		// set a custom shadow that overlays the main content when the drawer
 		// opens
