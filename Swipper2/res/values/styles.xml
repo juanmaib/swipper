@@ -70,9 +70,27 @@
         <item name="android:layout_width">@dimen/radar_monocle_size</item>
         <item name="android:layout_height">@dimen/radar_monocle_size</item>
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:background">@drawable/radar_background</item>
         <item name="android:layout_margin">@dimen/radar_monocle_margin</item>
     </style>
+
+    <style name="Swipper.Monocle.Radar.Background" parent="@style/Swipper.Monocle.Radar">
+        <item name="android:src">@drawable/radar_background</item>
+    </style>
+
+    <style name="Swipper.Monocle.Radar.North" parent="@android:style/Widget">
+        <item name="android:layout_width">@dimen/radar_monocle_size</item>
+        <item name="android:layout_height">@dimen/radar_monocle_size</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginRight">@dimen/radar_monocle_margin</item>
+        <item name="android:layout_marginLeft">@dimen/radar_monocle_margin</item>
+        <item name="android:shadowColor">#FF8800</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="Swipper.Monocle.Radar.Places" parent="@style/Swipper.Monocle.Radar"></style>
 
     <style name="Swipper.Monocle.Reality.PlaceName" parent="@android:style/TextAppearance">
         <item name="android:layout_width">wrap_content</item>

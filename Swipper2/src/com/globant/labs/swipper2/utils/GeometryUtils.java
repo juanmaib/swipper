@@ -27,10 +27,11 @@ public class GeometryUtils {
 		point.x = (int) Math.floor((size_x * delta_long) / max_delta_long);
 		point.y = (int) Math.floor((size_y * delta_lat) / max_delta_lat);
 
-		int centerx = (int) Math.floor(size_x / 2);
-		int centery = (int) Math.floor(size_y / 2);
-		Point center = new Point(centerx, centery);
-		return rotatePoint(point, center, azimuth);
+		// int centerx = (int) Math.floor(size_x / 2);
+		// int centery = (int) Math.floor(size_y / 2);
+		// Point center = new Point(centerx, centery);
+		// return rotatePoint(point, center, azimuth);
+		return point;
 	}
 
 	public static Point locationToRealityPoint(Place place, LatLngBounds bounds, int size_x,
@@ -41,6 +42,10 @@ public class GeometryUtils {
 
 		// let's delegate most of the hard work to our sibling method
 		Point point = locationToRadarPoint(place, bounds, size_x, size_y, azimuth);
+		int centerx = (int) Math.floor(size_x / 2);
+		int centery = (int) Math.floor(size_y / 2);
+		Point center = new Point(centerx, centery);
+		point = rotatePoint(point, center, azimuth);
 		// now let's transform the points domain from a
 		// "left to right, top to bottom" system, to a "4 quadrant" one
 		point.x = point.x - (size_x / 2);

@@ -13,7 +13,10 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
@@ -41,7 +44,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
 	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
 	private static final int SENSOR_DELAY_RADAR = SensorManager.SENSOR_DELAY_UI;
-	private static final int RADAR_LAYOUT_DELAY_MILLIS = 200;
+	private static final int RADAR_PLACES_LAYOUT_DELAY_MILLIS = 200;
+	private static final int RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS = 100;
 	private static final int REALITY_LAYOUT_DELAY_MILLIS = 200;
 
 	public static final double DEFAULT_RADIUS = 1000;
@@ -58,7 +62,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private boolean mFocusing;
 
 	// private SwipperTextView mBrand;
-	private RadarView mRadar;
+	private ImageView mRadarBackground;
+	private RadarView mRadarPlaces;
 	private RealityView mReality;
 
 	private GoogleApiClient mGoogleApiClient;
@@ -66,9 +71,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private Location mCurrentLocation;
 	private Location mPreviousLocation;
 
-	private PlacesProvider mPlacesProvider;
+	private MonoclePlacesProvider mPlacesProvider;
 	private OrientationSensor mOrientationSensor;
 	private SensorManager mSensorManager;
+
+	private float mRadarBackgroundCenter;
+	private RotateAnimation mRotateAnimation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +100,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 		checkAndEnableAutoFocus();
 
-		mRadar = (RadarView) findViewById(R.id.radar_monocle);
+		mRadarPlaces = (RadarView) findViewById(R.id.radar_monocle_places);
+		mRadarBackground = (ImageView) findViewById(R.id.radar_monocle_background);
 
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
@@ -103,13 +112,13 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		// Use high accuracy
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-		mPlacesProvider = new PlacesProvider(this);
+		mPlacesProvider = new MonoclePlacesProvider(this);
 		mPlacesProvider.refreshFilteredPlaces();
 		mPlacesProvider.setPlacesCallback(new PlacesCallback() {
 
 			@Override
 			public void placesUpdated(List<Place> places) {
-				mRadar.onPlacesUpdate(places);
+				mRadarPlaces.onPlacesUpdate(places);
 				mReality.onPlacesUpdate(places);
 			}
 
@@ -125,6 +134,18 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		setAzimuthDegrees(0);
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mOrientationSensor = new OrientationSensor(mSensorManager, null);
+
+		mRadarBackground.getViewTreeObserver().addOnGlobalLayoutListener(
+				new OnGlobalLayoutListener() {
+
+					@SuppressWarnings("deprecation")
+					@Override
+					public void onGlobalLayout() {
+						mRadarBackground.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+						mRadarBackgroundCenter = mRadarBackground.getWidth() / 2;
+					}
+				});
+
 	}
 
 	@Override
@@ -145,11 +166,22 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 					@Override
 					public void run() {
-						mRadar.requestLayout();
+						mRadarPlaces.requestLayout();
 					}
 				});
 			}
-		}, 0, RADAR_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+		}, 0, RADAR_PLACES_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						rotateRadarBackground((float) -getAzimuthDegrees());
+					}
+				});
+			}
+		}, 0, RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				runOnUiThread(new Runnable() {
@@ -161,6 +193,13 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 				});
 			}
 		}, 0, REALITY_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+	}
+
+	private void rotateRadarBackground(float rotate) {
+		mRotateAnimation = new RotateAnimation(rotate, rotate, mRadarBackgroundCenter,
+				mRadarBackgroundCenter);
+		mRotateAnimation.setFillAfter(true);
+		mRadarBackground.startAnimation(mRotateAnimation);
 	}
 
 	@Override
@@ -285,7 +324,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	@Override
 	public void onConnected(Bundle connectionHint) {
 		setCurrentLocation(LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
-		mRadar.onLocationChanged(getCurrentLocation());
+		mRadarPlaces.onLocationChanged(getCurrentLocation());
 		mReality.onLocationChanged(getCurrentLocation());
 		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
 				mLocationRequest, this);
@@ -303,12 +342,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	public void onLocationChanged(Location location) {
 		setCurrentLocation(location);
 		setSpeed();
-		mRadar.onLocationChanged(location);
+		mRadarPlaces.onLocationChanged(location);
 		mReality.onLocationChanged(location);
 		mPlacesProvider.setCurrentLocation(new LatLng(location.getLatitude(), location
 				.getLongitude()));
 		if (mPlacesProvider.updateLocation(getBounds(BASE_COEFICIENT))) {
-			mRadar.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
+			mRadarPlaces.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
 			mReality.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
 		}
 	}
@@ -385,6 +424,21 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 			this.mAzimuthDegrees = 360 + GeoUtils.getDegree(azimuthRadians);
 		} else {
 			this.mAzimuthDegrees = GeoUtils.getDegree(azimuthRadians);
+		}
+	}
+
+	private class MonoclePlacesProvider extends PlacesProvider {
+
+		public MonoclePlacesProvider(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void onError(Throwable t) {
+			// this way we have an even harder worker provider. it doesn't
+			// accept a no as an answer, it keeps working until it achieves it's
+			// goal, or it dies
+			loadPlaces();
 		}
 	}
 }

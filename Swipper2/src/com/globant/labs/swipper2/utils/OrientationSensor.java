@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.Surface;
 
 public class OrientationSensor implements SensorEventListener {
@@ -101,113 +102,121 @@ public class OrientationSensor implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent evnt) {
 
-		int SensorType = evnt.sensor.getType();
-		switch (SensorType) {
-		case Sensor.TYPE_GRAVITY:
-			if (mNormGravityVector == null)
-				mNormGravityVector = new float[3];
-			System.arraycopy(evnt.values, 0, mNormGravityVector, 0, mNormGravityVector.length);
-			mNormGravity = (float) Math.sqrt(mNormGravityVector[0] * mNormGravityVector[0]
-					+ mNormGravityVector[1] * mNormGravityVector[1] + mNormGravityVector[2]
-					* mNormGravityVector[2]);
-			for (int i = 0; i < mNormGravityVector.length; i++)
-				mNormGravityVector[i] /= mNormGravity;
-			break;
-		case Sensor.TYPE_MAGNETIC_FIELD:
-			if (mNormMagFieldValues == null)
-				mNormMagFieldValues = new float[3];
-			System.arraycopy(evnt.values, 0, mNormMagFieldValues, 0, mNormMagFieldValues.length);
-			mNormMagField = (float) Math.sqrt(mNormMagFieldValues[0] * mNormMagFieldValues[0]
-					+ mNormMagFieldValues[1] * mNormMagFieldValues[1] + mNormMagFieldValues[2]
-					* mNormMagFieldValues[2]);
-			for (int i = 0; i < mNormMagFieldValues.length; i++)
-				mNormMagFieldValues[i] /= mNormMagField;
-			break;
-		}
-		if (mNormGravityVector != null && mNormMagFieldValues != null) {
-			// first calculate the horizontal vector that points due east
-			float East_x = mNormMagFieldValues[1] * mNormGravityVector[2] - mNormMagFieldValues[2]
-					* mNormGravityVector[1];
-			float East_y = mNormMagFieldValues[2] * mNormGravityVector[0] - mNormMagFieldValues[0]
-					* mNormGravityVector[2];
-			float East_z = mNormMagFieldValues[0] * mNormGravityVector[1] - mNormMagFieldValues[1]
-					* mNormGravityVector[0];
-			float norm_East = (float) Math
-					.sqrt(East_x * East_x + East_y * East_y + East_z * East_z);
-			if (mNormGravity * mNormMagField * norm_East < 0.1f) { // Typical
-																	// values
-																	// are
-																	// >
-																	// 100.
-				mOrientationOK = false; // device is close to free fall (or
-										// in
-										// space?), or close to magnetic
-										// north pole.
-			} else {
-				mNormEastVector[0] = East_x / norm_East;
-				mNormEastVector[1] = East_y / norm_East;
-				mNormEastVector[2] = East_z / norm_East;
-
-				// next calculate the horizontal vector that points due
-				// north
-				float M_dot_G = (mNormGravityVector[0] * mNormMagFieldValues[0]
-						+ mNormGravityVector[1] * mNormMagFieldValues[1] + mNormGravityVector[2]
+		try {
+			int SensorType = evnt.sensor.getType();
+			switch (SensorType) {
+			case Sensor.TYPE_GRAVITY:
+				if (mNormGravityVector == null)
+					mNormGravityVector = new float[3];
+				System.arraycopy(evnt.values, 0, mNormGravityVector, 0, mNormGravityVector.length);
+				mNormGravity = (float) Math.sqrt(mNormGravityVector[0] * mNormGravityVector[0]
+						+ mNormGravityVector[1] * mNormGravityVector[1] + mNormGravityVector[2]
+						* mNormGravityVector[2]);
+				for (int i = 0; i < mNormGravityVector.length; i++)
+					mNormGravityVector[i] /= mNormGravity;
+				break;
+			case Sensor.TYPE_MAGNETIC_FIELD:
+				if (mNormMagFieldValues == null)
+					mNormMagFieldValues = new float[3];
+				System.arraycopy(evnt.values, 0, mNormMagFieldValues, 0, mNormMagFieldValues.length);
+				mNormMagField = (float) Math.sqrt(mNormMagFieldValues[0] * mNormMagFieldValues[0]
+						+ mNormMagFieldValues[1] * mNormMagFieldValues[1] + mNormMagFieldValues[2]
 						* mNormMagFieldValues[2]);
-				float North_x = mNormMagFieldValues[0] - mNormGravityVector[0] * M_dot_G;
-				float North_y = mNormMagFieldValues[1] - mNormGravityVector[1] * M_dot_G;
-				float North_z = mNormMagFieldValues[2] - mNormGravityVector[2] * M_dot_G;
-				float norm_North = (float) Math.sqrt(North_x * North_x + North_y * North_y
-						+ North_z * North_z);
-				mNormNorthVector[0] = North_x / norm_North;
-				mNormNorthVector[1] = North_y / norm_North;
-				mNormNorthVector[2] = North_z / norm_North;
-
-				// take account of screen rotation away from its natural
-				// rotation
-				int rotation = mActivity.getWindowManager().getDefaultDisplay().getRotation();
-				float screen_adjustment = 0;
-				switch (rotation) {
-				case Surface.ROTATION_0:
-					screen_adjustment = 0;
-					break;
-				case Surface.ROTATION_90:
-					screen_adjustment = (float) Math.PI / 2;
-					break;
-				case Surface.ROTATION_180:
-					screen_adjustment = (float) Math.PI;
-					break;
-				case Surface.ROTATION_270:
-					screen_adjustment = 3 * (float) Math.PI / 2;
-					break;
-				}
-				// NB: the rotation matrix has now effectively been
-				// calculated.
-				// It consists of the three vectors m_NormEastVector[],
-				// m_NormNorthVector[] and m_NormGravityVector[]
-
-				// calculate all the required angles from the rotation
-				// matrix
-				// NB: see
-				// http://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
-				float sin = mNormEastVector[1] - mNormNorthVector[0], cos = mNormEastVector[0]
-						+ mNormNorthVector[1];
-				mAzimuthRadians = (float) (sin != 0 && cos != 0 ? Math.atan2(sin, cos) : 0);
-				mPitchRadians = (float) Math.acos(mNormGravityVector[2]);
-				sin = -mNormEastVector[1] - mNormNorthVector[0];
-				cos = mNormEastVector[0] - mNormNorthVector[1];
-				float aximuth_plus_two_pitch_axis_radians = (float) (sin != 0 && cos != 0 ? Math
-						.atan2(sin, cos) : 0);
-				mPitchAxisRadians = (float) (aximuth_plus_two_pitch_axis_radians - mAzimuthRadians) / 2;
-				mAzimuthRadians += screen_adjustment;
-				mPitchAxisRadians += screen_adjustment;
-				mOrientationOK = true;
+				for (int i = 0; i < mNormMagFieldValues.length; i++)
+					mNormMagFieldValues[i] /= mNormMagField;
+				break;
 			}
-		}
-		if (mParent != null)
-			mParent.onSensorChanged(evnt);
+			if (mNormGravityVector != null && mNormMagFieldValues != null) {
+				// first calculate the horizontal vector that points due east
+				float East_x = mNormMagFieldValues[1] * mNormGravityVector[2]
+						- mNormMagFieldValues[2] * mNormGravityVector[1];
+				float East_y = mNormMagFieldValues[2] * mNormGravityVector[0]
+						- mNormMagFieldValues[0] * mNormGravityVector[2];
+				float East_z = mNormMagFieldValues[0] * mNormGravityVector[1]
+						- mNormMagFieldValues[1] * mNormGravityVector[0];
+				float norm_East = (float) Math.sqrt(East_x * East_x + East_y * East_y + East_z
+						* East_z);
+				if (mNormGravity * mNormMagField * norm_East < 0.1f) { // Typical
+																		// values
+																		// are
+																		// >
+																		// 100.
+					mOrientationOK = false; // device is close to free fall (or
+											// in
+											// space?), or close to magnetic
+											// north pole.
+				} else {
+					mNormEastVector[0] = East_x / norm_East;
+					mNormEastVector[1] = East_y / norm_East;
+					mNormEastVector[2] = East_z / norm_East;
 
-		if (mListener != null) {
-			mListener.onAzimuthChanged(mAzimuthRadians);
+					// next calculate the horizontal vector that points due
+					// north
+					float M_dot_G = (mNormGravityVector[0] * mNormMagFieldValues[0]
+							+ mNormGravityVector[1] * mNormMagFieldValues[1] + mNormGravityVector[2]
+							* mNormMagFieldValues[2]);
+					float North_x = mNormMagFieldValues[0] - mNormGravityVector[0] * M_dot_G;
+					float North_y = mNormMagFieldValues[1] - mNormGravityVector[1] * M_dot_G;
+					float North_z = mNormMagFieldValues[2] - mNormGravityVector[2] * M_dot_G;
+					float norm_North = (float) Math.sqrt(North_x * North_x + North_y * North_y
+							+ North_z * North_z);
+					mNormNorthVector[0] = North_x / norm_North;
+					mNormNorthVector[1] = North_y / norm_North;
+					mNormNorthVector[2] = North_z / norm_North;
+
+					// take account of screen rotation away from its natural
+					// rotation
+					int rotation = mActivity.getWindowManager().getDefaultDisplay().getRotation();
+					float screen_adjustment = 0;
+					switch (rotation) {
+					case Surface.ROTATION_0:
+						screen_adjustment = 0;
+						break;
+					case Surface.ROTATION_90:
+						screen_adjustment = (float) Math.PI / 2;
+						break;
+					case Surface.ROTATION_180:
+						screen_adjustment = (float) Math.PI;
+						break;
+					case Surface.ROTATION_270:
+						screen_adjustment = 3 * (float) Math.PI / 2;
+						break;
+					}
+					// NB: the rotation matrix has now effectively been
+					// calculated.
+					// It consists of the three vectors m_NormEastVector[],
+					// m_NormNorthVector[] and m_NormGravityVector[]
+
+					// calculate all the required angles from the rotation
+					// matrix
+					// NB: see
+					// http://math.stackexchange.com/questions/381649/whats-the-best-3d-angular-co-ordinate-system-for-working-with-smartfone-apps
+					float sin = mNormEastVector[1] - mNormNorthVector[0], cos = mNormEastVector[0]
+							+ mNormNorthVector[1];
+					mAzimuthRadians = (float) (sin != 0 && cos != 0 ? Math.atan2(sin, cos) : 0);
+					mPitchRadians = (float) Math.acos(mNormGravityVector[2]);
+					sin = -mNormEastVector[1] - mNormNorthVector[0];
+					cos = mNormEastVector[0] - mNormNorthVector[1];
+					float aximuth_plus_two_pitch_axis_radians = (float) (sin != 0 && cos != 0 ? Math
+							.atan2(sin, cos) : 0);
+					mPitchAxisRadians = (float) (aximuth_plus_two_pitch_axis_radians - mAzimuthRadians) / 2;
+					mAzimuthRadians += screen_adjustment;
+					mPitchAxisRadians += screen_adjustment;
+					mOrientationOK = true;
+				}
+			}
+			if (mParent != null)
+				mParent.onSensorChanged(evnt);
+
+			if (mListener != null) {
+				mListener.onAzimuthChanged(mAzimuthRadians);
+			}
+		} catch (NullPointerException npe) {
+			// Due to the amount of times this method is called, it may happen
+			// that while the parent is being destroyed, we try to reference it.
+			// In those cases, it doesn't really matter if this method finalizes
+			// it's execution, because we're exiting
+			Log.i("OrientationSensor", "onSensorChanged", npe);
 		}
 
 	}
