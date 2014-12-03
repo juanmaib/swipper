@@ -2,7 +2,7 @@ package com.globant.labs.swipper2;
 
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
@@ -11,7 +11,6 @@ import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.RotateAnimation;
@@ -41,12 +40,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		OnConnectionFailedListener, LocationListener, OnAzimuthChangeListener {
 
 	public static final double BASE_COEFICIENT = 1;
-	private static final long AUTO_FOCUS_INTERVAL_MS = 3000L;
-	private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000L;
+	private static final int AUTO_FOCUS_INTERVAL_MILLIS = 10000;
+	private static final int UPDATE_INTERVAL_MILLIS = 5000;
 	private static final int SENSOR_DELAY_RADAR = SensorManager.SENSOR_DELAY_UI;
-	private static final int RADAR_PLACES_LAYOUT_DELAY_MILLIS = 200;
+	private static final int RADAR_PLACES_LAYOUT_DELAY_MILLIS = 100;
 	private static final int RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS = 100;
-	private static final int REALITY_LAYOUT_DELAY_MILLIS = 200;
+	private static final int REALITY_LAYOUT_DELAY_MILLIS = 100;
 
 	public static final double DEFAULT_RADIUS = 1000;
 	private static final double NORTH_EAST_BEARING = 45;
@@ -57,11 +56,13 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	private Camera mCamera;
 	private CameraPreview mPreview;
-	private AsyncTask<Void, Void, Void> mAutoFocusTask;
+	private AutoFocusCallback mAutoFocusCallback;
+	private ScheduledExecutorService mAutoFocusService;
 	private boolean mStopped;
 	private boolean mFocusing;
 
 	// private SwipperTextView mBrand;
+	private FrameLayout mPreviewFrame;
 	private ImageView mRadarBackground;
 	private RadarView mRadarPlaces;
 	private RealityView mReality;
@@ -87,19 +88,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
 				.addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
 
-		// mBrand = (SwipperTextView) findViewById(R.id.et_brand_monocle);
+		// get some view handles
 		mReality = (RealityView) findViewById(R.id.reality_monocle);
-
-		// Create an instance of Camera
-		mCamera = getCameraInstance();
-
-		// Create our Preview view and set it as the content of our activity.
-		mPreview = new CameraPreview(this, mCamera);
-		FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-		preview.addView(mPreview);
-
-		checkAndEnableAutoFocus();
-
 		mRadarPlaces = (RadarView) findViewById(R.id.radar_monocle_places);
 		mRadarBackground = (ImageView) findViewById(R.id.radar_monocle_background);
 
@@ -107,11 +97,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mLocationRequest = LocationRequest.create();
 
 		// Set the update interval
-		mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+		mLocationRequest.setInterval(UPDATE_INTERVAL_MILLIS);
 
 		// Use high accuracy
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+		// Set up places provider (use our own tweaked version)
 		mPlacesProvider = new MonoclePlacesProvider(this);
 		mPlacesProvider.refreshFilteredPlaces();
 		mPlacesProvider.setPlacesCallback(new PlacesCallback() {
@@ -131,10 +122,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 			}
 		});
 
+		// Set up sensor manager
 		setAzimuthDegrees(0);
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		mOrientationSensor = new OrientationSensor(mSensorManager, null);
 
+		// we need this to get the final size that is asigned to the radar
 		mRadarBackground.getViewTreeObserver().addOnGlobalLayoutListener(
 				new OnGlobalLayoutListener() {
 
@@ -145,7 +138,6 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 						mRadarBackgroundCenter = mRadarBackground.getWidth() / 2;
 					}
 				});
-
 	}
 
 	@Override
@@ -157,9 +149,26 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		setUpCamera();
 		mOrientationSensor.Register(this, SENSOR_DELAY_RADAR, this);
+		setUpLayoutRefreshers();
+	}
 
+	@Override
+	protected void onPause() {
+		mOrientationSensor.Unregister();
+		stopAutoFocus();
+		releaseCamera(); // release the camera immediately on pause event
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		mGoogleApiClient.disconnect();
+		super.onStop();
+	}
+
+	private void setUpLayoutRefreshers() {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				runOnUiThread(new Runnable() {
@@ -202,18 +211,18 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mRadarBackground.startAnimation(mRotateAnimation);
 	}
 
-	@Override
-	protected void onPause() {
-		mOrientationSensor.Unregister();
-		stopAutoFocus();
-		releaseCamera(); // release the camera immediately on pause event
-		super.onPause();
-	}
+	private void setUpCamera() {
+		mPreviewFrame = (FrameLayout) findViewById(R.id.camera_preview);
+		mPreviewFrame.removeAllViews();
 
-	@Override
-	protected void onStop() {
-		mGoogleApiClient.disconnect();
-		super.onStop();
+		// Create an instance of Camera
+		mCamera = getCameraInstance();
+
+		// Create our Preview view and set it as the content of our activity.
+		mPreview = new CameraPreview(this, mCamera);
+		mPreviewFrame.addView(mPreview);
+
+		checkAndEnableAutoFocus();
 	}
 
 	private void checkAndEnableAutoFocus() {
@@ -239,6 +248,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	private void releaseCamera() {
 		if (mCamera != null) {
+			mCamera.stopPreview();
+			mCamera.setPreviewCallback(null);
 			mPreview.getHolder().removeCallback(mPreview);
 			mCamera.release(); // release the camera for other applications
 			mCamera = null;
@@ -256,37 +267,31 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		return c; // returns null if camera is unavailable
 	}
 
-	private final class AutoFocusTask extends AsyncTask<Void, Void, Void> {
-		@Override
-		protected Void doInBackground(Void... params) {
-			try {
-				Thread.sleep(AUTO_FOCUS_INTERVAL_MS);
-			} catch (InterruptedException e) {
-				// continue
-			}
-			startAutoFocus();
-			return null;
-		}
-	}
-
 	private void startAutoFocus() {
-		mAutoFocusTask = null;
-		if (!mStopped && !mFocusing) {
-			try {
-				mCamera.autoFocus(this);
-				mFocusing = true;
-			} catch (RuntimeException re) {
-				// Have heard RuntimeException reported in Android 4.0.x+;
-				// continue?
-				// Try again later to keep cycle going
-				autoFocusAgainLater();
+
+		mStopped = false;
+
+		mAutoFocusCallback = this;
+
+		mAutoFocusService = Executors.newSingleThreadScheduledExecutor();
+
+		mAutoFocusService.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				try {
+					if (!mStopped && !mFocusing) {
+						mFocusing = true;
+						mCamera.autoFocus(mAutoFocusCallback);
+					}
+				} catch (Exception e) {
+					mFocusing = false;
+				}
 			}
-		}
+		}, 0, AUTO_FOCUS_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
 	}
 
 	private void stopAutoFocus() {
 		mStopped = true;
-		cancelAutoFocusTask();
+		shutdownAutoFocusService();
 		// Doesn't hurt to call this even if not focusing
 		try {
 			mCamera.cancelAutoFocus();
@@ -295,30 +300,14 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		}
 	}
 
-	private void autoFocusAgainLater() {
-		if (!mStopped && mAutoFocusTask == null) {
-			AutoFocusTask newTask = new AutoFocusTask();
-			try {
-				newTask.execute();
-				mAutoFocusTask = newTask;
-			} catch (RejectedExecutionException ree) {
-			}
-		}
-	}
-
-	private synchronized void cancelAutoFocusTask() {
-		if (mAutoFocusTask != null) {
-			if (mAutoFocusTask.getStatus() != AsyncTask.Status.FINISHED) {
-				mAutoFocusTask.cancel(true);
-			}
-			mAutoFocusTask = null;
-		}
+	private synchronized void shutdownAutoFocusService() {
+		mAutoFocusService.shutdown();
+		mFocusing = false;
 	}
 
 	@Override
 	public void onAutoFocus(boolean success, Camera camera) {
 		mFocusing = false;
-		autoFocusAgainLater();
 	}
 
 	@Override

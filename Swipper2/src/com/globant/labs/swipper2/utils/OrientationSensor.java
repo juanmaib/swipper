@@ -216,7 +216,7 @@ public class OrientationSensor implements SensorEventListener {
 			// that while the parent is being destroyed, we try to reference it.
 			// In those cases, it doesn't really matter if this method finalizes
 			// it's execution, because we're exiting
-			Log.i("OrientationSensor", "onSensorChanged", npe);
+			Log.i("OrientationSensor", "onSensorChanged. this exception can be safely ignored", npe);
 		}
 
 	}

@@ -3,11 +3,14 @@ package com.globant.labs.swipper2.widget;
 import java.text.DecimalFormat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.globant.labs.swipper2.MonocleActivity;
+import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
@@ -63,6 +66,20 @@ public class RealityView extends MonocleComponentViewGroup {
 				.getCurrentLatLng())));
 
 		placeView.setTag(place.getId());
+		placeView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Place p = getPlaces().get(v.getTag());
+				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
+				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
+				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
+				intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA,
+						GeoUtils.getDistance(p.getLocation(), getActivity().getCurrentLatLng()));
+				getActivity().startActivity(intent);
+			}
+		});
 		addView(placeView);
 	}
 
