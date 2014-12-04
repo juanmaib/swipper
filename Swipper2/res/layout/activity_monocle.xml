@@ -8,16 +8,19 @@
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <com.globant.labs.swipper2.widget.RealityView
         android:id="@+id/reality_monocle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/radar_monocle_background"
-        style="@style/Swipper.Monocle.Radar.Background" />
+        style="@style/Swipper.Monocle.Radar.Background"
+        android:visibility="gone" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         style="@style/Swipper.Monocle.Radar.North"
@@ -25,19 +28,53 @@
         android:text="N"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:visibility="gone"
         app:fontName="roboto_bold.ttf" />
 
     <com.globant.labs.swipper2.widget.RadarView
         android:id="@+id/radar_monocle_places"
-        style="@style/Swipper.Monocle.Radar.Places" />
+        style="@style/Swipper.Monocle.Radar.Places"
+        android:visibility="gone" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/stv_brand_monocle"
         style="@style/Swipper.Monocle.Brand"
-        android:text="@string/app_name" />
+        android:text="@string/app_name"
+        android:visibility="gone" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/et_azimuth_monocle"
-        style="@style/Swipper.Monocle.Brand" />
+        style="@style/Swipper.Monocle.Brand"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/loading_monocle"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/azimuth_monocle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white" />
+    
+    <TextView
+        android:id="@+id/another_azimuth_monocle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/azimuth_monocle"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@android:color/black"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>
