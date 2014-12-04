@@ -65,16 +65,5 @@
         android:layout_marginRight="5dp"
         android:background="@android:color/black"
         android:textColor="@android:color/white" />
-    
-    <TextView
-        android:id="@+id/another_azimuth_monocle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/azimuth_monocle"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@android:color/black"
-        android:textColor="@android:color/white" />
 
 </RelativeLayout>

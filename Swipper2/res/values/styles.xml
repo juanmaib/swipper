@@ -109,4 +109,12 @@
         <item name="fontName">roboto_bold_italic.ttf</item>
     </style>
 
+    <style name="Swipper.Monocle.InfoWindow.Text" parent="@android:style/TextAppearance">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="fontName">roboto_light.ttf</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>

@@ -15,7 +15,7 @@ public class GeoUtils {
 
 	private static final int MILLION = 1000000;
 	private static final int EARTH_RADIUS = 6371009;
-	private static final double RAD_CONV = 180 / Math.PI;
+	// private static final double RAD_CONV = 180 / Math.PI;
 
 	public static JSONObject latLngToJson(LatLng latLng) {
 		JSONObject jsonObject = new JSONObject();
@@ -114,9 +114,9 @@ public class GeoUtils {
 		// north), δ is the angular distance d/R; d being the distance
 		// travelled, R the earth’s radius
 
-		double lat1 = getRadians(latLng.latitude);
-		double lng1 = getRadians(latLng.longitude);
-		double b = getRadians(bearing);
+		double lat1 = Math.toRadians(latLng.latitude);
+		double lng1 = Math.toRadians(latLng.longitude);
+		double b = Math.toRadians(bearing);
 		double dR = distance / EARTH_RADIUS;
 
 		double lat2 = Math.asin(Math.sin(lat1) * Math.cos(dR) + Math.cos(lat1) * Math.sin(dR)
@@ -126,7 +126,7 @@ public class GeoUtils {
 				+ Math.atan2(Math.sin(b) * Math.sin(dR) * Math.cos(lat1),
 						Math.cos(dR) - Math.sin(lat1) * Math.sin(lat2));
 
-		return new LatLng(getDegree(lat2), getDegree(lng2));
+		return new LatLng(Math.toDegrees(lat2), Math.toDegrees(lng2));
 	}
 
 	/**
@@ -143,9 +143,9 @@ public class GeoUtils {
 	 */
 	@Deprecated
 	public static LatLng getDestinationLocation(LatLng latLng, double bearing, double distance) {
-		double lat1 = getRadians(latLng.latitude);
-		double lon1 = getRadians(latLng.longitude);
-		double b = getRadians(bearing);
+		double lat1 = Math.toRadians(latLng.latitude);
+		double lon1 = Math.toRadians(latLng.longitude);
+		double b = Math.toRadians(bearing);
 		double dr = distance / EARTH_RADIUS;
 
 		double lat2 = Math.asin(Math.sin(lat1) * Math.cos(dr) + Math.cos(lat1) * Math.sin(dr)
@@ -155,17 +155,9 @@ public class GeoUtils {
 						Math.cos(dr) - Math.sin(lat1) * Math.sin(lat2));
 		lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
 
-		double lat2d = getDegree(lat2);
-		double lon2d = getDegree(lon2);
+		double lat2d = Math.toDegrees(lat2);
+		double lon2d = Math.toDegrees(lon2);
 		return new LatLng(lat2d, lon2d);
-	}
-
-	public static double getRadians(double angle) {
-		return angle / RAD_CONV;
-	}
-
-	public static double getDegree(double rad) {
-		return rad * RAD_CONV;
 	}
 
 	public static boolean isPlaceWithinScope(Place place, Location location, double distance) {

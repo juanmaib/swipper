@@ -3,6 +3,7 @@ package com.globant.labs.swipper2.utils;
 import android.graphics.Point;
 
 import com.globant.labs.swipper2.models.Place;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class GeometryUtils {
@@ -40,30 +41,55 @@ public class GeometryUtils {
 		// about the angle, as that's the value that's gonna give us the
 		// horizontal position in the screen of the "place"
 
-		// let's delegate most of the hard work to our sibling method
-		Point point = locationToRadarPoint(place, bounds, size_x, size_y, azimuth);
-		int centerx = (int) Math.floor(size_x / 2);
-		int centery = (int) Math.floor(size_y / 2);
-		Point center = new Point(centerx, centery);
-		point = rotatePoint(point, center, azimuth);
-		// now let's transform the points domain from a
-		// "left to right, top to bottom" system, to a "4 quadrant" one
-		point.x = point.x - (size_x / 2);
-		point.y = point.y - (size_y / 2);
-		double angle = -getPolarAngle(point);
-		angle = normalizeNegativeRadian(angle);
-		// angle = angle + (Math.PI / 2);
-		// normalizePositiveRadian(angle);
-		// the angle domain is (-PI;PI), so let's convert that to a screen
-		// related value.
-		int canvas_width = (int) (size_x * x_fov_multiplier);
-		int x = (int) ((canvas_width - (canvas_width * (angle / (2 * Math.PI)))) - (canvas_width / 2));
-		return new Point(x, size_y / 2);
+		double newAzimuth = normalizeRadian(azimuth);
+
+		// prepare our full canvas size
+		double max_canvas_x = size_x * x_fov_multiplier;
+		double max_canvas_y = size_y * y_fov_multiplier;
+		double max_canvas_center_x = max_canvas_x / 2;
+		double max_canvas_center_y = max_canvas_y / 2;
+		double excedent_x_per_side = (max_canvas_x - size_x) / 2;
+		double excedent_y_per_side = (max_canvas_y - size_y) / 2;
+		LatLng centerLatLng = bounds.getCenter();
+
+		LatLng placeLatLng = place.getLocation();
+		double distance_x = placeLatLng.longitude - centerLatLng.longitude;
+		double distance_y = placeLatLng.latitude - centerLatLng.latitude;
+		double max_distance_x = bounds.northeast.longitude - centerLatLng.longitude;
+		double max_distance_y = bounds.southwest.latitude - centerLatLng.latitude;
+		double distance_ratio_x = distance_x / max_distance_x;
+		double distance_ratio_y = distance_y / max_distance_y;
+
+		// Log.i("locationToRealityPoint", "place: " + place);
+		// Log.i("locationToRealityPoint", "distance_ratio_x: " +
+		// distance_ratio_x);
+		// Log.i("locationToRealityPoint", "distance_ratio_y: " +
+		// distance_ratio_y);
+
+		double x = max_canvas_center_x * distance_ratio_x;
+		double y = max_canvas_center_y * distance_ratio_y;
+
+		double max_angle = 2 * Math.PI;
+		double final_x_ratio = normalizeRadian(-(-Math.atan2(Math.sin(y / x), Math.cos(y / x))
+				+ newAzimuth))
+				/ max_angle;
+		double final_x = final_x_ratio * max_canvas_x;
+
+		int newx = (int) Math.round(final_x);
+		int newy = (int) Math.round(max_canvas_center_y);
+
+		Point p = new Point(newx, newy);
+		// do not forget to convert from our large canvas, to a screen real
+		// state based one, based one
+		Point q = new Point();
+		q.x = (int) Math.round(p.x - excedent_x_per_side);
+		q.y = (int) Math.round(p.y - excedent_y_per_side);
+		return q;
 	}
 
 	public static Point rotatePoint(Point point, Point center, double angle) {
-		double sin = Math.sin(GeoUtils.getRadians(angle));
-		double cos = Math.cos(GeoUtils.getRadians(angle));
+		double sin = Math.sin(Math.toRadians(angle));
+		double cos = Math.cos(Math.toRadians(angle));
 
 		point.x -= center.x;
 		point.y -= center.y;
@@ -81,14 +107,7 @@ public class GeometryUtils {
 		return Math.atan2(point.y, point.x);
 	}
 
-	public static double normalizeNegativeRadian(double angle) {
-		if (angle < 0)
-			angle = (2 * Math.PI) + angle;
-		return angle;
-	}
-
-	public static void normalizePositiveRadian(double angle) {
-		if (angle > (2 * Math.PI))
-			angle = angle - (2 * Math.PI);
+	public static double normalizeRadian(double angle) {
+		return ((4 * Math.PI) + angle) % (2 * Math.PI);
 	}
 }
