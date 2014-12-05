@@ -8,7 +8,8 @@ import android.widget.RelativeLayout;
 public class RealityPlaceView extends RelativeLayout {
 
 	private float mScaleFactor = 1.f;
-	private double position_y = -1;
+	private double mPositionY = -1;
+	private double mDirection = 0;
 
 	public RealityPlaceView(Context context) {
 		super(context);
@@ -46,11 +47,19 @@ public class RealityPlaceView extends RelativeLayout {
 	}
 
 	public double getPositionY() {
-		return position_y;
+		return mPositionY;
 	}
 
 	public void setPositionY(double position_y) {
-		this.position_y = position_y;
+		this.mPositionY = position_y;
+	}
+
+	public double getDirection() {
+		return mDirection;
+	}
+
+	public void setDirection(double direction) {
+		this.mDirection = direction;
 	}
 
 }

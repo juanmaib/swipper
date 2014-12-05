@@ -6,12 +6,27 @@
     android:background="@android:color/black"
     android:padding="5dp" >
 
-    <com.globant.labs.swipper2.widget.SwipperTextView
+    <!--
+         <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/placeName_monocle"
         style="@style/Swipper.Monocle.InfoWindow.Text"
         android:drawablePadding="20dp"
         android:drawableRight="@drawable/details_arrow"
         android:textSize="22sp" />
+    -->
+
+    <com.globant.labs.swipper2.widget.SwipperTextView
+        android:id="@+id/placeName_monocle"
+        style="@style/Swipper.Monocle.InfoWindow.Text"
+        android:paddingRight="20dp"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:id="@+id/arrow_info_window_monocle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/placeName_monocle"
+        android:src="@drawable/details_arrow" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/distance_monocle"

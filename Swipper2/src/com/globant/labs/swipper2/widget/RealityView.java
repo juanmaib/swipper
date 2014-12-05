@@ -8,6 +8,8 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 import com.globant.labs.swipper2.MonocleActivity;
 import com.globant.labs.swipper2.PlaceDetailActivity;
@@ -15,9 +17,12 @@ import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.globant.labs.swipper2.utils.GeometryUtils;
+import com.globant.labs.swipper2.utils.OrientationSensor.OnAzimuthChangeListener;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-public class RealityView extends MonocleComponentViewGroup {
+public class RealityView extends MonocleComponentViewGroup
+		implements
+			OnAzimuthChangeListener {
 
 	private static DecimalFormat DF = new DecimalFormat("0.00");
 	private static final double X_FOV_MULTIPLIER = 4;
@@ -104,7 +109,7 @@ public class RealityView extends MonocleComponentViewGroup {
 				// (FrameLayout.LayoutParams) v.getLayoutParams();
 
 				realityPlaceView = (RealityPlaceView) view;
-				
+
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_MOVE : {
 						mPerformingClic = false;
@@ -162,6 +167,14 @@ public class RealityView extends MonocleComponentViewGroup {
 
 				int halfwidth = (int) ((v.getMeasuredWidth() * v.getScale()) / 2);
 				int halfheight = (int) ((v.getMeasuredHeight() * v.getScale()) / 2);
+				
+				ImageView arrow = (ImageView) v.findViewById(R.id.arrow_info_window_monocle);
+				// float angle = (float) getActivity().getAzimuthDegrees() + 90;
+				float half_canvas = size_x / 2;
+				float displacement = point.x - half_canvas;
+				float angle = (45 * displacement / half_canvas) - 90;
+				
+				rotateArrow(arrow, angle, arrow.getWidth() / 2);
 
 				v.layout((int) (point.x - halfwidth),
 						(int) (point.y - halfheight),
@@ -170,6 +183,13 @@ public class RealityView extends MonocleComponentViewGroup {
 			}
 			mIsInLayout = false;
 		}
+	}
+	
+	private void rotateArrow(ImageView arrow, float angle, float center) {
+		RotateAnimation animation = new RotateAnimation(angle, angle,
+				center, center);
+		animation.setFillAfter(true);
+		arrow.startAnimation(animation);
 	}
 
 	@Override
@@ -187,5 +207,11 @@ public class RealityView extends MonocleComponentViewGroup {
 		 * setFoodDrawable(getResources().getDrawable
 		 * (R.drawable.reality_item_food));
 		 */
+	}
+
+	@Override
+	public void onAzimuthChanged(double azimuthDegrees) {
+		// TODO Auto-generated method stub
+		
 	}
 }
