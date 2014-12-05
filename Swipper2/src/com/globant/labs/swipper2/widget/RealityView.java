@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 public class RealityView extends MonocleComponentViewGroup {
 
 	private static DecimalFormat DF = new DecimalFormat("0.00");
-	private static final double X_FOV_MULTIPLIER = 2;
+	private static final double X_FOV_MULTIPLIER = 4;
 	private static final double Y_FOV_MULTIPLIER = 2;
 
 	private boolean mIsInLayout = false;

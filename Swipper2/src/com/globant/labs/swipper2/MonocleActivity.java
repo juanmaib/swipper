@@ -51,7 +51,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private static final int REALITY_LAYOUT_DELAY_MILLIS = 100;
 	private static final int LOADING_STEPS = 3;
 
-	public static final double DEFAULT_RADIUS = 1000;
+	public static final double DEFAULT_RADIUS = 2000;
 	private static final double NORTH_EAST_BEARING = 45;
 	private static final double SOUTH_WEST_BEARING = 225;
 

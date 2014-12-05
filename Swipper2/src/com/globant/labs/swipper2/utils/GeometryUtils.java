@@ -3,13 +3,18 @@ package com.globant.labs.swipper2.utils;
 import android.graphics.Point;
 
 import com.globant.labs.swipper2.models.Place;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class GeometryUtils {
+	/**
+	 * This translation angle (90 deg) is used because when facing on azimuth
+	 * zero, places at an angle of ninety degrees should be showed up
+	 */
+	private static final double TRANSLATION_ANGLE = Math.PI / 2;
+	private static final double TWO_PI_RADIANS = 2 * Math.PI;
 
-	public static Point locationToRadarPoint(Place place, LatLngBounds bounds, int size_x,
-			int size_y, double azimuth) {
+	public static Point locationToRadarPoint(Place place, LatLngBounds bounds,
+			int size_x, int size_y, double azimuth) {
 
 		double min_lat = bounds.southwest.latitude;
 		double min_long = bounds.southwest.longitude;
@@ -35,56 +40,50 @@ public class GeometryUtils {
 		return point;
 	}
 
-	public static Point locationToRealityPoint(Place place, LatLngBounds bounds, int size_x,
-			double x_fov_multiplier, int size_y, double y_fov_multiplier, double azimuth) {
-		// basically a cartesian to polar conversion. in particular, we care
-		// about the angle, as that's the value that's gonna give us the
-		// horizontal position in the screen of the "place"
-
-		double newAzimuth = normalizeRadian(azimuth);
-
-		// prepare our full canvas size
+	/**
+	 * Basically a cartesian to polar conversion. In particular, we care about
+	 * the angle, as that's the value that's gonna give us the horizontal
+	 * position in the screen of the "place"
+	 */
+	public static Point locationToRealityPoint(Place place,
+			LatLngBounds bounds, int size_x, double x_fov_multiplier,
+			int size_y, double y_fov_multiplier, double azimuthDegrees) {
+		// calculate our canvas full size
 		double max_canvas_x = size_x * x_fov_multiplier;
 		double max_canvas_y = size_y * y_fov_multiplier;
-		double max_canvas_center_x = max_canvas_x / 2;
+
+		// aaand the center of the extended canvas
+		// double max_canvas_center_x = max_canvas_x / 2;
 		double max_canvas_center_y = max_canvas_y / 2;
+
+		// aaand how much space is out of real state
 		double excedent_x_per_side = (max_canvas_x - size_x) / 2;
 		double excedent_y_per_side = (max_canvas_y - size_y) / 2;
-		LatLng centerLatLng = bounds.getCenter();
 
-		LatLng placeLatLng = place.getLocation();
-		double distance_x = placeLatLng.longitude - centerLatLng.longitude;
-		double distance_y = placeLatLng.latitude - centerLatLng.latitude;
-		double max_distance_x = bounds.northeast.longitude - centerLatLng.longitude;
-		double max_distance_y = bounds.southwest.latitude - centerLatLng.latitude;
-		double distance_ratio_x = distance_x / max_distance_x;
-		double distance_ratio_y = distance_y / max_distance_y;
+		// get the distance in both axis between our position and the place
+		double distance_x = place.getLocation().longitude
+				- bounds.getCenter().longitude;
+		double distance_y = place.getLocation().latitude
+				- bounds.getCenter().latitude;
 
-		// Log.i("locationToRealityPoint", "place: " + place);
-		// Log.i("locationToRealityPoint", "distance_ratio_x: " +
-		// distance_ratio_x);
-		// Log.i("locationToRealityPoint", "distance_ratio_y: " +
-		// distance_ratio_y);
+		// and the angle between 'em
+		double place_angle = normalizeRadian(Math.atan2(distance_y, distance_x));
+		double azimuth_angle = normalizeRadian(Math.toRadians(azimuthDegrees));
 
-		double x = max_canvas_center_x * distance_ratio_x;
-		double y = max_canvas_center_y * distance_ratio_y;
+		// now mix and match all angles accordingly
+		double mixed_angle = normalizeRadian(place_angle - azimuth_angle
+				- TRANSLATION_ANGLE);
 
-		double max_angle = 2 * Math.PI;
-		double final_x_ratio = normalizeRadian(-(-Math.atan2(Math.sin(y / x), Math.cos(y / x))
-				+ newAzimuth))
-				/ max_angle;
-		double final_x = final_x_ratio * max_canvas_x;
+		// translate that from a [0,2PI] domain, to a [0,1] one
+		double angleRatio = mixed_angle / TWO_PI_RADIANS;
 
-		int newx = (int) Math.round(final_x);
-		int newy = (int) Math.round(max_canvas_center_y);
+		// and finally get where should the place be on the x axis
+		double position_x_in_canvas = max_canvas_x * angleRatio;
 
-		Point p = new Point(newx, newy);
-		// do not forget to convert from our large canvas, to a screen real
-		// state based one, based one
-		Point q = new Point();
-		q.x = (int) Math.round(p.x - excedent_x_per_side);
-		q.y = (int) Math.round(p.y - excedent_y_per_side);
-		return q;
+		// do not forget to translate back the points and show only the ones
+		// that fit on the screen
+		return new Point((int) (position_x_in_canvas - excedent_x_per_side),
+				(int) (max_canvas_center_y - excedent_y_per_side));
 	}
 
 	public static Point rotatePoint(Point point, Point center, double angle) {
