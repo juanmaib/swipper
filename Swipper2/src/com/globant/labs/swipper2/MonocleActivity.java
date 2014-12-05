@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,6 +28,7 @@ import com.globant.labs.swipper2.utils.OrientationSensor;
 import com.globant.labs.swipper2.widget.CameraPreview;
 import com.globant.labs.swipper2.widget.RadarView;
 import com.globant.labs.swipper2.widget.RealityView;
+import com.globant.labs.swipper2.widget.SwipperTextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -39,8 +39,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-public class MonocleActivity extends Activity implements AutoFocusCallback, ConnectionCallbacks,
-		OnConnectionFailedListener, LocationListener {
+public class MonocleActivity extends Activity
+		implements
+			AutoFocusCallback,
+			ConnectionCallbacks,
+			OnConnectionFailedListener,
+			LocationListener {
 
 	public static final double BASE_COEFICIENT = 1;
 	private static final int AUTO_FOCUS_INTERVAL_MILLIS = 10000;
@@ -51,7 +55,7 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private static final int REALITY_LAYOUT_DELAY_MILLIS = 100;
 	private static final int LOADING_STEPS = 3;
 
-	public static final double DEFAULT_RADIUS = 2000;
+	public static final double DEFAULT_RADIUS = 1000;
 	private static final double NORTH_EAST_BEARING = 45;
 	private static final double SOUTH_WEST_BEARING = 225;
 
@@ -69,11 +73,12 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	// private SwipperTextView mBrand;
 	private FrameLayout mPreviewFrame;
-	private ImageView mRadarBackground;
+	// private ImageView mRadarBackground;
 	private RadarView mRadarPlaces;
 	private RealityView mReality;
 	private ProgressBar mLoadingProgressBar;
 	private TextView mAzimuthTextView;
+	private SwipperTextView mRadarNorthTextView;
 
 	private GoogleApiClient mGoogleApiClient;
 	private LocationRequest mLocationRequest;
@@ -85,8 +90,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	private LocationListener mOrientationSensorLocationListener;
 	private SensorManager mSensorManager;
 
-	private float mRadarBackgroundCenter;
-	private RotateAnimation mRotateAnimation;
+	// private float mRadarBackgroundCenter;
+	private float mRadarNorthCenter;
+	// private RotateAnimation mRadarBackgroundRotateAnimation;
+	private RotateAnimation mRadarNorthRotateAnimation;
 
 	private int mLoadingSteps;
 
@@ -98,15 +105,18 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		setContentView(R.layout.activity_monocle);
 
 		// Set up the google api client
-		mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
-				.addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addApi(LocationServices.API).addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this).build();
 
 		// get some view handles
 		mReality = (RealityView) findViewById(R.id.reality_monocle);
 		mRadarPlaces = (RadarView) findViewById(R.id.radar_monocle_places);
-		mRadarBackground = (ImageView) findViewById(R.id.radar_monocle_background);
+		// mRadarBackground = (ImageView)
+		// findViewById(R.id.radar_monocle_background);
 		mLoadingProgressBar = (ProgressBar) findViewById(R.id.loading_monocle);
 		mAzimuthTextView = (TextView) findViewById(R.id.azimuth_monocle);
+		mRadarNorthTextView = (SwipperTextView) findViewById(R.id.north_monocle);
 
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
@@ -160,7 +170,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		mLoadingSteps = 0;
 		setUpCamera();
 		mOrientationSensor.Register(null, SENSOR_DELAY_RADAR);
-		mRadarBackgroundCenter = getResources().getDimension(R.dimen.radar_monocle_size) / 2;
+		// mRadarBackgroundCenter =
+		// getResources().getDimension(R.dimen.radar_monocle_size) / 2;
+		mRadarNorthCenter = getResources().getDimension(
+				R.dimen.radar_north_monocle_size) / 2;
 		setUpLayoutRefreshers();
 		super.onResume();
 	}
@@ -201,65 +214,90 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	}
 
 	private void setUpLayoutRefreshers() {
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						mRadarPlaces.requestLayout();
-					}
-				});
-			}
-		}, 0, RADAR_PLACES_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						rotateRadarBackground((float) getAzimuthDegrees());
-					}
-				});
-			}
-		}, 0, RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						mReality.requestLayout();
-					}
-				});
-			}
-		}, 0, REALITY_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
-
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				runOnUiThread(new Runnable() {
-
-					@Override
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+				new Runnable() {
 					public void run() {
 						runOnUiThread(new Runnable() {
 
 							@Override
 							public void run() {
-								mAzimuthTextView.setText(DF.format(mOrientationSensor
-										.getAzimuthRadians()));
+								mRadarPlaces.requestLayout();
 							}
 						});
 					}
-				});
-			}
-		}, 0, 100, TimeUnit.MILLISECONDS);
+				}, 0, RADAR_PLACES_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+
+		/*
+		 * Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new
+		 * Runnable() { public void run() { runOnUiThread(new Runnable() {
+		 * 
+		 * @Override public void run() { rotateRadarBackground((float)
+		 * getAzimuthDegrees()); } }); } }, 0,
+		 * RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+		 */
+
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+				new Runnable() {
+					public void run() {
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								rotateRadarNorth((float) getAzimuthDegrees());
+							}
+						});
+					}
+				}, 0, RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS,
+				TimeUnit.MILLISECONDS);
+
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+				new Runnable() {
+					public void run() {
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								mReality.requestLayout();
+							}
+						});
+					}
+				}, 0, REALITY_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+
+		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+				new Runnable() {
+					public void run() {
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								runOnUiThread(new Runnable() {
+
+									@Override
+									public void run() {
+										mAzimuthTextView.setText(DF
+												.format(mOrientationSensor
+														.getAzimuthRadians()));
+									}
+								});
+							}
+						});
+					}
+				}, 0, 100, TimeUnit.MILLISECONDS);
 	}
 
-	private void rotateRadarBackground(float rotate) {
-		mRotateAnimation = new RotateAnimation(rotate, rotate, mRadarBackgroundCenter,
-				mRadarBackgroundCenter);
-		mRotateAnimation.setFillAfter(true);
-		mRadarBackground.startAnimation(mRotateAnimation);
+	/*
+	 * private void rotateRadarBackground(float angle) {
+	 * mRadarBackgroundRotateAnimation = new RotateAnimation(angle, angle,
+	 * mRadarBackgroundCenter, mRadarBackgroundCenter);
+	 * mRadarBackgroundRotateAnimation.setFillAfter(true);
+	 * mRadarBackground.startAnimation(mRadarBackgroundRotateAnimation); }
+	 */
+
+	private void rotateRadarNorth(float angle) {
+		mRadarNorthRotateAnimation = new RotateAnimation(-angle, -angle,
+				mRadarNorthCenter, mRadarNorthCenter);
+		mRadarNorthRotateAnimation.setFillAfter(true);
+		mRadarNorthTextView.startAnimation(mRadarNorthRotateAnimation);
 	}
 
 	private void setUpCamera() {
@@ -365,12 +403,14 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		setCurrentLocation(LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient));
+		setCurrentLocation(LocationServices.FusedLocationApi
+				.getLastLocation(mGoogleApiClient));
 		mRadarPlaces.onLocationChanged(getCurrentLocation());
 		mReality.onLocationChanged(getCurrentLocation());
-		mOrientationSensorLocationListener.onLocationChanged(getCurrentLocation());
-		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-				mLocationRequest, this);
+		mOrientationSensorLocationListener
+				.onLocationChanged(getCurrentLocation());
+		LocationServices.FusedLocationApi.requestLocationUpdates(
+				mGoogleApiClient, mLocationRequest, this);
 		onLoadingStep();
 	}
 
@@ -388,9 +428,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		setSpeed();
 		mRadarPlaces.onLocationChanged(location);
 		mReality.onLocationChanged(location);
-		mOrientationSensorLocationListener.onLocationChanged(getCurrentLocation());
-		mPlacesProvider.setCurrentLocation(new LatLng(location.getLatitude(), location
-				.getLongitude()));
+		mOrientationSensorLocationListener
+				.onLocationChanged(getCurrentLocation());
+		mPlacesProvider.setCurrentLocation(new LatLng(location.getLatitude(),
+				location.getLongitude()));
 		if (mPlacesProvider.updateLocation(getBounds(BASE_COEFICIENT))) {
 			mRadarPlaces.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
 			mReality.onPlacesUpdate(mPlacesProvider.getFilteredPlaces());
@@ -406,8 +447,10 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 			mSpeed = getCurrentLocation().getSpeed();
 		} else {
 			if (getPreviousLocation() != null) {
-				double distance = getCurrentLocation().distanceTo(mPreviousLocation);
-				double timeDiff = getCurrentLocation().getTime() - getPreviousLocation().getTime();
+				double distance = getCurrentLocation().distanceTo(
+						mPreviousLocation);
+				double timeDiff = getCurrentLocation().getTime()
+						- getPreviousLocation().getTime();
 				mSpeed = distance / timeDiff;
 			} else {
 				mSpeed = 0;
@@ -425,7 +468,8 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 	}
 
 	public LatLng getCurrentLatLng() {
-		return new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+		return new LatLng(mCurrentLocation.getLatitude(),
+				mCurrentLocation.getLongitude());
 	}
 
 	private Location getPreviousLocation() {
@@ -441,11 +485,14 @@ public class MonocleActivity extends Activity implements AutoFocusCallback, Conn
 		// The idea is that between each update, the points do not get
 		// completely replaced, but just displaced halfway, instead.
 		double radius = getRadius(baseCoeficient);
-		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(), getCurrentLocation()
-				.getLongitude());
-		LatLng northEastLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, NORTH_EAST_BEARING);
-		LatLng southWestLatLng = GeoUtils.displaceLatLng(currentLatLng, radius, SOUTH_WEST_BEARING);
-		return LatLngBounds.builder().include(northEastLatLng).include(southWestLatLng).build();
+		LatLng currentLatLng = new LatLng(getCurrentLocation().getLatitude(),
+				getCurrentLocation().getLongitude());
+		LatLng northEastLatLng = GeoUtils.displaceLatLng(currentLatLng, radius,
+				NORTH_EAST_BEARING);
+		LatLng southWestLatLng = GeoUtils.displaceLatLng(currentLatLng, radius,
+				SOUTH_WEST_BEARING);
+		return LatLngBounds.builder().include(northEastLatLng)
+				.include(southWestLatLng).build();
 	}
 
 	public double getRadius(double baseCoeficient) {

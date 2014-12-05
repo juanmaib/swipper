@@ -20,12 +20,14 @@
     <ImageView
         android:id="@+id/radar_monocle_background"
         style="@style/Swipper.Monocle.Radar.Background"
+        android:contentDescription="@string/imageRadarMonocleDescription"
         android:visibility="gone" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
+        android:id="@+id/north_monocle"
         style="@style/Swipper.Monocle.Radar.North"
         android:gravity="center_horizontal"
-        android:text="N"
+        android:text="@string/radar_north_monocle"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:visibility="gone"

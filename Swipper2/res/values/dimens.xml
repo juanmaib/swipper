@@ -17,6 +17,7 @@
     <dimen name="brand_monocle_margin">8dp</dimen>
     <dimen name="radar_monocle_margin">8dp</dimen>
     <dimen name="radar_monocle_size">96dp</dimen>
+    <dimen name="radar_north_monocle_size">112dp</dimen>
     <dimen name="item_reality_monocle_width">150dp</dimen>
     <dimen name="item_reality_monocle_height">75dp</dimen>
 

@@ -72,10 +72,12 @@
     <string name="status_no_places_dual_line">No places found.\nTry changing filters or location.</string>
     <string name="status_zoom_in">Zoom in to see the places</string>
     <string name="status_retry">Network error, retrying...</string>
+    <string name="imageRadarMonocleDescription">Radar background</string>
 
     <!-- Monocle -->
     <string name="scanning">Scanning...</string>
     <string name="title_activity_monocle">Swipper Monocle</string>
     <string name="hello_world">Hello world!</string>
+    <string name="radar_north_monocle">N</string>
 
 </resources>

@@ -78,12 +78,15 @@
     </style>
 
     <style name="Swipper.Monocle.Radar.North" parent="@android:style/Widget">
-        <item name="android:layout_width">@dimen/radar_monocle_size</item>
-        <item name="android:layout_height">@dimen/radar_monocle_size</item>
+        <item name="android:layout_width">@dimen/radar_north_monocle_size</item>
+        <item name="android:layout_height">@dimen/radar_north_monocle_size</item>
         <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_margin">0dp</item>
+        <!--
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginRight">@dimen/radar_monocle_margin</item>
         <item name="android:layout_marginLeft">@dimen/radar_monocle_margin</item>
+        -->
         <item name="android:shadowColor">#FF8800</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>

@@ -33,11 +33,11 @@ public class GeometryUtils {
 		point.x = (int) Math.floor((size_x * delta_long) / max_delta_long);
 		point.y = (int) Math.floor((size_y * delta_lat) / max_delta_lat);
 
-		// int centerx = (int) Math.floor(size_x / 2);
-		// int centery = (int) Math.floor(size_y / 2);
-		// Point center = new Point(centerx, centery);
-		// return rotatePoint(point, center, azimuth);
-		return point;
+		int centerx = (int) Math.floor(size_x / 2);
+		int centery = (int) Math.floor(size_y / 2);
+		Point center = new Point(centerx, centery);
+		return rotatePoint(point, center, -azimuth);
+		// return point;
 	}
 
 	/**
