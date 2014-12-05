@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.globant.labs.swipper2.MonocleActivity;
 import com.globant.labs.swipper2.PlaceDetailActivity;
@@ -21,7 +21,6 @@ public class RealityView extends MonocleComponentViewGroup {
 
 	private static DecimalFormat DF = new DecimalFormat("0.00");
 	private static final double X_FOV_MULTIPLIER = 4;
-	private static final double Y_FOV_MULTIPLIER = 2;
 
 	private boolean mIsInLayout = false;
 
@@ -39,8 +38,8 @@ public class RealityView extends MonocleComponentViewGroup {
 
 	@Override
 	protected void addPlaceView(Place place) {
-		ViewGroup placeView = (ViewGroup) getInflater().inflate(R.layout.reality_info_window, this,
-				false);
+		RealityPlaceView placeView = (RealityPlaceView) getInflater().inflate(
+				R.layout.reality_info_window, this, false);
 
 		// cannot use switch e.e
 		/*
@@ -62,29 +61,82 @@ public class RealityView extends MonocleComponentViewGroup {
 
 		SwipperTextView placeDistanceView = (SwipperTextView) placeView
 				.findViewById(R.id.distance_monocle);
-		placeDistanceView.setText(DF.format(GeoUtils.getDistance(place.getLocation(), getActivity()
-				.getCurrentLatLng())));
+		placeDistanceView.setText(DF.format(GeoUtils.getDistance(
+				place.getLocation(), getActivity().getCurrentLatLng())));
 
 		placeView.setTag(place.getId());
+
+		double distanceRatio = GeoUtils.getDistance(getActivity()
+				.getCurrentLatLng(), place.getLocation())
+				* 1000 / getActivity().getRadius(1);
+
+		// ((e^(2-x*2))/2)
+		float scale = (float) (1 + (Math.pow(Math.E, (2 - distanceRatio * 2)) / 4));
+
+		placeView.setScale(scale);
+
 		placeView.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Place p = getPlaces().get(v.getTag());
-				Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+				Intent intent = new Intent(getActivity(),
+						PlaceDetailActivity.class);
 				intent.putExtra(PlaceDetailActivity.PLACE_ID_EXTRA, p.getId());
-				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA, p.getName());
-				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA, p.getCategory());
+				intent.putExtra(PlaceDetailActivity.PLACE_NAME_EXTRA,
+						p.getName());
+				intent.putExtra(PlaceDetailActivity.PLACE_CATEGORY_EXTRA,
+						p.getCategory());
 				intent.putExtra(PlaceDetailActivity.PLACE_DISTANCE_EXTRA,
-						GeoUtils.getDistance(p.getLocation(), getActivity().getCurrentLatLng()));
+						GeoUtils.getDistance(p.getLocation(), getActivity()
+								.getCurrentLatLng()));
 				getActivity().startActivity(intent);
 			}
 		});
+
+		placeView.setOnTouchListener(new OnTouchListener() {
+			private RealityPlaceView realityPlaceView;
+			private boolean mPerformingClic = false;
+
+			@Override
+			public boolean onTouch(final View view, final MotionEvent event) {
+				// final FrameLayout.LayoutParams par =
+				// (FrameLayout.LayoutParams) v.getLayoutParams();
+
+				realityPlaceView = (RealityPlaceView) view;
+				
+				switch (event.getAction()) {
+					case MotionEvent.ACTION_MOVE : {
+						mPerformingClic = false;
+						realityPlaceView.setPositionY(event.getRawY());
+						return true;
+					}
+					case MotionEvent.ACTION_UP : {
+						if (mPerformingClic) {
+							mPerformingClic = false;
+							view.performClick();
+						}
+						realityPlaceView.setPositionY(event.getRawY());
+						return true;
+					}
+					case MotionEvent.ACTION_DOWN : {
+						mPerformingClic = true;
+						realityPlaceView.bringToFront();
+						realityPlaceView.setPositionY(event.getRawY());
+						return true;
+					}
+					default :
+						return false;
+				}
+			}
+		});
+
 		addView(placeView);
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+	protected void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
 		// here we must tell each view where to position itself.
 		// for this case, we want to put them in a way such that when the user
 		// is looking with the camera straight to a place, it is positioned
@@ -94,20 +146,27 @@ public class RealityView extends MonocleComponentViewGroup {
 		// screen altogether.
 		if (getActivity().getCurrentLocation() != null && !mIsInLayout) {
 			mIsInLayout = true;
-			LatLngBounds latLngBounds = getActivity()
-					.getBounds(2 * MonocleActivity.BASE_COEFICIENT);
+			LatLngBounds latLngBounds = getActivity().getBounds(
+					2 * MonocleActivity.BASE_COEFICIENT);
 			int size_x = right - left;
 			int size_y = bottom - top;
 			for (int i = 0; i < getChildCount(); i++) {
-				ViewGroup v = (ViewGroup) getChildAt(i);
-				int halfwidth = v.getMeasuredWidth() / 2;
-				int halfheight = v.getMeasuredHeight() / 2;
-				Point point = GeometryUtils.locationToRealityPoint(
-						getPlaces().get((String) v.getTag()), latLngBounds, size_x,
-						X_FOV_MULTIPLIER, size_y, Y_FOV_MULTIPLIER, getActivity()
+				RealityPlaceView v = (RealityPlaceView) getChildAt(i);
+				if (v.getPositionY() == -1)
+					v.setPositionY(size_y / 2);
+
+				Point point = GeometryUtils.locationToRealityPoint(getPlaces()
+						.get((String) v.getTag()), latLngBounds, size_x,
+						X_FOV_MULTIPLIER, v.getPositionY(), getActivity()
 								.getAzimuthDegrees());
-				v.layout((int) (point.x - halfwidth), (int) (point.y - halfheight),
-						(int) (point.x + halfwidth), (int) (point.y + halfheight));
+
+				int halfwidth = (int) ((v.getMeasuredWidth() * v.getScale()) / 2);
+				int halfheight = (int) ((v.getMeasuredHeight() * v.getScale()) / 2);
+
+				v.layout((int) (point.x - halfwidth),
+						(int) (point.y - halfheight),
+						(int) (point.x + halfwidth),
+						(int) (point.y + halfheight));
 			}
 			mIsInLayout = false;
 		}

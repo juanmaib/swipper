@@ -47,18 +47,12 @@ public class GeometryUtils {
 	 */
 	public static Point locationToRealityPoint(Place place,
 			LatLngBounds bounds, int size_x, double x_fov_multiplier,
-			int size_y, double y_fov_multiplier, double azimuthDegrees) {
+			double position_y, double azimuthDegrees) {
 		// calculate our canvas full size
 		double max_canvas_x = size_x * x_fov_multiplier;
-		double max_canvas_y = size_y * y_fov_multiplier;
-
-		// aaand the center of the extended canvas
-		// double max_canvas_center_x = max_canvas_x / 2;
-		double max_canvas_center_y = max_canvas_y / 2;
 
 		// aaand how much space is out of real state
 		double excedent_x_per_side = (max_canvas_x - size_x) / 2;
-		double excedent_y_per_side = (max_canvas_y - size_y) / 2;
 
 		// get the distance in both axis between our position and the place
 		double distance_x = place.getLocation().longitude
@@ -83,7 +77,7 @@ public class GeometryUtils {
 		// do not forget to translate back the points and show only the ones
 		// that fit on the screen
 		return new Point((int) (position_x_in_canvas - excedent_x_per_side),
-				(int) (max_canvas_center_y - excedent_y_per_side));
+				(int) (position_y));
 	}
 
 	public static Point rotatePoint(Point point, Point center, double angle) {
