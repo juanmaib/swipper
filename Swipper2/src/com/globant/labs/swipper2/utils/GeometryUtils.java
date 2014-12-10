@@ -2,8 +2,6 @@ package com.globant.labs.swipper2.utils;
 
 import android.graphics.Point;
 import android.location.Location;
-import android.util.Log;
-
 import com.globant.labs.swipper2.models.Place;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -50,12 +48,6 @@ public class GeometryUtils {
 	public static Point locationToRealityPoint(Place place,
 			Location location, int size_x, double x_fov_multiplier,
 			double position_y, double azimuthDegrees) {
-		
-		if (place.getName().equals("Sitone")) {
-			Log.i("locationToRealityPoint", "Sitone: " + place.getLocation());
-		} else {
-			// Log.i("locationToRealityPoint", "Place: '" + place.getName() + "', location: " + place.getLocation());
-		}
 		// calculate our canvas full size
 		double max_canvas_x = size_x * x_fov_multiplier;
 

@@ -6,35 +6,17 @@
     android:background="@android:color/black"
     android:padding="5dp" >
 
-    <!--
-         <com.globant.labs.swipper2.widget.SwipperTextView
-        android:id="@+id/placeName_monocle"
-        style="@style/Swipper.Monocle.InfoWindow.Text"
-        android:drawablePadding="20dp"
-        android:drawableRight="@drawable/details_arrow"
-        android:textSize="22sp" />
-    -->
-
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/placeName_monocle"
-        style="@style/Swipper.Monocle.InfoWindow.Text"
-        android:paddingRight="20dp"
-        android:textSize="18sp" />
+        style="@style/Swipper.Monocle.InfoWindow.PlaceName.Text" />
 
     <ImageView
         android:id="@+id/arrow_info_window_monocle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/placeName_monocle"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/imageArrowInfoWindowMonocleDescription"
-        android:src="@drawable/details_arrow" />
+        style="@style/Swipper.Monocle.InfoWindow.Arrow.Image"
+        android:contentDescription="@string/imageArrowInfoWindowMonocleDescription" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/distance_monocle"
-        style="@style/Swipper.Monocle.InfoWindow.Text"
-        android:layout_below="@id/placeName_monocle"
-        android:drawableLeft="@drawable/distance_icon"
-        android:drawablePadding="4dp" />
+        style="@style/Swipper.Monocle.InfoWindow.PlaceDistance.Text" />
 
 </com.globant.labs.swipper2.widget.RealityPlaceView>

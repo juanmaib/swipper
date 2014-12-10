@@ -1,27 +1,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/camera_preview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true" >
 
-    <FrameLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
     <com.globant.labs.swipper2.widget.RealityView
         android:id="@+id/reality_monocle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/radar_monocle_background"
         style="@style/Swipper.Monocle.Radar.Background"
-        android:contentDescription="@string/imageRadarMonocleDescription"
-        android:visibility="gone" />
+        android:contentDescription="@string/imageRadarMonocleDescription" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/north_monocle"
@@ -30,32 +23,29 @@
         android:text="@string/radar_north_monocle"
         android:textColor="@color/white"
         android:textSize="16sp"
-        android:visibility="gone"
         app:fontName="roboto_bold.ttf" />
 
     <com.globant.labs.swipper2.widget.RadarView
         android:id="@+id/radar_monocle_places"
-        style="@style/Swipper.Monocle.Radar.Places"
-        android:visibility="gone" />
+        style="@style/Swipper.Monocle.Radar.Places" />
+
+    <View
+        android:id="@+id/black_background_monocle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
         android:id="@+id/stv_brand_monocle"
         style="@style/Swipper.Monocle.Brand"
-        android:text="@string/app_name"
-        android:visibility="gone" />
-
-    <com.globant.labs.swipper2.widget.SwipperTextView
-        android:id="@+id/et_azimuth_monocle"
-        style="@style/Swipper.Monocle.Brand"
-        android:visibility="gone" />
+        android:text="@string/app_name" />
 
     <ProgressBar
         android:id="@+id/loading_monocle"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible" />
+        android:layout_centerInParent="true" />
 
     <TextView
         android:id="@+id/azimuth_monocle"

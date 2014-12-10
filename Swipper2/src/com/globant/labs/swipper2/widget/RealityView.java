@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
@@ -44,20 +45,6 @@ public class RealityView extends MonocleComponentViewGroup
 		RealityPlaceView placeView = (RealityPlaceView) getInflater().inflate(
 				R.layout.reality_info_window, this, false);
 
-		// cannot use switch e.e
-		/*
-		 * if (place.getCategory().equals(getLodgingString())) {
-		 * placeView.setBackgroundDrawable(getLodgingDrawable()); } else if
-		 * (place.getCategory().equals(getTaxiString())) {
-		 * placeView.setBackgroundDrawable(getTaxiDrawable()); } else if
-		 * (place.getCategory().equals(getGasString())) {
-		 * placeView.setBackgroundDrawable(getGasDrawable()); } else if
-		 * (place.getCategory().equals(getCarRentalString())) {
-		 * placeView.setBackgroundDrawable(getCarRentalDrawable()); } else if
-		 * (place.getCategory().equals(getFoodString())) {
-		 * placeView.setBackgroundDrawable(getFoodDrawable()); } else {
-		 * Toast.makeText(getContext(), "da fuq?", Toast.LENGTH_SHORT).show(); }
-		 */
 		SwipperTextView placeNameView = (SwipperTextView) placeView
 				.findViewById(R.id.placeName_monocle);
 		placeNameView.setText(place.getName());
@@ -104,8 +91,6 @@ public class RealityView extends MonocleComponentViewGroup
 
 			@Override
 			public boolean onTouch(final View view, final MotionEvent event) {
-				// final FrameLayout.LayoutParams par =
-				// (FrameLayout.LayoutParams) v.getLayoutParams();
 
 				realityPlaceView = (RealityPlaceView) view;
 
@@ -135,6 +120,18 @@ public class RealityView extends MonocleComponentViewGroup
 			}
 		});
 
+		// put the arrow to the right of the widest of the views in the info window
+		ImageView arrow = (ImageView) placeView
+				.findViewById(R.id.arrow_info_window_monocle);
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) arrow
+				.getLayoutParams();
+		placeView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+		if (placeNameView.getMeasuredWidth() > placeDistanceView.getMeasuredWidth()) {
+			params.addRule(RelativeLayout.RIGHT_OF, placeNameView.getId());
+		} else {
+			params.addRule(RelativeLayout.RIGHT_OF, placeDistanceView.getId());
+		}
+		arrow.setLayoutParams(params);
 		addView(placeView);
 	}
 

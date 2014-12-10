@@ -13,12 +13,10 @@ import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.globant.labs.swipper2.models.Place;
@@ -48,20 +46,20 @@ public class MonocleActivity extends Activity
 			OnConnectionFailedListener,
 			LocationListener {
 
+	public static final double DEFAULT_RADIUS = 1000;
 	public static final double BASE_COEFICIENT = 1;
+	private static final double NORTH_EAST_BEARING = 45;
+	private static final double SOUTH_WEST_BEARING = 225;
 	private static final int AUTO_FOCUS_INTERVAL_MILLIS = 10000;
 	private static final int UPDATE_INTERVAL_MILLIS = 5000;
 	private static final int SENSOR_DELAY_RADAR = SensorManager.SENSOR_DELAY_UI;
 	private static final int RADAR_PLACES_LAYOUT_DELAY_MILLIS = 100;
-	private static final int RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS = 100;
-	private static final int REALITY_LAYOUT_DELAY_MILLIS = 100;
+	private static final int RADAR_NORTH_LAYOUT_DELAY_MILLIS = 100;
+	private static final int REALITY_LAYOUT_DELAY_MILLIS = 75;
+	private static final int AZIMUTH_TEXT_VIEW_UPDATE_DELAY_MILLIS = 100;
 	private static final int LOADING_STEPS = 3;
-
-	public static final double DEFAULT_RADIUS = 1000;
-	private static final double NORTH_EAST_BEARING = 45;
-	private static final double SOUTH_WEST_BEARING = 225;
-
-	private static DecimalFormat DF = new DecimalFormat("0.0000");
+	private static final String CAMERA_PREVIEW_TAG = "CameraPreview";
+	private static final DecimalFormat DF = new DecimalFormat("0.0000");
 
 	private double mSpeed;
 	// private double mAzimuthDegrees;
@@ -74,7 +72,7 @@ public class MonocleActivity extends Activity
 	private boolean mFocusing;
 
 	// private SwipperTextView mBrand;
-	private FrameLayout mPreviewFrame;
+	private RelativeLayout mPreviewFrame;
 	// private ImageView mRadarBackground;
 	private RadarView mRadarPlaces;
 	private RealityView mReality;
@@ -207,14 +205,8 @@ public class MonocleActivity extends Activity
 	private void hideLoadingView() {
 		ViewGroup content = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content))
 				.getChildAt(0);
-		for (int i = 0; i < content.getChildCount(); i++) {
-			View child = content.getChildAt(i);
-			if (child.getId() == R.id.loading_monocle) {
-				child.setVisibility(View.GONE);
-			} else {
-				child.setVisibility(View.VISIBLE);
-			}
-		}
+		content.removeView(content.findViewById(R.id.black_background_monocle));
+		content.removeView(content.findViewById(R.id.loading_monocle));
 	}
 
 	private void setUpLayoutRefreshers() {
@@ -231,15 +223,6 @@ public class MonocleActivity extends Activity
 					}
 				}, 0, RADAR_PLACES_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 
-		/*
-		 * Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new
-		 * Runnable() { public void run() { runOnUiThread(new Runnable() {
-		 * 
-		 * @Override public void run() { rotateRadarBackground((float)
-		 * getAzimuthDegrees()); } }); } }, 0,
-		 * RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
-		 */
-
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
 				new Runnable() {
 					public void run() {
@@ -251,8 +234,7 @@ public class MonocleActivity extends Activity
 							}
 						});
 					}
-				}, 0, RADAR_BACKGROUND_LAYOUT_DELAY_MILLIS,
-				TimeUnit.MILLISECONDS);
+				}, 0, RADAR_NORTH_LAYOUT_DELAY_MILLIS, TimeUnit.MILLISECONDS);
 
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
 				new Runnable() {
@@ -286,16 +268,9 @@ public class MonocleActivity extends Activity
 							}
 						});
 					}
-				}, 0, 100, TimeUnit.MILLISECONDS);
+				}, 0, AZIMUTH_TEXT_VIEW_UPDATE_DELAY_MILLIS,
+				TimeUnit.MILLISECONDS);
 	}
-
-	/*
-	 * private void rotateRadarBackground(float angle) {
-	 * mRadarBackgroundRotateAnimation = new RotateAnimation(angle, angle,
-	 * mRadarBackgroundCenter, mRadarBackgroundCenter);
-	 * mRadarBackgroundRotateAnimation.setFillAfter(true);
-	 * mRadarBackground.startAnimation(mRadarBackgroundRotateAnimation); }
-	 */
 
 	private void rotateRadarNorth(float angle) {
 		mRadarNorthRotateAnimation = new RotateAnimation(-angle, -angle,
@@ -305,15 +280,17 @@ public class MonocleActivity extends Activity
 	}
 
 	private void setUpCamera() {
-		mPreviewFrame = (FrameLayout) findViewById(R.id.camera_preview);
-		mPreviewFrame.removeAllViews();
+		mPreviewFrame = (RelativeLayout) findViewById(R.id.camera_preview);
+		mPreviewFrame.removeView(mPreviewFrame
+				.findViewWithTag(CAMERA_PREVIEW_TAG));
 
 		// Create an instance of Camera
 		mCamera = getCameraInstance();
 
 		// Create our Preview view and set it as the content of our activity.
 		mPreview = new CameraPreview(this, mCamera);
-		mPreviewFrame.addView(mPreview);
+		mPreview.setTag(CAMERA_PREVIEW_TAG);
+		mPreviewFrame.addView(mPreview, 0);
 
 		checkAndEnableAutoFocus();
 
@@ -428,7 +405,6 @@ public class MonocleActivity extends Activity
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.i("onLocationChanged", "my location: " + location);
 		setCurrentLocation(location);
 		setSpeed();
 		mRadarPlaces.onLocationChanged(location);
