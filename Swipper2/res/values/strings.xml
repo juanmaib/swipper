@@ -73,6 +73,7 @@
     <string name="status_zoom_in">Zoom in to see the places</string>
     <string name="status_retry">Network error, retrying...</string>
     <string name="imageRadarMonocleDescription">Radar background</string>
+    <string name="imageArrowInfoWindowMonocleDescription">Arrow pointing to place</string>
 
     <!-- Monocle -->
     <string name="scanning">Scanning...</string>

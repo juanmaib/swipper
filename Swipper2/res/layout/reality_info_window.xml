@@ -19,13 +19,14 @@
         android:id="@+id/placeName_monocle"
         style="@style/Swipper.Monocle.InfoWindow.Text"
         android:paddingRight="20dp"
-        android:textSize="22sp" />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/arrow_info_window_monocle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/placeName_monocle"
+        android:contentDescription="@string/imageArrowInfoWindowMonocleDescription"
         android:src="@drawable/details_arrow" />
 
     <com.globant.labs.swipper2.widget.SwipperTextView
@@ -33,7 +34,6 @@
         style="@style/Swipper.Monocle.InfoWindow.Text"
         android:layout_below="@id/placeName_monocle"
         android:drawableLeft="@drawable/distance_icon"
-        android:drawablePadding="4dp"
-        android:textSize="16sp" />
+        android:drawablePadding="4dp" />
 
 </com.globant.labs.swipper2.widget.RealityPlaceView>

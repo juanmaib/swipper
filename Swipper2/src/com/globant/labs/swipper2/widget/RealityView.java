@@ -11,14 +11,12 @@ import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
-import com.globant.labs.swipper2.MonocleActivity;
 import com.globant.labs.swipper2.PlaceDetailActivity;
 import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.globant.labs.swipper2.utils.GeometryUtils;
 import com.globant.labs.swipper2.utils.OrientationSensorRotationVector.OnAzimuthChangeListener;
-import com.google.android.gms.maps.model.LatLngBounds;
 
 public class RealityView extends MonocleComponentViewGroup
 		implements
@@ -67,7 +65,8 @@ public class RealityView extends MonocleComponentViewGroup
 		SwipperTextView placeDistanceView = (SwipperTextView) placeView
 				.findViewById(R.id.distance_monocle);
 		placeDistanceView.setText(DF.format(GeoUtils.getDistance(
-				place.getLocation(), getActivity().getCurrentLatLng())));
+				place.getLocation(), getActivity().getCurrentLatLng()))
+				+ " km");
 
 		placeView.setTag(place.getId());
 
@@ -76,7 +75,7 @@ public class RealityView extends MonocleComponentViewGroup
 				* 1000 / getActivity().getRadius(1);
 
 		// ((e^(2-x*2))/2)
-		float scale = (float) (1 + (Math.pow(Math.E, (2 - distanceRatio * 2)) / 4));
+		float scale = (float) (1 + (Math.pow(Math.E, (2 - distanceRatio * 2)) / 8));
 
 		placeView.setScale(scale);
 
@@ -159,19 +158,20 @@ public class RealityView extends MonocleComponentViewGroup
 					v.setPositionY(size_y / 2);
 
 				Point point = GeometryUtils.locationToRealityPoint(getPlaces()
-						.get((String) v.getTag()), getActivity().getCurrentLocation(), size_x,
-						X_FOV_MULTIPLIER, v.getPositionY(), getActivity()
-								.getAzimuthDegrees());
+						.get((String) v.getTag()), getActivity()
+						.getCurrentLocation(), size_x, X_FOV_MULTIPLIER, v
+						.getPositionY(), getActivity().getAzimuthDegrees());
 
 				int halfwidth = (int) ((v.getMeasuredWidth() * v.getScale()) / 2);
 				int halfheight = (int) ((v.getMeasuredHeight() * v.getScale()) / 2);
-				
-				ImageView arrow = (ImageView) v.findViewById(R.id.arrow_info_window_monocle);
+
+				ImageView arrow = (ImageView) v
+						.findViewById(R.id.arrow_info_window_monocle);
 				// float angle = (float) getActivity().getAzimuthDegrees() + 90;
 				float half_canvas = size_x / 2;
 				float displacement = point.x - half_canvas;
 				float angle = (45 * displacement / half_canvas) - 90;
-				
+
 				rotateArrow(arrow, angle, arrow.getWidth() / 2);
 
 				v.layout((int) (point.x - halfwidth),
@@ -182,10 +182,10 @@ public class RealityView extends MonocleComponentViewGroup
 			mIsInLayout = false;
 		}
 	}
-	
+
 	private void rotateArrow(ImageView arrow, float angle, float center) {
-		RotateAnimation animation = new RotateAnimation(angle, angle,
-				center, center);
+		RotateAnimation animation = new RotateAnimation(angle, angle, center,
+				center);
 		animation.setFillAfter(true);
 		arrow.startAnimation(animation);
 	}
@@ -209,7 +209,5 @@ public class RealityView extends MonocleComponentViewGroup
 
 	@Override
 	public void onAzimuthChanged(double azimuthDegrees) {
-		// TODO Auto-generated method stub
-		
 	}
 }
