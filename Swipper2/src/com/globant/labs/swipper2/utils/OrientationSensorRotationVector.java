@@ -7,9 +7,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 
+import com.globant.labs.swipper2.MonocleActivity.OrientationProvider;
 import com.google.android.gms.location.LocationListener;
 
-public class OrientationSensor implements SensorEventListener, LocationListener {
+public class OrientationSensorRotationVector
+		implements
+			SensorEventListener,
+			LocationListener,
+			OrientationProvider {
 
 	private float[] mRotationMatrix;
 	private float[] mOutRotationMatrix;
@@ -23,7 +28,7 @@ public class OrientationSensor implements SensorEventListener, LocationListener 
 	private SensorManager mSensorManager;
 	private Location mLocation;
 
-	public OrientationSensor(SensorManager sm) {
+	public OrientationSensorRotationVector(SensorManager sm) {
 		mSensorManager = sm;
 	}
 
@@ -33,9 +38,11 @@ public class OrientationSensor implements SensorEventListener, LocationListener 
 		mRotationMatrix = new float[16];
 		mOutRotationMatrix = new float[16];
 
-		Sensor sensorRotationVector = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+		Sensor sensorRotationVector = mSensorManager
+				.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		if (sensorRotationVector != null) {
-			mSensorManager.registerListener(this, sensorRotationVector, sensorSpeed);
+			mSensorManager.registerListener(this, sensorRotationVector,
+					sensorSpeed);
 			return true;
 		} else {
 			return false;
@@ -50,19 +57,24 @@ public class OrientationSensor implements SensorEventListener, LocationListener 
 	public void onSensorChanged(SensorEvent event) {
 		if (mLocation != null) {
 			if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-				SensorManager.getRotationMatrixFromVector(mRotationMatrix, event.values);
+				SensorManager.getRotationMatrixFromVector(mRotationMatrix,
+						event.values);
 
-				mGeomagneticField = new GeomagneticField((float) mLocation.getLatitude(),
-						(float) mLocation.getLongitude(), (float) mLocation.getAltitude(),
+				mGeomagneticField = new GeomagneticField(
+						(float) mLocation.getLatitude(),
+						(float) mLocation.getLongitude(),
+						(float) mLocation.getAltitude(),
 						System.currentTimeMillis());
 
 				// Remap coordinate System to compensate for the landscape
 				// position of device
-				SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
-						SensorManager.AXIS_Z, mOutRotationMatrix);
+				SensorManager.remapCoordinateSystem(mRotationMatrix,
+						SensorManager.AXIS_X, SensorManager.AXIS_Z,
+						mOutRotationMatrix);
 				SensorManager.getOrientation(mOutRotationMatrix, event.values);
 
-				mAzimuth = event.values[0] + Math.toRadians(mGeomagneticField.getDeclination());
+				mAzimuth = event.values[0]
+						+ Math.toRadians(mGeomagneticField.getDeclination());
 				mPitch = event.values[1];
 				mRoll = event.values[2];
 

@@ -17,7 +17,7 @@ import com.globant.labs.swipper2.R;
 import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.utils.GeoUtils;
 import com.globant.labs.swipper2.utils.GeometryUtils;
-import com.globant.labs.swipper2.utils.OrientationSensor.OnAzimuthChangeListener;
+import com.globant.labs.swipper2.utils.OrientationSensorRotationVector.OnAzimuthChangeListener;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public class RealityView extends MonocleComponentViewGroup
@@ -151,8 +151,6 @@ public class RealityView extends MonocleComponentViewGroup
 		// screen altogether.
 		if (getActivity().getCurrentLocation() != null && !mIsInLayout) {
 			mIsInLayout = true;
-			LatLngBounds latLngBounds = getActivity().getBounds(
-					2 * MonocleActivity.BASE_COEFICIENT);
 			int size_x = right - left;
 			int size_y = bottom - top;
 			for (int i = 0; i < getChildCount(); i++) {
@@ -161,7 +159,7 @@ public class RealityView extends MonocleComponentViewGroup
 					v.setPositionY(size_y / 2);
 
 				Point point = GeometryUtils.locationToRealityPoint(getPlaces()
-						.get((String) v.getTag()), latLngBounds, size_x,
+						.get((String) v.getTag()), getActivity().getCurrentLocation(), size_x,
 						X_FOV_MULTIPLIER, v.getPositionY(), getActivity()
 								.getAzimuthDegrees());
 

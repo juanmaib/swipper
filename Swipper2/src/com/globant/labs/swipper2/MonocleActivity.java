@@ -13,6 +13,7 @@ import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
@@ -24,7 +25,8 @@ import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.utils.GeoUtils;
-import com.globant.labs.swipper2.utils.OrientationSensor;
+import com.globant.labs.swipper2.utils.OrientationSensorRotationVector;
+import com.globant.labs.swipper2.utils.OrientationSensorRotationVector.OnAzimuthChangeListener;
 import com.globant.labs.swipper2.widget.CameraPreview;
 import com.globant.labs.swipper2.widget.RadarView;
 import com.globant.labs.swipper2.widget.RealityView;
@@ -86,7 +88,7 @@ public class MonocleActivity extends Activity
 	private Location mPreviousLocation;
 
 	private MonoclePlacesProvider mPlacesProvider;
-	private OrientationSensor mOrientationSensor;
+	private OrientationProvider mOrientationProvider;
 	private LocationListener mOrientationSensorLocationListener;
 	private SensorManager mSensorManager;
 
@@ -152,8 +154,10 @@ public class MonocleActivity extends Activity
 		// Set up sensor manager
 		// setAzimuthDegrees(0);
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		mOrientationSensor = new OrientationSensor(mSensorManager);
-		mOrientationSensorLocationListener = mOrientationSensor;
+		// mOrientationProvider = new OrientationSensor(mSensorManager);
+		mOrientationProvider = new OrientationSensorRotationVector(
+				mSensorManager);
+		mOrientationSensorLocationListener = mOrientationProvider;
 
 		// Set max progress
 		mLoadingProgressBar.setMax(LOADING_STEPS);
@@ -169,7 +173,7 @@ public class MonocleActivity extends Activity
 	protected void onResume() {
 		mLoadingSteps = 0;
 		setUpCamera();
-		mOrientationSensor.Register(null, SENSOR_DELAY_RADAR);
+		mOrientationProvider.Register(null, SENSOR_DELAY_RADAR);
 		// mRadarBackgroundCenter =
 		// getResources().getDimension(R.dimen.radar_monocle_size) / 2;
 		mRadarNorthCenter = getResources().getDimension(
@@ -180,7 +184,7 @@ public class MonocleActivity extends Activity
 
 	@Override
 	protected void onPause() {
-		mOrientationSensor.Unregister();
+		mOrientationProvider.Unregister();
 		stopAutoFocus();
 		releaseCamera(); // release the camera immediately on pause event
 		super.onPause();
@@ -275,7 +279,7 @@ public class MonocleActivity extends Activity
 									@Override
 									public void run() {
 										mAzimuthTextView.setText(DF
-												.format(mOrientationSensor
+												.format(mOrientationProvider
 														.getAzimuthRadians()));
 									}
 								});
@@ -424,6 +428,7 @@ public class MonocleActivity extends Activity
 
 	@Override
 	public void onLocationChanged(Location location) {
+		Log.i("onLocationChanged", "my location: " + location);
 		setCurrentLocation(location);
 		setSpeed();
 		mRadarPlaces.onLocationChanged(location);
@@ -516,6 +521,13 @@ public class MonocleActivity extends Activity
 	}
 
 	public double getAzimuthDegrees() {
-		return mOrientationSensor.getAzimuthDegrees();
+		return mOrientationProvider.getAzimuthDegrees();
+	}
+
+	public interface OrientationProvider extends LocationListener {
+		boolean Register(OnAzimuthChangeListener[] listeners, int sensorSpeed);
+		void Unregister();
+		double getAzimuthDegrees();
+		double getAzimuthRadians();
 	}
 }

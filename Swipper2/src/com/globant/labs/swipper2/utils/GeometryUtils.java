@@ -1,6 +1,8 @@
 package com.globant.labs.swipper2.utils;
 
 import android.graphics.Point;
+import android.location.Location;
+import android.util.Log;
 
 import com.globant.labs.swipper2.models.Place;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -36,7 +38,7 @@ public class GeometryUtils {
 		int centerx = (int) Math.floor(size_x / 2);
 		int centery = (int) Math.floor(size_y / 2);
 		Point center = new Point(centerx, centery);
-		return rotatePoint(point, center, -azimuth);
+		return rotatePoint(point, center, 180 - azimuth);
 		// return point;
 	}
 
@@ -46,8 +48,14 @@ public class GeometryUtils {
 	 * position in the screen of the "place"
 	 */
 	public static Point locationToRealityPoint(Place place,
-			LatLngBounds bounds, int size_x, double x_fov_multiplier,
+			Location location, int size_x, double x_fov_multiplier,
 			double position_y, double azimuthDegrees) {
+		
+		if (place.getName().equals("Sitone")) {
+			Log.i("locationToRealityPoint", "Sitone: " + place.getLocation());
+		} else {
+			// Log.i("locationToRealityPoint", "Place: '" + place.getName() + "', location: " + place.getLocation());
+		}
 		// calculate our canvas full size
 		double max_canvas_x = size_x * x_fov_multiplier;
 
@@ -56,9 +64,9 @@ public class GeometryUtils {
 
 		// get the distance in both axis between our position and the place
 		double distance_x = place.getLocation().longitude
-				- bounds.getCenter().longitude;
+				- location.getLongitude();
 		double distance_y = place.getLocation().latitude
-				- bounds.getCenter().latitude;
+				- location.getLatitude();
 
 		// and the angle between 'em
 		double place_angle = normalizeRadian(Math.atan2(distance_y, distance_x));
@@ -66,7 +74,7 @@ public class GeometryUtils {
 
 		// now mix and match all angles accordingly
 		double mixed_angle = normalizeRadian(place_angle - azimuth_angle
-				- TRANSLATION_ANGLE);
+				+ TRANSLATION_ANGLE);
 
 		// translate that from a [0,2PI] domain, to a [0,1] one
 		double angleRatio = mixed_angle / TWO_PI_RADIANS;
