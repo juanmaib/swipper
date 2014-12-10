@@ -26,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/placeName_monocle"
+        android:layout_centerVertical="true"
         android:contentDescription="@string/imageArrowInfoWindowMonocleDescription"
         android:src="@drawable/details_arrow" />
 
