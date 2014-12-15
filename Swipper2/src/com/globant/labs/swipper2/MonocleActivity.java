@@ -23,7 +23,9 @@ import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.utils.GeoUtils;
+import com.globant.labs.swipper2.utils.OrientationSensorGravityMagnetic;
 import com.globant.labs.swipper2.utils.OrientationSensorRotationVector;
+import com.globant.labs.swipper2.utils.OrientationSensorSamsungDevice;
 import com.globant.labs.swipper2.utils.OrientationSensorRotationVector.OnAzimuthChangeListener;
 import com.globant.labs.swipper2.widget.CameraPreview;
 import com.globant.labs.swipper2.widget.RadarView;
@@ -70,6 +72,7 @@ public class MonocleActivity extends Activity
 	private ScheduledExecutorService mAutoFocusService;
 	private boolean mStopped;
 	private boolean mFocusing;
+	private boolean mFocusAuto = false;
 
 	// private SwipperTextView mBrand;
 	private RelativeLayout mPreviewFrame;
@@ -153,7 +156,7 @@ public class MonocleActivity extends Activity
 		// setAzimuthDegrees(0);
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		// mOrientationProvider = new OrientationSensor(mSensorManager);
-		mOrientationProvider = new OrientationSensorRotationVector(
+		mOrientationProvider = new OrientationSensorSamsungDevice(
 				mSensorManager);
 		mOrientationSensorLocationListener = mOrientationProvider;
 
@@ -315,6 +318,7 @@ public class MonocleActivity extends Activity
 			// set Camera parameters
 			mCamera.setParameters(params);
 			startAutoFocus();
+			mFocusAuto = true;
 		}
 	}
 
@@ -373,7 +377,9 @@ public class MonocleActivity extends Activity
 	}
 
 	private synchronized void shutdownAutoFocusService() {
-		mAutoFocusService.shutdown();
+		if (mFocusAuto) {
+			mAutoFocusService.shutdown();
+		}
 		mFocusing = false;
 	}
 
