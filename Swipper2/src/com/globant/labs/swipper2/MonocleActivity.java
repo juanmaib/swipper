@@ -23,6 +23,7 @@ import com.globant.labs.swipper2.models.Place;
 import com.globant.labs.swipper2.provider.PlacesProvider;
 import com.globant.labs.swipper2.provider.PlacesProvider.PlacesCallback;
 import com.globant.labs.swipper2.utils.GeoUtils;
+import com.globant.labs.swipper2.utils.OrientationSensorAccelerometerMagnetic;
 import com.globant.labs.swipper2.utils.OrientationSensorGravityMagnetic;
 import com.globant.labs.swipper2.utils.OrientationSensorRotationVector;
 import com.globant.labs.swipper2.utils.OrientationSensorSamsungDevice;
@@ -156,7 +157,7 @@ public class MonocleActivity extends Activity
 		// setAzimuthDegrees(0);
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		// mOrientationProvider = new OrientationSensor(mSensorManager);
-		mOrientationProvider = new OrientationSensorSamsungDevice(
+		mOrientationProvider = new OrientationSensorAccelerometerMagnetic(
 				mSensorManager);
 		mOrientationSensorLocationListener = mOrientationProvider;
 
