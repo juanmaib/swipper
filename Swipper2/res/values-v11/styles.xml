@@ -18,5 +18,15 @@
 		<item name="android:height">60dp</item>	
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
+
+    <style name="NoLogoActionBar" parent="@style/MyActionBar">
+        <item name="displayOptions">showTitle</item> <!-- pre-v11-compatibility -->
+        <item name="android:displayOptions">showTitle</item>
+    </style>
+
+    <style name="NoLogoActivityTheme" parent="@style/AppTheme">
+        <item name="actionBarStyle">@style/NoLogoActionBar</item> <!-- pre-v11-compatibility -->
+        <item name="android:actionBarStyle">@style/NoLogoActionBar</item>
+    </style>
     
 </resources>

@@ -67,4 +67,12 @@
         <item name="fontName">roboto_thin.ttf</item>
     </style>
 
+    <style name="NoLogoActionBar" parent="@style/MyActionBar">
+        <item name="displayOptions">showTitle</item> <!-- pre-v11-compatibility -->
+    </style>
+
+    <style name="NoLogoActivityTheme" parent="@style/AppTheme">
+        <item name="actionBarStyle">@style/NoLogoActionBar</item> <!-- pre-v11-compatibility -->
+    </style>
+
 </resources>

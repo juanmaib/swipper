@@ -7,7 +7,7 @@
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="21" />
 
     <permission
         android:name="com.globant.labs.swipper2.permission.MAPS_RECEIVE"
@@ -31,8 +31,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        tools:ignore="UnusedAttribute" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name="SplashScreen"
             android:label="@string/app_name"
@@ -53,7 +52,7 @@
         <activity
             android:name="com.globant.labs.swipper2.PlaceDetailActivity"
             android:parentActivityName="com.globant.labs.swipper2.MainActivity"
-            android:icon="@android:color/transparent"
+            android:theme="@style/NoLogoActivityTheme"
             android:screenOrientation="portrait" >
             <meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
