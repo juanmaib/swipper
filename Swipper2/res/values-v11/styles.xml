@@ -17,6 +17,7 @@
         <item name="android:background">@color/orange</item>
 		<item name="android:height">60dp</item>	
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
+        <item name="android:logo">@drawable/action_logo</item>
     </style>
 
     <style name="NoLogoActionBar" parent="@style/MyActionBar">

@@ -45,7 +45,6 @@
         <activity
             android:name="com.globant.labs.swipper2.MainActivity"
             android:title=""
-            android:icon="@drawable/action_logo"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" >
         </activity>

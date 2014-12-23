@@ -28,6 +28,7 @@
         <!-- Support library compatibility -->
         <item name="background">@color/orange</item>
         <item name="titleTextStyle">@style/MyActionBarTitleText</item>
+        <item name="logo">@drawable/action_logo</item>
         <!-- <item name="logo">@drawable/action_logo</item> -->
     </style>
 
